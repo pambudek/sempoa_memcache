@@ -82,4 +82,8 @@ class KEYAPP
     public static $NO_HP_BARU_TIDAK_ADA = "Masukan No HP baru Anda!";
     public static $PWD_BARU_KOSONG = "Masukan Password baru!";
     public static $PANJANG_PWD_HRS_6 = "Panjang password harus 6";
+
+
+    public static $TYPE_PARENT = "1";
+    public static $TYPE_CHILD = "2";
 }

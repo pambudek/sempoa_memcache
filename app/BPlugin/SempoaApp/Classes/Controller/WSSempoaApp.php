@@ -79,9 +79,9 @@ class WSSempoaApp extends WebService
         // jika bukan email cek apakah kode_siswa
         //1606030020
         // Murid
-        if(is_numeric($user_id)){
+        if (is_numeric($user_id)) {
             $pwd = addslashes($_POST['pwd']);
-            Generic::checkFieldKosong($pwd,"Masukan Password");
+            Generic::checkFieldKosong($pwd, "Masukan Password");
             $objSiswa = new MuridModel();
             $objSiswa->getWhereOne("kode_siswa='$user_id' AND murid_app_pwd='$pwd'");
 
@@ -95,15 +95,14 @@ class WSSempoaApp extends WebService
             foreach ($arrWS as $val) {
                 $arrHlp[$val] = $objSiswa->$val;
             }
-
+            $arrHlp['type'] = KEYAPP::$TYPE_CHILD;
             $json['status_code'] = 1;
             $json['result'] = $arrHlp;
             $json['status_message'] = "Berhasil!";
             echo json_encode($json);
             die();
-        }
-        // ini Parent
-        elseif(Generic::isEmailValid($user_id)){
+        } // ini Parent
+        elseif (Generic::isEmailValid($user_id)) {
             $pwd = addslashes($_POST['pwd']);
             if ($user_id == "") {
                 Generic::errorMsg("Email harus diisi");
@@ -132,16 +131,14 @@ class WSSempoaApp extends WebService
             foreach ($arrWS as $val) {
                 $arrHlp[$val] = $objParent->$val;
             }
-
+            $arrHlp['type'] = KEYAPP::$TYPE_PARENT;
             $json['status_code'] = 1;
             $json['result'] = $arrHlp;
             $json['status_message'] = "Berhasil!";
             echo json_encode($json);
             die();
-        }
-
-        // Bukan Murid bukan Parent
-        else{
+        } // Bukan Murid bukan Parent
+        else {
             Generic::errorMsg("Masukan user id sebagai Siswa atau Email sebagai Orang tua!");
         }
 
@@ -383,7 +380,7 @@ class WSSempoaApp extends WebService
         $content = "Password anak Anda:" . $sempoaMurid->nama_siswa . " " . $pwd;
 
         $sendTo = $objParent->parent_email;
-        $mail->sendHTMLEmail($sendTo, $subject,"", $content);
+        $mail->sendHTMLEmail($sendTo, $subject, "", $content);
         $sempoaMurid->setFieldMurid($sempoaMurid->id_murid, "murid_app_pwd", $pwd);
         $sempoaMurid->setFieldMurid($sempoaMurid->id_murid, "murid_created_date", leap_mysqldate());
         $sempoaMurid->setFieldMurid($sempoaMurid->id_murid, "murid_updated", leap_mysqldate());
@@ -795,6 +792,40 @@ class WSSempoaApp extends WebService
         $json['status_code'] = 1;
         $json['result'] = $arrNamaAnak;
         $json['status_message'] = KEYAPP::$SUCCESS;
+        echo json_encode($json);
+        die();
+    }
+
+    public function dataLogin()
+    {
+
+        if (Efiwebsetting::getData('checkOAuth') == 'yes')
+            IMBAuth::checkOAuth();
+
+        $parent_id = addslashes($_POST['parent_id']);
+
+        if ($parent_id == "") {
+            Generic::errorMsg("id harus diisi");
+        }
+
+        $json = array();
+        $objParent = new ParentSempoa();
+        $objParent->getWhereOne("parent_id='$parent_id'");
+        if (is_null($objParent->parent_id)) {
+            Generic::errorMsg("!");
+        }
+
+        $objParent->setLastLogin($objParent->parent_id);
+        $arrWS = explode(",", $objParent->crud_webservice_allowed);
+
+        $arrHlp = array();
+        foreach ($arrWS as $val) {
+            $arrHlp[$val] = $objParent->$val;
+        }
+
+        $json['status_code'] = 1;
+        $json['result'] = $arrHlp;
+        $json['status_message'] = "Berhasil!";
         echo json_encode($json);
         die();
     }
