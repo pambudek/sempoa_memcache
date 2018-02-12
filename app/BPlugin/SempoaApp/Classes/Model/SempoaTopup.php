@@ -8,7 +8,7 @@
  */
 class SempoaTopup extends Model
 {
-    var $table_name = "Sempoa__app_topup";
+    var $table_name = "sempoa__app_topup";
     var $main_id = "topup_id";
 
     //Default Coloms for read
