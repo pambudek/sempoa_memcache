@@ -589,6 +589,48 @@ class WSTeacher extends WebService
     }
 
 
+    public function refresh(){
+        if (Efiwebsetting::getData('checkOAuth') == 'yes')
+            IMBAuth::checkOAuth();
+
+        $kode_guru = addslashes($_POST['kode_guru']);
+        Generic::checkFieldKosong($kode_guru, KEYAPP::$GURU_ID_KOSONG);
+
+        $objGuru = new SempoaGuruModel();
+        $objGuru->getWhereOne("kode_guru='$kode_guru'");
+
+        if (is_null($objGuru->guru_id)) {
+            Generic::errorMsg(KEYAPP::$TEACHER_TDK_BS_LOGIN);
+        }
+        $arrWS = explode(",",$objGuru->APPWS);
+        $arrHlp = array();
+        foreach($arrWS as $val){
+            $arrHlp[$val] = $objGuru->$val;
+
+        }
+
+        $tc = new SempoaOrg();
+        $tc->getByID($objGuru->guru_tc_id);
+        $arrWS = explode(",",$tc->ContactTCAPP);
+        $arrHlpTC = array();
+        foreach($arrWS as $val){
+            $arrHlpTC[$val] = $tc->$val;
+        }
+        $arrHlp['TC'] = $arrHlpTC;
+
+        $ibo = new SempoaOrg();
+        $ibo->getByID($objGuru->guru_ibo_id);
+        foreach($arrWS as $val){
+            $arrHlpTC[$val] = $ibo->$val;
+        }
+        $arrHlp['IBO'] = $arrHlpTC;
+        $json = array();
+        $json['status_code'] = 1;
+        $json['results'] = $arrHlp;
+        $json['status_message'] = KEYAPP::$LOGIN_BERHASIL;
+        echo json_encode($json);
+        die();
+    }
     public function getProgress(){
 
 
