@@ -271,6 +271,7 @@ class WSSempoaApp extends WebService
                 // Challange
 
             }
+            $json['status_code'] = 1;
             $json['result'] = $jsonHlp;
             $json['status_message'] = KEYAPP::$SUCCESS;
             echo json_encode($json);
