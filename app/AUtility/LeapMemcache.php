@@ -17,12 +17,12 @@ class LeapMemcache {
         define('MEMCACHED_PORT', '11211');
 
 // Connection creation
-        $memcache = new Memcache;
-        $cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
-
-        $this->cacheAvailable = $cacheAvailable;
-        $this->memcache = $memcache;
-        $this->cacheAvailable=false;
+//        $memcache = new Memcache;
+//        $cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
+//
+//        $this->cacheAvailable = $cacheAvailable;
+//        $this->memcache = $memcache;
+//        $this->cacheAvailable=false;
     }
 
     public static function addInboxUsingAccID($client_camp_id,$acc_id,$cardNr,$message,$url,$useGateway=1){
