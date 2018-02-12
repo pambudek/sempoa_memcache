@@ -489,7 +489,7 @@ class WSTeacher extends WebService
         $kode_guru = addslashes($_POST['kode_guru']);
         $guru_email = addslashes($_POST['guru_email']);
         Generic::checkFieldKosong($kode_guru, KEYAPP::$PARENT_ID_KOSONG);
-        Generic::checkFieldKosong($guru_email, KEYAPP::$PARENT_ID_KOSONG);
+//        Generic::checkFieldKosong($guru_email, KEYAPP::$PARENT_ID_KOSONG);
 
         // cek username
         $guru_newemail = addslashes($_POST['guru_newemail']);
