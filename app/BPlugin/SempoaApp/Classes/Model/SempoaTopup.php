@@ -33,6 +33,7 @@ class SempoaTopup extends Model
     public function getParentTopUp($parent_id)
     {
         $arrMyTopUp = $this->getWhere("topup_parent_id='$parent_id' ORDER BY topup_id DESC");
+        pr($arrMyTopUp);
         return $arrMyTopUp;
     }
 
