@@ -118,6 +118,9 @@ class WSTeacher extends WebService
         if (Efiwebsetting::getData('checkOAuth') == 'yes')
             IMBAuth::checkOAuth();
 
+//        $guru_id = addslashes($_POST['guru_id']);
+//        Generic::checkFieldKosong($guru_id, KEYAPP::$GURU_ID_KOSONG);
+
         $kelas_id = addslashes($_POST['kelas_id']);
         Generic::checkFieldKosong($kelas_id, "Kelas ID Kosong");
         $objKelasMatrix = new MuridKelasMatrix();
@@ -222,13 +225,26 @@ class WSTeacher extends WebService
         Generic::checkFieldKosong($kelas_id, KEYAPP::$PARENT_ID_KOSONG);
         $guru_id = addslashes($_POST['guru_id']);
         Generic::checkFieldKosong($kelas_id, KEYAPP::$GURU_ID_KOSONG_LOGOUT);
+        $tc_id = addslashes($_POST['tc_id']);
+        Generic::checkFieldKosong($tc_id, KEYAPP::$PARENT_ID_KOSONG);
+
 
         // Cek, guru ini ngajar di kelas id ini atau tidak
         $kelas = new KelasWebModel();
         $kelas->getWhereOne("id_kelas='$kelas_id' AND guru_id='$guru_id'");
-//pr($kelas);
+
         if (is_null($kelas->id_kelas)) {
             Generic::errorMsg(KEYAPP::$GURU_TDK_NGAJAR_DIKELAS_INI);
+        }
+
+        if($tc_id != $kelas->tc_id){
+            Generic::errorMsg(KEYAPP::$PARENT_ID_KOSONG . " TC berbeda");
+        }
+
+        $objMurid = new MuridModel();
+        $objMurid->getByID($id_murid);
+        if($tc_id != $objMurid->murid_tc_id){
+            Generic::errorMsg(KEYAPP::$PARENT_ID_KOSONG . " TC berbeda");
         }
 
         // cek murid sdh di add
@@ -240,8 +256,7 @@ class WSTeacher extends WebService
             Generic::errorMsg(KEYAPP::$MURID_SUDAH_DI_ADD_DALAM_KELAS);
         }
 
-        $objMurid = new MuridModel();
-        $objMurid->getByID($id_murid);
+
         $mk = new MuridKelasMatrix();
         $mk->kelas_id = $kelas_id;
         $mk->murid_id = $id_murid;
