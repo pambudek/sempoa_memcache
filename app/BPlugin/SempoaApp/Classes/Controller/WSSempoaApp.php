@@ -259,9 +259,9 @@ class WSSempoaApp extends WebService
                     $arrHlp[$field] = $objMurid->$field;
                 }
                 $objWallet = new WalletModel();
-                $arrHlp['Wallet'][] = $objWallet->getMyCoin($val);
-                $arrHlp['Progress'][] = "Halam 10";
-                $arrHlp['Rank Challange'][] = "1";
+                $arrHlp['wallet'] = $objWallet->getMyCoin($val);
+                $arrHlp['progress'][] = "Halam 10";
+                $arrHlp['rank_Challange'] = "1";
                 $jsonHlp['list murid'][] = $arrHlp;
                 // Wallet
 
