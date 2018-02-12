@@ -449,6 +449,20 @@ class WSSempoaApp extends WebService
         $cara_pembayaran = addslashes($_POST['cara_pembayaran']);
         Generic::checkFieldKosong($cara_pembayaran, KEYAPP::$CARA_PEMBAYARAN_KOSONG);
 
+        // check anaknya orang tua
+        $objParent = new ParentSempoa();
+        $objParent->getByID($parent_id);
+//        pr($objParent);
+        if(is_null($objParent->parent_id)) {
+            Generic::errorMsg(KEYAPP::$PARENT_ID_KOSONG);
+        }
+        else{
+            $arrKodeMurid = explode(",",$objParent->parent_kode_anak);
+            if(!in_array($kode_siswa,$arrKodeMurid)){
+                Generic::errorMsg("Kode Anak salah!");
+            }
+        }
+
         $topUp = new SempoaTopup();
         $topUp->topup_created_date = leap_mysqldate();
         $topUp->topup_kodesiswa = $kode_siswa;
@@ -457,8 +471,7 @@ class WSSempoaApp extends WebService
         $topUp->topup_jumlah = $jumlah_yg_dibeli;
         $topUp->topup_status = KEYAPP::$STATUS_TOP_UP_PENDING;
         $topUp->topup_pending_date = leap_mysqldate();
-        $objParent = new ParentSempoa();
-        $objParent->getByID($parent_id);
+
         $topUp->topup_changed_status_by = $objParent->parent_fullname;
         $topUp->save();
         $json = array();
