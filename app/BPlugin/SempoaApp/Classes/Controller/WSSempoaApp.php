@@ -452,14 +452,13 @@ class WSSempoaApp extends WebService
         // check anaknya orang tua
         $objParent = new ParentSempoa();
         $objParent->getByID($parent_id);
-//        pr($objParent);
         if(is_null($objParent->parent_id)) {
             Generic::errorMsg(KEYAPP::$PARENT_ID_KOSONG);
         }
         else{
             $arrKodeMurid = explode(",",$objParent->parent_kode_anak);
             if(!in_array($kode_siswa,$arrKodeMurid)){
-                Generic::errorMsg("Kode Anak salah!");
+                Generic::errorMsg(KEYAPP::$PARENT_ID_KOSONG);
             }
         }
 
