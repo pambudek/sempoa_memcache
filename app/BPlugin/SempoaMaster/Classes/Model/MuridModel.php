@@ -54,7 +54,7 @@ class MuridModel extends SempoaModel
     public $statushelp;
     public $hideColoums = array("murid_ak_id", "murid_kpo_id", "murid_ibo_id", "murid_kurikulum", "murid_parent_id");
 
-    public $APPWS = "id_murid,kode_siswa,nama_siswa,jenis_kelamin,alamat,agama,tempat_lahir,id_level_sekarang,tanggal_lahir,murid_ak_id,murid_kpo_id,murid_ibo_id,murid_tc_id";
+    public $APPWS = "id_murid,kode_siswa,nama_siswa,jenis_kelamin,alamat,agama,tempat_lahir,id_level_sekarang,tanggal_lahir,murid_ak_id,murid_kpo_id,murid_ibo_id,murid_tc_id,murid_app_pwd";
 
 
     // Webservice
