@@ -37,6 +37,7 @@ class ProgressModel extends Model
     public $progress_active;
 
     public $crud_webservice_allowed = "progress_id,kode_siswa,progress_level,progress_nama_buku_1,progress_nama_buku_2,progress_nama_buku_3,progress_nama_buku_4,progress_hal_buku_1,progress_hal_buku_2,progress_hal_buku_3,progress_hal_buku_4,progress_total_hal_1,progress_total_hal_2,progress_total_hal_3,progress_total_hal_4,progress_guru_id,progress_created,progress_updated,progress_active";
+    public $WSHalBuku = "progress_nama_buku_1,progress_nama_buku_2,progress_nama_buku_3,progress_nama_buku_4,progress_hal_buku_1,progress_hal_buku_2,progress_hal_buku_3,progress_hal_buku_4,progress_total_hal_1,progress_total_hal_2,progress_total_hal_3,progress_total_hal_4";
 
     public function isProgressCreated($kode_siswa, $progress_level, $date)
     {

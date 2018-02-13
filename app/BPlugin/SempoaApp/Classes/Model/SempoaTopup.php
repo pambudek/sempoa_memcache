@@ -32,14 +32,14 @@ class SempoaTopup extends Model
 
     public function getParentTopUp($parent_id)
     {
-        $arrMyTopUp = $this->getWhere("topup_parent_id='$parent_id' ORDER BY topup_id DESC");
+        $arrMyTopUp = $this->getWhere("topup_parent_id='$parent_id' ORDER BY topup_created_date DESC");
 //        pr($arrMyTopUp);
         return $arrMyTopUp;
     }
 
     public function getStudentTopUp($kode_siswa)
     {
-        $arrMyTopUp = $this->getWhere("topup_kodesiswa='$kode_siswa' ORDER BY topup_id DESC");
+        $arrMyTopUp = $this->getWhere("topup_kodesiswa='$kode_siswa' ORDER BY topup_created_date DESC");
         return $arrMyTopUp;
     }
 }

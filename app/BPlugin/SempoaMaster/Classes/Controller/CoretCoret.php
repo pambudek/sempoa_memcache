@@ -1623,8 +1623,9 @@ class CoretCoret extends WebService
     public function printObj()
     {
 
-        $obj = new ProgressModel();
-        $obj->printColumlistAsAttributes();
+        $withDraw = new WithdrawModel();
+        $withDraw->printColumlistAsAttributes();
+        die();
         $date = new DateTime('today');
         $todayweek = $date->format("W");
         $hari = $date->format("w");

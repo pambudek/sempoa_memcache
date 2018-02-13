@@ -86,4 +86,30 @@ class KEYAPP
 
     public static $TYPE_PARENT = "1";
     public static $TYPE_CHILD = "2";
+
+    // Notif
+    public static $NOTIF_TYPE_TOP_UP = 1;
+    public static $NOTIF_TYPE_INFORMATION = 2;
+    public static $NOTIF_TYPE_CHALLANGE = 3;
+    public static $NOTIF_TITLE_TOP_UP = "Request Coin";
+
+    public static $NOTIF_CONTENT_TOP_UP = "Your Child requests the Coin";
+    // Murid
+
+    public static $MURID_SALAH_LOGIN = "ID atau Password yg anda masukan salah";
+    public static $ID_MURID_KOSONG = "Username anda harus di isi!";
+    public static $ID_MURID_KOSONG_LOGOUT = "Username anda kosong, silahkan login kembali";
+    public static $MURID_TIDAK_MASUK_HARI_INI = "Murid tidak ada jadwal di hari ini";
+    public static $MURID_SALAH_JADWAL = "Murid salah jadwal";
+    public static $MURID_TIDAK_BOLEH_ABSEN = "Murid tidak boleh absen lagi";
+
+//    TOPUP ANAK
+    public static $NOMOR_BANK_KOSONG = "Nomor bank anda kosong";
+    public static $JUMLAH_COIN_KOSOSNG = "Field anda kosong";
+
+    // challange
+    public static $MURID_SUDAH_JOIN = "Murid sudah join di challange ini, silahkan tunggu challange berikutnya";
+
+    // Generic
+
 }
