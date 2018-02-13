@@ -111,5 +111,9 @@ class KEYAPP
     public static $MURID_SUDAH_JOIN = "Murid sudah join di challange ini, silahkan tunggu challange berikutnya";
 
     // Generic
+// Absensi murid
+    public static $KELAS_SALAH_MURID = "Murid salah kelas";
+    public static $HARI_INI_SUDAH_ABSEN = "Hari ini sudah absen";
+    public static $BERHASIL_ABSEN = "Murid berhasil diabsen";
 
 }
