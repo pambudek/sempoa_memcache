@@ -335,10 +335,13 @@ class WSSempoaApp extends WebService
 
         $objParent = new ParentSempoa();
         $objParent->getWhereOne("parent_id ='$parent_id' AND FIND_IN_SET('$kode_siswa',parent_kode_anak)");
+        if (!is_null($objParent->parent_id)) {
+            Generic::checkFieldKosong($parent_id, KEYAPP::$MURID_SDH_PUNYA_PARENT);
+        }
+        $objParent->getByID($parent_id);
         if (is_null($objParent->parent_id)) {
             Generic::checkFieldKosong($parent_id, KEYAPP::$PARENT_ID_KOSONG);
         }
-
         $sempoaMurid = new MuridModel();
         $sempoaMurid->getWhereOne("kode_siswa = '$kode_siswa' AND nama_siswa='$nama_siswa' AND tanggal_lahir='$tgl_lahir_siswa'");
 
