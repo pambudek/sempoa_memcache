@@ -9,17 +9,25 @@
 class SoalChallange extends WebService
 {
 
-    function delete_soal_challange(){
+    function delete_soal_challange()
+    {
 
     }
-    function create_soal_challange(){
 
+    function create_soal_challange()
+    {
+
+        $_GET['cmd'] = 'edit';
+        $this->read_soal_challange();
+    }
+
+    function update_soal_challange()
+    {
 
     }
-    function update_soal_challange(){
 
-    }
-    function read_soal_challange(){
+    function read_soal_challange()
+    {
         $obj = new SoalChallangeModel();
         $crud = new CrudCustom();
         $crud->ar_add = AccessRight::hasRight("create_soal_challange");
@@ -27,5 +35,7 @@ class SoalChallange extends WebService
         $crud->ar_delete = AccessRight::hasRight("delete_soal_challange");
         $crud->run_custom($obj, "SoalChallange", "read_soal_challange");
     }
+
+
 
 }

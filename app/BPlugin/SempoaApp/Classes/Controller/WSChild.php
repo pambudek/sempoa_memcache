@@ -237,6 +237,7 @@ class WSChild extends WebService
         die();
 
     }
+
 // ok
     public function coinsHistory()
     {
@@ -266,6 +267,7 @@ class WSChild extends WebService
         echo json_encode($json);
         die();
     }
+
     // ok!
     public function withdrawMurid()
     {
@@ -296,7 +298,7 @@ class WSChild extends WebService
 
         $objParent = new ParentSempoa();
         $objParent->getWhereOne("parent_id='$parent_id' AND parent_pwd='$parent_pwd'");
-        if(is_null($objParent->parent_id)){
+        if (is_null($objParent->parent_id)) {
             Generic::errorMsg(KEYAPP::$PASSWORD_SALAH);
         }
 
@@ -318,7 +320,6 @@ class WSChild extends WebService
         die();
 
     }
-
 
 
     public function withdrawHistory()
@@ -519,81 +520,6 @@ class WSChild extends WebService
 
     }
 
-    public function ChallangeSoal()
-    {
-
-        if (Efiwebsetting::getData('checkOAuth') == 'yes')
-            IMBAuth::checkOAuth();
-
-        $soal_challange_level = addslashes($_POST['soal_challange_level']);
-        Generic::checkFieldKosong($soal_challange_level, "level challange anda kosong");
-
-        $soal_challange_soal = addslashes($_POST['soal_challange_soal']);
-        Generic::checkFieldKosong($soal_challange_soal, "soal challange anda kosong");
-
-        $soal_challange_jawaban = addslashes($_POST['soal_challange_jawaban']);
-        Generic::checkFieldKosong($soal_challange_jawaban, "jawaban challange anda kosong");
-
-        $objChallange = new SoalChallangeModel();
-        $objChallange->soal_challange_jawaban = $soal_challange_jawaban;
-        $objChallange->soal_challange_soal = $soal_challange_soal;
-        $objChallange->soal_challange_level = $soal_challange_level;
-        $objChallange->soal_challange_created_date = leap_mysqldate();
-        $objChallange->soal_challange_update = leap_mysqldate();
-        $objChallange->soal_challange_status = "";
-        $objChallange->save();
-
-        $json = array();
-        $json['status_code'] = 1;
-        $json['status_message'] = KEYAPP::$SUCCESS;
-        echo json_encode($json);
-        die();
-
-    }
-
-    public function AddChallange()
-    {
-
-        if (Efiwebsetting::getData('checkOAuth') == 'yes')
-            IMBAuth::checkOAuth();
-
-        $challange_type = addslashes($_POST['challange_type']);
-        Generic::checkFieldKosong($challange_type, "type challange anda kosong");
-
-        $challange_title = addslashes($_POST['challange_title']);
-        Generic::checkFieldKosong($challange_title, "title challange anda kosong");
-
-        $challange_level = addslashes($_POST['challange_level']);
-        Generic::checkFieldKosong($challange_level, "level challange anda kosong");
-
-        $challange_date = addslashes($_POST['challange_date']);
-        Generic::checkFieldKosong($challange_date, "date challange anda kosong");
-
-        $kode_siswa = addslashes($_POST['kode_siswa']);
-
-        $objChallange = new ChallangeModel();
-        $objChallange->challange_type = $challange_type;
-        $objChallange->challange_title = $challange_title;
-        $objChallange->challange_level = $challange_level;
-        $objChallange->challange_date = $challange_date;
-        $objChallange->challange_created_date = leap_mysqldate();
-        $objChallange->challange_updated = leap_mysqldate();
-        $objMurid = new MuridModel();
-        $objMurid->getByID($kode_siswa);
-        $objChallange->challange_ak = $objMurid->murid_ak_id;
-        $objChallange->challange_kpo = $objMurid->murid_kpo_id;
-        $objChallange->challange_ibo = $objMurid->murid_ibo_id;
-        $objChallange->challange_tc = $objMurid->murid_tc_id;
-        $objChallange->save();
-
-        $json = array();
-        $json['status_code'] = 1;
-        $json['status_message'] = KEYAPP::$SUCCESS;
-        echo json_encode($json);
-        die();
-
-
-    }
 
     public function ViewChallange()
     {
@@ -601,19 +527,58 @@ class WSChild extends WebService
         if (Efiwebsetting::getData('checkOAuth') == 'yes')
             IMBAuth::checkOAuth();
 
-        $challange_type = addslashes($_POST['challange_type']);
-        Generic::checkFieldKosong($challange_type, "type challange anda kosng");
-
-        $challange_title = addslashes($_POST['challange_title']);
-        Generic::checkFieldKosong($challange_title, "title challange anda kosng");
-
-        $challange_level = addslashes($_POST['challange_level']);
-        Generic::checkFieldKosong($challange_level, "level challange anda kosng");
-
-        $challange_date = addslashes($_POST['challange_date']);
-        Generic::checkFieldKosong($challange_date, "date challange anda kosng");
-
+        $ibo_id = addslashes($_POST['ibo_id']);
+        Generic::checkFieldKosong($ibo_id, KEYAPP::$PARENT_ID_KOSONG);
         $objChallange = new ChallangeModel();
+        $arrChallange = $objChallange->getWhere("challange_ibo='$ibo_id' ORDER BY challange_date DESC");
+
+
+        $arrWs = explode(",", $objChallange->crud_webservice_allowed);
+        $arrHlp[] = array();
+        foreach ($arrChallange as $challange) {
+            unset($arrHlp);
+            foreach ($arrWs as $val) {
+                $arrHlp[$val] = $challange->$val;
+                if($val == "challange_status"){
+                    $date1 = new DateTime('now');
+                    $date2 = new DateTime($challange->challange_date);
+                    $diff =  Generic::diffTwoDays($date1, $date2);
+                    if($challange->$val == KEYAPP::$STATUS_CHALLANGE_AKTIV){
+                        if($diff >=0){
+                            $arrHlp['allow'] = "Allow";
+                            $arrHlp['status_allow'] = "Now open";
+                        }
+                        else{
+                            $arrHlp['allow'] = "Not Allow";
+                            $arrHlp['status_allow'] = $diff . " days left";
+                        }
+                    }
+                    else{
+                        if($diff >=0){
+                            $arrHlp['allow'] = "Not Allow";
+                            $arrHlp['status_allow'] = "Will be announced";
+                        }
+                        else{
+                            $arrHlp['allow'] = "Not Allow";
+                            $arrHlp['status_allow'] = $diff . " days left";
+                        }
+                    }
+
+
+                }
+            }
+            $arrJsonHlp[] = $arrHlp;
+        }
+        // status aktiv, tgl challange lebih besar  dr skrg => open
+        // status aktiv, tgl challange lbh kexil dr skrg => tutup
+// status tidak aktiv, tgl challange masa depan => will be announced
+
+        // sstatus tdk aktiv, tgl chal lbh kecil dr skrg => tutup
+        $json['status_code'] = 1;
+        $json['result'] = $arrJsonHlp;
+        $json['status_message'] = KEYAPP::$SUCCESS;
+        echo json_encode($json);
+        die();
 
     }
 
@@ -627,14 +592,16 @@ class WSChild extends WebService
         Generic::checkFieldKosong($kode_siswa, "ID anda kosong");
 
         $challange_id = addslashes($_POST['challange_id']);
-        Generic::checkFieldKosong($challange_id, "ID anda kosong");
+        Generic::checkFieldKosong($challange_id, "ID challange  anda kosong");
 
-        $objMurid = new MuridModel();
-        $objMurid->getByID($kode_siswa);
+        $join_hasil = addslashes($_POST['join_hasil']);
+        $join_total_nilai = addslashes($_POST['join_total_nilai']);
+        $join_total_waktu = addslashes($_POST['join_total_waktu']);
+
 
         $today = date("Y-m-d");
         $join = new ChallangeModel();
-        $count = $join->getJumlah("challange_date='$today' AND join_kode_siswa='$kode_siswa' AND join_challange_id='$challange_id'");
+        $count = $join->getJumlah("challange_date='$today' AND challange_murid_ikut='$kode_siswa' AND challange_id='$challange_id'");
         if ($count > 0) {
             $json['status_code'] = 0;
             $json['status_message'] = KEYAPP::$MURID_SUDAH_JOIN;
@@ -649,7 +616,10 @@ class WSChild extends WebService
         $objJoin = new JoinChallangeModel();
         $objJoin->join_challange_id = $challange_id;
         $objJoin->join_kode_siswa = $kode_siswa;
-
+        $objJoin->join_hasil = $join_hasil;
+        $objJoin->join_total_nilai = $join_total_nilai;
+        $objJoin->join_total_waktu = $join_total_waktu;
+        $objJoin->join_active = 1;
         $objJoin->save();
 
         $json = array();
@@ -672,6 +642,7 @@ class WSChild extends WebService
         Generic::checkFieldKosong($kode_siswa, "ID anda kosong");
 
         $Challange = new JoinChallangeModel();
+
         $arrayChallange = $Challange->getMuridChallange($kode_siswa);
 
         $arrWS = explode(",", $Challange->crud_webservice_allowed);

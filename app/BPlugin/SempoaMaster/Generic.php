@@ -1833,6 +1833,15 @@ class Generic
     }
 
 
+    public static function diffTwoDays($date1, $date2){
+        $interval = $date1->diff($date2);
+
+        if($interval->invert == 1){
+            return -1* $interval->days;
+        }
+        return $interval->days;
+
+    }
     public static function getLevelAndKurByIdBarang($id_barang)
     {
         $res = array();

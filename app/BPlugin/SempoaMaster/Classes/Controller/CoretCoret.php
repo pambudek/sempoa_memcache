@@ -1647,7 +1647,20 @@ class CoretCoret extends WebService
     public function halBuku()
     {
 
+        $start_date = new DateTime('now');
+        $end_date = new DateTime("2018-2-2 06:45:00");
+        $interval = $start_date->diff($end_date);
+        $hours   = $interval->format('%h');
+        $minutes = $interval->format('%i');
+        pr($interval);
+        pr($interval->invert);
+        pr($interval->days);
+        pr($start_date);
+        echo  'Diff. in minutes is: '.($hours * 60 + $minutes);
 
+//        pr("now: " . $now);
+//        pr("your_date: " . $your_date);
+die();
 //        $date = new DateTime('now');
 //
 //        pr($date->format("Y-m-d"));

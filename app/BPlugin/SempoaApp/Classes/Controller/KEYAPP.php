@@ -116,4 +116,8 @@ class KEYAPP
     public static $HARI_INI_SUDAH_ABSEN = "Hari ini sudah absen";
     public static $BERHASIL_ABSEN = "Murid berhasil diabsen";
 
+
+    // Challange
+    public static $STATUS_CHALLANGE_AKTIV = 1;
+    public static $STATUS_CHALLANGE_TDK_AKTIV = 0;
 }

@@ -341,7 +341,7 @@ class WSSempoaApp extends WebService
         }
 
         $sempoaMurid = new MuridModel();
-        $sempoaMurid->getWhereOne("kode_siswa = '$kode_siswa'");
+        $sempoaMurid->getWhereOne("kode_siswa = '$kode_siswa' AND nama_siswa='$nama_siswa' AND tanggal_lahir='$tgl_lahir_siswa'");
 
         if (is_null($sempoaMurid->id_murid)) {
             Generic::errorMsg(KEYAPP::$KODE_SISWA_NOT_FOUND);
