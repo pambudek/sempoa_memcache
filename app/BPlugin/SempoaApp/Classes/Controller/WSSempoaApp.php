@@ -334,8 +334,7 @@ class WSSempoaApp extends WebService
         Generic::checkFieldKosong($tgl_lahir_siswa, KEYAPP::$BIRTHDAY_MURID_KOSONG);
 
         $objParent = new ParentSempoa();
-        $objParent->getByID($parent_id);
-
+        $objParent->getWhereOne("parent_id ='$parent_id' AND FIND_IN_SET('$kode_siswa',parent_kode_anak)");
         if (is_null($objParent->parent_id)) {
             Generic::checkFieldKosong($parent_id, KEYAPP::$PARENT_ID_KOSONG);
         }
