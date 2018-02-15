@@ -2353,6 +2353,7 @@ class MuridWebHelper extends WebService
                                         <? }
                                         ?>
                                         $('#payNow_<?= $mk->bln_id; ?>').click(function () {
+                                            $('#payNow_<?= $mk->bln_id; ?>').prop('disabled', true);
                                             var bln_id = '<?= $mk->bln_id; ?>';
                                             var jpb = $('#jenis_pmbr_invoice_spp_<?= $mk->bln_id ?>').val();
                                             var kupon = $('#kupon_name_t_<?= $mk->bln_id; ?>').val();
