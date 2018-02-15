@@ -1092,6 +1092,7 @@ class MuridWebHelper extends WebService
 
             });
             $("#beli_buku_<?= $t; ?>").click(function () {
+                $("#beli_buku_<?= $t; ?>").prop('disabled', true);
                 if (confirm("Anda yakin akan membeli buku level " + "<?=Generic::getLevelNameByID($murid->id_level_sekarang);?>")) {
 
                     var kur =<?= $murid->murid_kurikulum; ?>;
@@ -1151,6 +1152,7 @@ class MuridWebHelper extends WebService
                 }
             });
             $('#undo_first_payment_<?=$murid->id_murid; ?>').click(function () {
+                $('#undo_first_payment_<?=$murid->id_murid; ?>').prop('disabled', true);
                 if (confirm("Anda yakin akan membatalkan transaksi Firstpayment?")) {
                     $.get("<?= _SPPATH; ?>MuridWebHelper/undo_process_firstpayment?murid_id=<?= $murid->id_murid; ?>" + "&level_murid=<?= $murid->id_level_masuk; ?>", function (data) {
                         alert(data.status_message);
@@ -1215,8 +1217,7 @@ class MuridWebHelper extends WebService
 
 
             $('#naiklevel_<?= $murid->id_murid; ?>').click(function () {
-
-
+                $('#naiklevel_<?= $murid->id_murid; ?>').prop('disabled', true);
                 <?
                 $arrKur = Generic::getJenisKurikulum();
                 ?>
@@ -2050,6 +2051,7 @@ class MuridWebHelper extends WebService
             <script>
 
                 $('#create_invoice_bulanan_ibo_<?= $t; ?>').click(function () {
+                    $('#create_invoice_bulanan_ibo_<?= $t; ?>').prop('disabled', true);
                     var id_murid = <?= $id; ?>;
                     $('#modal_ibo .modal-body').load("<?= _SPPATH; ?>KelasWebHelper/create_invoice_ibo?id_murid=" + id_murid);
                     $('#modal_ibo').modal('show');
@@ -2059,6 +2061,7 @@ class MuridWebHelper extends WebService
 
 
                 $('#create_invoice_bulanan_<?=$t;?>').click(function () {
+                    $('#create_invoice_bulanan_<?=$t;?>').prop('disabled', true);
                     if (confirm("Anda yakin akan mencetak Invoice untuk bulan selanjutnya?")) {
                         var id_murid = <?= $id; ?>;
                         $.get("<?= _SPPATH; ?>MuridWebHelper/create_invoice?id=" + id_murid, function (data2) {
@@ -2300,6 +2303,7 @@ class MuridWebHelper extends WebService
                                     <script>
 
                                         $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').click(function () {
+                                            $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').prop('disabled', true);
                                             var bln_id = '<?= $mk->bln_id; ?>';
                                             if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
                                                 $.post("<?= _SPPATH; ?>LaporanWebHelper/hapusIuranBulanan", {
@@ -2317,6 +2321,8 @@ class MuridWebHelper extends WebService
                                         });
 
                                         $('#undo_<?= $mk->bln_id; ?>').click(function () {
+                                            $('#undo_<?= $mk->bln_id; ?>').prop('disabled', true);
+
                                             var bln_id = '<?= $mk->bln_id; ?>';
                                             var kupon = $('#no_kupon_<?= $mk->bln_id; ?>').text();
 //                                            alert(kupon);
@@ -2598,6 +2604,8 @@ class MuridWebHelper extends WebService
                                     <script>
                                         var bln_id = '<?= $val->bln_id; ?>';
                                         $('#delete_invoice_buku_<?= $val->bln_id . "_" . $t; ?>').click(function () {
+                                            $('#delete_invoice_buku_<?= $val->bln_id . "_" . $t; ?>').prop('disabled', true);
+
                                             var bln_id = '<?= $val->bln_id; ?>';
                                             if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
 //                                                alert(bln_id);
@@ -2614,6 +2622,8 @@ class MuridWebHelper extends WebService
                                             }
                                         });
                                         $("#undo_iuran_buku_<?= $val->bln_id; ?>").click(function () {
+                                            $("#undo_iuran_buku_<?= $val->bln_id; ?>").prop('disabled', true);
+
                                             var bln_id = '<?= $val->bln_id; ?>';
                                             if (confirm("Apakah Anda Yakin akan membatalkan transaksi Iuran Bulanan?" + bln_id)) {
                                                 $.post("<?= _SPPATH; ?>LaporanWebHelper/undo_iuran_buku_2", {
@@ -2645,6 +2655,8 @@ class MuridWebHelper extends WebService
                                         }
                                         ?>
                                         $('#pay_now_bulanan_<?= $val->bln_id . $t; ?>').click(function () {
+
+                                            $('#pay_now_bulanan_<?= $val->bln_id . $t; ?>').prop('disabled', true);
                                             var jpb = $('#jenis_pmbr_invoice_<?= $val->bln_id ?>').val();
                                             var bln_id = <?= $val->bln_id; ?>;
                                             $.post("<?= _SPPATH; ?>LaporanWebHelper/pay_iuran_buku_roy", {
@@ -2875,6 +2887,7 @@ class MuridWebHelper extends WebService
 
 
                 $('#undo_<?= $mk->bln_id; ?>').click(function () {
+                    $('#undo_<?= $mk->bln_id; ?>').prop('disabled', true);
                     var bln_id = '<?= $mk->bln_id; ?>';
                     var kupon = $('#no_kupon_<?= $mk->bln_id; ?>').text();
                     if (kupon != null) {
@@ -2905,6 +2918,7 @@ class MuridWebHelper extends WebService
                 <? }
                 ?>
                 $('#payNow_<?= $mk->bln_id; ?>').click(function () {
+                    $('#payNow_<?= $mk->bln_id; ?>').prop('disabled', true);
                     var bln_id = '<?= $mk->bln_id; ?>';
                     var kupon = $('#kupon_name_t_<?= $mk->bln_id; ?>').val();
                     var jpb = $('#jenis_pmbr_invoice_spp_<?= $mk->bln_id ?>').val();
