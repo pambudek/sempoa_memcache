@@ -2140,20 +2140,16 @@ class BarangWebHelper extends WebService
                                         "<option value='99'>Cancel</option>" +
                                         "</select>";
                                 }
-//                                else if (current == 'Paid') {
-//                                    var html = "<select id='select_status_<?//= $po->po_id; ?>//'>" +
-//                                        "<option value='1' selected>Paid</option>" +
-//                                        "</select>";
-//                                }
-//                                else if (current == 'Cancel') {
-//                                    var html = "<select id='select_status_<?//= $po->po_id; ?>//'>" +
-//                                        "<option value='99' selected>Cancel</option>" +
-//                                        "</select>";
-//                                }
+
                                 $("#status_po_<?= $po->po_id; ?>").html(html);
                                 $('#select_status_<?= $po->po_id; ?>').change(function () {
                                     var id_status = $('#select_status_<?= $po->po_id; ?>').val();
+                                    alert(id_status);
                                     var po_id = "<?= $po->po_id; ?>";
+                                    if(id_status == 1){
+//                                        $('#modal_proses').modal('show');
+
+                                    }
                                     $.get("<?= _SPPATH; ?>BarangWebHelper/setStatusPO?id_status=" + id_status + "&po_id=" + po_id, function (data) {
                                         lwrefresh("status_po_<?= $po->po_id; ?>");
                                         if (data.status_code) {

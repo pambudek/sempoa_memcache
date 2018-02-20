@@ -1647,6 +1647,17 @@ class CoretCoret extends WebService
     public function halBuku()
     {
 
+
+        $soal = new SoalChallangeModel();
+        $arrChallangeSoal = $soal->getSoalChallangeByLevel(1);
+        foreach($arrChallangeSoal as $val){
+
+        }
+        $label = implode(".", $arrChallangeSoal);
+
+
+        pr($label);
+        die();
         $start_date = new DateTime('now');
         $end_date = new DateTime("2018-2-2 06:45:00");
         $interval = $start_date->diff($end_date);

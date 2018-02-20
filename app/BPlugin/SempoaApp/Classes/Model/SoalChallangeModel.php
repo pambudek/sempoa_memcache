@@ -82,4 +82,12 @@ class SoalChallangeModel extends Model
         return $return;
     }
 
+    public function getSoalChallangeByLevel($level){
+        $arrSoal = $this->getWhere("soal_challange_level=$level AND soal_challange_status=1");
+        $arrHlp = array();
+        foreach($arrSoal as $val){
+            $arrHlp[$val->soal_challange_id] = $val->soal_challange_soal;
+        }
+        return $arrHlp;
+    }
 }

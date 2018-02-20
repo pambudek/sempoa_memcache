@@ -13,15 +13,16 @@ class ChallangeModel extends SempoaModel
     var $main_id = "challange_id";
 
     //Default Coloms for read
-    public $default_read_coloms = "challange_id,chllange_type,challange_title,challange_level,challange_date,challange_status,challange_murid_ikut,challange_created_date,challange_updated,challange_active,challange_ak,challange_kpo,challange_ibo,challange_tc";
+    public $default_read_coloms = "challange_id,chllange_type,challange_title,challange_level,challange_date,challange_status,challange_soal_id,challange_murid_ikut,challange_created_date,challange_updated,challange_active,challange_ak,challange_kpo,challange_ibo,challange_tc";
 //allowed colom in CRUD filter
-    public $coloumlist = "challange_id,chllange_type,challange_title,challange_level,challange_date,challange_status,challange_murid_ikut,challange_created_date,challange_updated,challange_active,challange_ak,challange_kpo,challange_ibo,challange_tc";
+    public $coloumlist = "challange_id,chllange_type,challange_title,challange_level,challange_date,challange_status,challange_soal_id,challange_murid_ikut,challange_created_date,challange_updated,challange_active,challange_ak,challange_kpo,challange_ibo,challange_tc";
     public $challange_id;
     public $chllange_type;
     public $challange_title;
     public $challange_level;
     public $challange_date;
     public $challange_status;
+    public $challange_soal_id;
     public $challange_murid_ikut;
     public $challange_created_date;
     public $challange_updated;
@@ -74,7 +75,22 @@ class ChallangeModel extends SempoaModel
         }
 
         $return['challange_status'] = new Leap\View\InputSelect($arrStatus, "challange_status", "challange_status", $this->challange_status);
+        $soal = new SoalChallangeModel();
+        $arrChallangeSoal = $soal->getSoalChallangeByLevel($this->challange_level);
+        foreach($arrChallangeSoal as $val){
 
+        }
+        $label = implode(".", $arrChallangeSoal);
+        $value = implode(",", array_keys($arrChallangeSoal));
+        $return['challange_soal_id'] = new Leap\View\InputFieldToken("text", 'challange_soal_id', 'challange_soal_id', $value, $label, $this->challange_soal_id);
+
+//        pr($label);
+//        $soalChallange = new SoalChallangeModel();
+//        $arrChallangeSoal = $soalChallange->getSoalChallangeByLevel($this->challange_level);
+////        pr($arrChallangeSoal);
+//        $label = implode(",", $arrChallangeSoal);
+//        $value = implode(",", array_keys($arrChallangeSoal));
+//
         return $return;
     }
 
