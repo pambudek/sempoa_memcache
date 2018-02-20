@@ -2303,21 +2303,29 @@ class MuridWebHelper extends WebService
                                     <script>
 
                                         $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').click(function () {
-                                            $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').prop('disabled', true);
-                                            var bln_id = '<?= $mk->bln_id; ?>';
-                                            if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
-                                                $.post("<?= _SPPATH; ?>LaporanWebHelper/hapusIuranBulanan", {
-                                                        bln_id: bln_id
-                                                    },
-                                                    function (data) {
-                                                        console.log(data);
-                                                        alert(data.status_message);
-                                                        if (data.status_code) {
-                                                            lwrefresh(selected_page);
-                                                            lwrefresh("Profile_Murid");
-                                                        }
-                                                    }, 'json');
+                                            var noKupon = '<?= $mk->bln_kupon_id; ?>';
+                                            if(noKupon == 0){
+                                                $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').prop('disabled', true);
+                                                var bln_id = '<?= $mk->bln_id; ?>';
+                                                if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
+                                                    $.post("<?= _SPPATH; ?>LaporanWebHelper/hapusIuranBulanan", {
+                                                            bln_id: bln_id
+                                                        },
+                                                        function (data) {
+                                                            console.log(data);
+                                                            alert(data.status_message);
+                                                            if (data.status_code) {
+                                                                lwrefresh(selected_page);
+                                                                lwrefresh("Profile_Murid");
+                                                            }
+                                                        }, 'json');
+                                                }
                                             }
+                                            else{
+                                                alert("Anda tidak dapat menghapus iuran bulanan, karena no kupon: " + noKupon +  " masih tersedia!");
+                                            }
+
+
                                         });
 
                                         $('#undo_<?= $mk->bln_id; ?>').click(function () {
@@ -2505,10 +2513,12 @@ class MuridWebHelper extends WebService
                                         ?></td>
                                     <td>
                                         <?
+                                        $allowDelete = true;
                                         $stock = new StockBuku();
                                         $res = $stock->getBukuNoByInvoiceID($val->bln_id);
                                         if (count($res) > 0) {
                                             foreach ($res as $key => $nobuku) {
+                                                $allowDelete = false;
                                                 echo $nobuku . "/" . $key . "<br>";
                                             }
                                         }
@@ -2604,28 +2614,34 @@ class MuridWebHelper extends WebService
                                     <script>
                                         var bln_id = '<?= $val->bln_id; ?>';
                                         $('#delete_invoice_buku_<?= $val->bln_id . "_" . $t; ?>').click(function () {
-                                            $('#delete_invoice_buku_<?= $val->bln_id . "_" . $t; ?>').prop('disabled', true);
+                                            if('<?=$allowDelete;?>'){
+                                                $('#delete_invoice_buku_<?= $val->bln_id . "_" . $t; ?>').prop('disabled', true);
 
-                                            var bln_id = '<?= $val->bln_id; ?>';
-                                            if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
+                                                var bln_id = '<?= $val->bln_id; ?>';
+                                                if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Buku?")) {
 //                                                alert(bln_id);
-                                                $.post("<?= _SPPATH; ?>LaporanWebHelper/hapusIuranBuku", {
-                                                    bln_id: bln_id
-                                                }, function (data) {
-                                                    console.log(data);
-                                                    alert(data.status_message);
-                                                    if (data.status_code) {
-                                                        lwrefresh(selected_page);
-                                                        lwrefresh("Profile_Murid");
-                                                    }
-                                                }, 'json');
+                                                    $.post("<?= _SPPATH; ?>LaporanWebHelper/hapusIuranBuku", {
+                                                        bln_id: bln_id
+                                                    }, function (data) {
+                                                        console.log(data);
+                                                        alert(data.status_message);
+                                                        if (data.status_code) {
+                                                            lwrefresh(selected_page);
+                                                            lwrefresh("Profile_Murid");
+                                                        }
+                                                    }, 'json');
+                                                }
                                             }
+                                            else{
+                                                alert("No Buku harus di Retour dulu, baru bisa menghapus Invoice!")
+                                            }
+
                                         });
                                         $("#undo_iuran_buku_<?= $val->bln_id; ?>").click(function () {
                                             $("#undo_iuran_buku_<?= $val->bln_id; ?>").prop('disabled', true);
 
                                             var bln_id = '<?= $val->bln_id; ?>';
-                                            if (confirm("Apakah Anda Yakin akan membatalkan transaksi Iuran Bulanan?" + bln_id)) {
+                                            if (confirm("Apakah Anda Yakin akan membatalkan transaksi Iuran Buku?" )) {
                                                 $.post("<?= _SPPATH; ?>LaporanWebHelper/undo_iuran_buku_2", {
                                                     bln_id: bln_id
                                                 }, function (data) {
@@ -2874,17 +2890,50 @@ class MuridWebHelper extends WebService
                                   aria-hidden="true"></span>
                             <?
                         }
-
-
                     }
-
                     ?>
-
-
+                <td>
+                    <?
+                    if ((AccessRight::getMyOrgType() == KEY::$IBO)) {
+                    ?>
+                    <span id="delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>"
+                          class="fa fa-times"
+                          aria-hidden="true"></span>
                 </td>
+            <?
+
+            }
+
+            ?>
+
             </tr>
             <script>
 
+                $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').click(function () {
+                    var noKupon = '<?= $mk->bln_kupon_id; ?>';
+                    if(noKupon == 0){
+                        $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').prop('disabled', true);
+                        var bln_id = '<?= $mk->bln_id; ?>';
+                        if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
+                            $.post("<?= _SPPATH; ?>LaporanWebHelper/hapusIuranBulanan", {
+                                    bln_id: bln_id
+                                },
+                                function (data) {
+                                    console.log(data);
+                                    alert(data.status_message);
+                                    if (data.status_code) {
+                                        lwrefresh(selected_page);
+                                        lwrefresh("Profile_Murid");
+                                    }
+                                }, 'json');
+                        }
+                    }
+                    else{
+                        alert("Anda tidak dapat menghapus iuran bulanan, karena no kupon: " + noKupon +  " masih tersedia!");
+                    }
+
+
+                });
 
                 $('#undo_<?= $mk->bln_id; ?>').click(function () {
                     $('#undo_<?= $mk->bln_id; ?>').prop('disabled', true);

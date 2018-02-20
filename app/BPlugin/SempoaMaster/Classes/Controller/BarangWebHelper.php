@@ -1553,11 +1553,13 @@ class BarangWebHelper extends WebService
                     $('#select_status_<?= $po->po_id; ?>').change(function () {
                         var id_status = $('#select_status_<?= $po->po_id; ?>').val();
                         var po_id = "<?= $po->po_id; ?>";
+                        $('modal_proses_<?=time();?>').modal('show');
                         $.get("<?= _SPPATH; ?>BarangWebHelper/setStatusPO?id_status=" + id_status + "&po_id=" + po_id, function (data) {
 
                             if (data.status_code) {
                                 //success
                                 alert(data.status_message);
+                                $('modal_proses_<?=time();?>').modal('show');
                                 console.log(data.po);
                                 console.log(data.stock);
                                 lwrefresh(selected_page);
