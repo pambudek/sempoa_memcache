@@ -583,19 +583,20 @@ class BarangWebHelper extends WebService
 //                $json['po'] = $arrPOItems;
 
 
-                if (count($arrPOItems > 0)) {
+                if (count($arrPOItems) > 0) {
                     if ($id_status == 1) {
-
                         // Check Jumlah no Buku
-
                         $objPO_buku = new POModel();
-                        global $db;
-                        $q = "SELECT * FROM {$objPO->table_name} po  WHERE   po.po_id= $po_id";
-                        $arrPO_buku = $db->query($q, 2);
+                        $arrPO_buku = $objPO_buku->getWhere("po_id='$po_id'");
+//                        global $db;
+//                        $q = "SELECT * FROM {$objPO->table_name} po  WHERE po.po_id= '$po_id'";
+//                        $arrPO_buku = $db->query($q, 2);
                         $peminta = $arrPO_buku[0]->po_pengirim;
                         $objPOItem_buku = new POItemModel();
                         $arrPOItems_buku = $objPOItem_buku->getWhere("po_id='$po_id'");
                         $json['po_buku'] = $arrPOItems_buku;
+                        $res = array();
+                        unset($res);
                         foreach ($arrPOItems as $val) {
                             $res[$val->id_barang]['barang'] = $val->id_barang;
                             $res[$val->id_barang]['qty'] = $val->qty;
@@ -604,10 +605,12 @@ class BarangWebHelper extends WebService
                             $res[$val->id_barang]['po_id'] = $val->po_id;
                         }
 
-
+                        $anzahlBuku = 0;
                         foreach ($res as $val) {
                             $anzahlBuku = self::getNoBuku($val['barang'], $val['qty'], $val['pemilik'], AccessRight::getMyOrgType());
-                            if ($anzahlBuku >= $val['qty']) {
+                            $json['anzahl'] = $val['barang'] . " - " . $val['qty'] . " - " . $anzahlBuku;
+                            if ($anzahlBuku == $val['qty']) {
+//                                if ($anzahlBuku >= $val['qty']) {
                                 self::setNoBuku($val['barang'], $val['qty'], $val['pemilik'], $val['peminta'], AccessRight::getMyOrgType(), $val['po_id']);
                             } else {
 
@@ -2144,7 +2147,7 @@ class BarangWebHelper extends WebService
                                 $("#status_po_<?= $po->po_id; ?>").html(html);
                                 $('#select_status_<?= $po->po_id; ?>').change(function () {
                                     var id_status = $('#select_status_<?= $po->po_id; ?>').val();
-                                    alert(id_status);
+//                                    alert(id_status);
                                     var po_id = "<?= $po->po_id; ?>";
                                     if(id_status == 1){
 //                                        $('#modal_proses').modal('show');
@@ -2154,7 +2157,8 @@ class BarangWebHelper extends WebService
                                         lwrefresh("status_po_<?= $po->po_id; ?>");
                                         if (data.status_code) {
                                             //success
-                                            alert(data.status_message);
+//                                            alert(data.status_message);
+                                            console.log(data);
                                             console.log(data.po);
 //                                            console.log(data.stock);
                                             lwrefresh(selected_page);
