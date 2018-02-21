@@ -14,9 +14,41 @@ class BarangWebHelper extends WebService
 {
 
 //put your code here
+    protected  $modelLogWebservices = '';
+    protected $logStatus = 1;
+
+    function __construct()
+    {
+        $this->modelLogWebservices= new LogWebServices();
+        $this->modelLogWebservices->startLog(Account::getMyName(), Generic::get_client_ip(), get_browser());
+        $logStatus = SempoaAuth::isLoggedTransaksi();
+        if (!$logStatus) {
+            die();
+        }
+    }
+
+    function __destruct()
+    {
+
+
+
+//        global $modelLogWebservices;
+//        // TODO: Implement __destruct() method.
+//        $this->modelLogWebservices->endlog();
+    }
 
     function accept_req()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $obj = new POItemModel();
         $obj->printColumlistAsAttributes();
         $json['post'] = $_POST;
@@ -49,6 +81,16 @@ class BarangWebHelper extends WebService
 
     function add_cart()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
 
         $qty = addslashes($_POST['qty']);
         $harga_barang = addslashes($_POST['harga_barang']);
@@ -105,6 +147,16 @@ class BarangWebHelper extends WebService
 
     function update_cart_qty()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $keys = explode(",", addslashes($_POST['keys']));
         $qtys = explode(",", addslashes($_POST['qtys']));
         if (count($keys) < 1) {
@@ -126,6 +178,16 @@ class BarangWebHelper extends WebService
 
     function add_cart_modal()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
 
         $qty = addslashes($_POST['qty']);
         $harga_barang = addslashes($_POST['harga_barang']);
@@ -164,6 +226,16 @@ class BarangWebHelper extends WebService
 
     function add_cart_tmp()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
 
 //        $po_id = (int) addslashes($_GET['po_id']);
         $id_barang = (int)addslashes($_GET['id_barang']);
@@ -238,6 +310,17 @@ class BarangWebHelper extends WebService
 
     public function add_cart_semua()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
         $item = (int)addslashes($_POST['item']);
         $id_barang = (int)addslashes($_POST['id']);
         $qty = (int)addslashes($_POST['qty']);
@@ -267,8 +350,17 @@ class BarangWebHelper extends WebService
     public function checkout()
     {
 
-        $cart = $_SESSION['cart'];
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
 
+        $cart = $_SESSION['cart'];
+        $total_harga = 0;
         if ($cart != null) {
             //TODO Check stock efindi jiayo
             $myOrgID = AccessRight::getMyOrgID();
@@ -347,6 +439,15 @@ class BarangWebHelper extends WebService
     public function coba()
     {
 
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
 //        pr($_SESSION);
         $cart = $_SESSION['cart'];
 
@@ -388,6 +489,16 @@ class BarangWebHelper extends WebService
     function remove_session()
     {
 
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
 
         unset($_SESSION['cart']);
 
@@ -408,6 +519,16 @@ class BarangWebHelper extends WebService
 
     function cart_modal()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $cart = $_SESSION['cart'];
         ?>
 
@@ -540,6 +661,16 @@ class BarangWebHelper extends WebService
     function remove_cart()
     {
 
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
         $id = (int)addslashes($_GET['id']);
         $json['id'] = $id;
         $cart = $_SESSION['cart'];
@@ -562,6 +693,16 @@ class BarangWebHelper extends WebService
     function setStatusPO()
     {
 
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
         $id_status = (int)addslashes($_GET['id_status']);
         $json['id_status'] = $id_status;
         $po_id = addslashes($_GET['po_id']);
@@ -571,6 +712,12 @@ class BarangWebHelper extends WebService
         if ($id_status != "") {
             $objPO = new POModel();
             $objPO->getByID($po_id);
+            if($objPO->po_status != '0'){
+                $json['status_code'] = 0;
+                $json['status_message'] = "Status pernah di Update ";
+                echo json_encode($json);
+                die();
+            }
             $status_sebelum = $objPO->po_status;
             $objPO->po_status = $id_status;
             $update = $objPO->save(1);
@@ -764,6 +911,7 @@ class BarangWebHelper extends WebService
             echo json_encode($json);
             die();
         }
+        $json['log'] = $this->modelLogWebservices;
         $json['id_status'] = $id_status;
         $json['status_code'] = 1;
         $json['status_message'] = "Status di Update";
@@ -1424,6 +1572,16 @@ class BarangWebHelper extends WebService
     function lihat_pesanan_load()
     {
 
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
         $myOrgID = AccessRight::getMyOrgID();
         $objPO = new POModel();
         $objPOItems = new POItemModel();
@@ -1823,6 +1981,16 @@ class BarangWebHelper extends WebService
 
     function read_barang_tc_load()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $myOrgID = AccessRight::getMyOrgID();
         $objPO = new POModel();
         $objPOItems = new POItemModel();
@@ -1954,6 +2122,16 @@ class BarangWebHelper extends WebService
 
     function read_buku_load()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $myOrgID = AccessRight::getMyOrgID();
         $kpo_id = Generic::getMyParentID($myOrgID);
         $objPO = new POModel();
@@ -2125,7 +2303,7 @@ class BarangWebHelper extends WebService
                             <td class='<?= $po->po_id ?>'><?= $items->qty ?></td>
                             <td class='<?= $po->po_id ?> '><?= Generic::getNamaBarangByIDBarang($items->id_barang); ?></td>
 
-                            <td class='<?= $po->po_id ?>'><?= self::getAwalAkhirNoBuku($po->po_id, AccessRight::getMyOrgType(),$items->id_barang) ?></td>
+                            <td class='<?= $po->po_id ?>'><?= self::getAwalAkhirNoBuku($po->po_id, AccessRight::getMyOrgType(), $items->id_barang) ?></td>
 
                             <td class='<?= $po->po_id ?>'><?= "IDR " . idr($items->harga); ?></td>
                             <td class='<?= $po->po_id ?>'><?= "IDR " . idr($items->harga * $items->qty) ?></td>
@@ -2151,13 +2329,14 @@ class BarangWebHelper extends WebService
                                     var id_status = $('#select_status_<?= $po->po_id; ?>').val();
 //                                    alert(id_status);
                                     var po_id = "<?= $po->po_id; ?>";
-                                    if(id_status == 1){
+                                    if (id_status == 1) {
 //                                        $('#modal_proses').modal('show');
 
                                     }
                                     $.get("<?= _SPPATH; ?>BarangWebHelper/setStatusPO?id_status=" + id_status + "&po_id=" + po_id, function (data) {
-                                        lwrefresh("status_po_<?= $po->po_id; ?>");
-                                        if (data.status_code) {
+//                                        lwrefresh("status_po_<?//= $po->po_id; ?>//");
+                                        if (data.status_code ) {
+                                            lwrefresh("status_po_<?= $po->po_id; ?>");
                                             //success
 //                                            alert(data.status_message);
                                             console.log(data);
@@ -2172,10 +2351,13 @@ class BarangWebHelper extends WebService
                                                 var html = "Cancel";
                                             }
                                             $("#status_po_<?= $po->po_id; ?>").html(html);
-                                        } else {
+                                        }
+                                        else {
                                             alert(data.status_message);
                                         }
-                                    }, 'json');
+                                    }, 'json').fail(function() {
+                                        alert( "Tidak ada Koneksi internet!" );
+                                    })
                                 });
                             });
                             var openPO_id = 0;
@@ -2356,6 +2538,16 @@ class BarangWebHelper extends WebService
 
     function read_barang_tc_load_tmp()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $myOrgID = AccessRight::getMyOrgID();
         $objPO = new POModel();
         $objPOItem = new POItemModel();
@@ -2420,13 +2612,11 @@ class BarangWebHelper extends WebService
         }
         if (count($arrStock) == 1) {
             return $arrStock[0]->stock_buku_no;
-        }
-        elseif (count($arrStock) == 0) {
+        } elseif (count($arrStock) == 0) {
             return "";
-        }
-        else {
+        } else {
 //            pr($arrStock[0]->stock_buku_no . " - " . $arrStock[count($arrStock)-1]->stock_buku_no);
-            return $arrStock[0]->stock_buku_no . " - " . $arrStock[count($arrStock)-1]->stock_buku_no;
+            return $arrStock[0]->stock_buku_no . " - " . $arrStock[count($arrStock) - 1]->stock_buku_no;
         }
     }
 }

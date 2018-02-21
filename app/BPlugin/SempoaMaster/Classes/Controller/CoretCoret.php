@@ -1623,7 +1623,7 @@ class CoretCoret extends WebService
     public function printObj()
     {
 
-        $withDraw = new WithdrawModel();
+        $withDraw = new LogWebServices();
         $withDraw->printColumlistAsAttributes();
         die();
         $date = new DateTime('today');
