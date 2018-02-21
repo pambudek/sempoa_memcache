@@ -13,6 +13,20 @@
 class LaporanWebHelper extends WebService
 {
 
+    protected  $modelLogWebservices = '';
+    protected $logStatus = 1;
+
+    function __construct()
+    {
+        $this->modelLogWebservices= new LogWebServices();
+        $this->modelLogWebservices->startLog(Account::getMyName(), Generic::get_client_ip(), get_browser());
+        $logStatus = SempoaAuth::isLoggedTransaksi();
+        if (!$logStatus) {
+            die();
+        }
+    }
+
+
     //put your code here
     function loadIuranBulanan()
     {
@@ -72,6 +86,17 @@ class LaporanWebHelper extends WebService
 
     function update_iuran_bulanan()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
         $bln_id = addslashes($_POST['bln_id']);
         $kupon_id = addslashes($_POST['kupon_id']);
         $kupon_owner = addslashes($_POST['kupon_owner']);
@@ -94,6 +119,13 @@ class LaporanWebHelper extends WebService
         $bln_skrg = date("n");
         $iuranBulanan = new IuranBulanan();
         $iuranBulanan->getByID($bln_id);
+        if($iuranBulanan->bln_status == 1){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Sudah melakukan pembayaran!";
+            echo json_encode($json);
+            die();
+        }
+
         $iuranBulanan->bln_status = 1;
         $iuranBulanan->bln_kupon_id = $kupon_id;
         $iuranBulanan->bln_date_pembayaran = date("Y-m-d H:i:s");
@@ -138,6 +170,17 @@ class LaporanWebHelper extends WebService
 
     function undo_iuran_bulanan()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
         $bln_id = addslashes($_POST['bln_id']);
         $kupon_id = addslashes($_POST['kupon_id']);
         $kupon_owner = addslashes($_POST['kupon_owner']);
@@ -157,6 +200,12 @@ class LaporanWebHelper extends WebService
 
         $iuranBulanan = new IuranBulanan();
         $iuranBulanan->getByID($bln_id);
+        if($iuranBulanan->bln_status ==0){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Kupon sudah di Undo! ";
+            echo json_encode($json);
+            die();
+        }
         $iuranBulanan->bln_status = 0;
         $iuranBulanan->bln_kupon_id = 0;
         $iuranBulanan->bln_date_pembayaran = KEY::$TGL_KOSONG;
@@ -191,10 +240,26 @@ class LaporanWebHelper extends WebService
 
 
     function undo_iuran_buku_2(){
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $bln_id = addslashes($_POST['bln_id']);
 
         $iuranBuku = new IuranBuku();
         $iuranBuku->getWhereOne("bln_id=$bln_id");
+        if($iuranBuku->bln_status == 0){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Iuran Buku sudah di retour!";
+            echo json_encode($json);
+            die();
+        }
         if(is_null($iuranBuku->bln_id)){
             $json['status_code'] = 0;
             $json['status_message'] = "Retour gagal!";
@@ -451,6 +516,16 @@ class LaporanWebHelper extends WebService
 
     public function pay_iuran_buku_roy()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $bln = isset($_GET['bln']) ? addslashes($_GET['bln']) : date("n");
         $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
         $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
@@ -459,6 +534,12 @@ class LaporanWebHelper extends WebService
 
         $iuranBuku = new IuranBuku();
         $iuranBuku->getByID($bln_id);
+        if($iuranBuku->bln_status == 1){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Murid sudah melakukan pembayaran!";
+            echo json_encode($json);
+            die();
+        }
         $myOrg = AccessRight::getMyOrgID();
         $myParentID = Generic::getMyParentID($myOrg);
         $myGrandParentID = Generic::getMyParentID($myParentID);
@@ -977,6 +1058,17 @@ class LaporanWebHelper extends WebService
 
 
     function hapusIuranBuku(){
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
+
         $bln_id = $_POST['bln_id'];
         $iuranBuku = new IuranBuku();
         $iuranBuku->getWhereOne("bln_id='$bln_id'");
@@ -1010,9 +1102,20 @@ class LaporanWebHelper extends WebService
     }
 
     function hapusIuranBulanan(){
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $bln_id = $_POST['bln_id'];
         $iuranBulanan = new IuranBulanan();
         $iuranBulanan->getWhereOne("bln_id='$bln_id'");
+
         if(is_null($iuranBulanan->bln_id)){
             $json['status_code'] = 0;
             $json['status_message'] =  "Iuran bulanan gagal dihapus!";

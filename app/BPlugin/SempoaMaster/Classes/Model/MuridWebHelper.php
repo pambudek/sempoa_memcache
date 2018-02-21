@@ -9,6 +9,20 @@
 class MuridWebHelper extends WebService
 {
 
+
+    protected  $modelLogWebservices = '';
+    protected $logStatus = 1;
+
+    function __construct()
+    {
+        $this->modelLogWebservices= new LogWebServices();
+        $this->modelLogWebservices->startLog(Account::getMyName(), Generic::get_client_ip(), get_browser());
+        $logStatus = SempoaAuth::isLoggedTransaksi();
+        if (!$logStatus) {
+            die();
+        }
+    }
+
     function firsttime_payment()
     {
         $id = addslashes($_GET['id_murid']);
@@ -295,7 +309,9 @@ class MuridWebHelper extends WebService
                                     } else {
                                         alert(data.status_message);
                                     }
-                                }, 'json');
+                                }, 'json').fail(function() {
+                                alert( "Tidak ada Koneksi internet!" );
+                            });
                         } else {
                             alert("Stock Buku atau perlengkapan habis!");
                         }
@@ -313,6 +329,16 @@ class MuridWebHelper extends WebService
 
     function process_firstpayment()
     {
+
+        if(!$this->logStatus){
+            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+            $this->modelLogWebservices->endLog();
+        }
+        else{
+            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+            $this->modelLogWebservices->endLog();
+        }
+
         $murid_id = addslashes($_POST['murid_id']);
         $jenis_pmbr = addslashes($_POST['jenis_pmbr']);
         $pilih_kupon = addslashes($_POST['pilih_kupon']);
@@ -2318,7 +2344,9 @@ class MuridWebHelper extends WebService
                                                                 lwrefresh(selected_page);
                                                                 lwrefresh("Profile_Murid");
                                                             }
-                                                        }, 'json');
+                                                        }, 'json').fail(function() {
+                                                        alert("Tidak ada Koneksi internet!");
+                                                    });
                                                 }
                                             }
                                             else{
@@ -2352,7 +2380,9 @@ class MuridWebHelper extends WebService
                                                             lwrefresh(selected_page);
                                                             lwrefresh("Profile_Murid");
                                                         }
-                                                    }, 'json');
+                                                    }, 'json').fail(function() {
+                                                        alert("Tidak ada Koneksi internet!");
+                                                    });
                                             }
                                             else {
                                                 alert("Kupon tidak tersedia!");
@@ -2389,7 +2419,9 @@ class MuridWebHelper extends WebService
                                                         lwrefresh(selected_page);
                                                         lwrefresh("Profile_Murid");
                                                     }
-                                                }, 'json');
+                                                }, 'json').fail(function() {
+                                                    alert("Tidak ada Koneksi internet!");
+                                                });
                                             }
                                             else {
                                                 alert("Kupon tidak tersedia!");
@@ -2629,7 +2661,9 @@ class MuridWebHelper extends WebService
                                                             lwrefresh(selected_page);
                                                             lwrefresh("Profile_Murid");
                                                         }
-                                                    }, 'json');
+                                                    }, 'json').fail(function() {
+                                                        alert("Tidak ada Koneksi internet!");
+                                                    })
                                                 }
                                             }
                                             else{
@@ -2651,7 +2685,9 @@ class MuridWebHelper extends WebService
                                                         lwrefresh(selected_page);
                                                         lwrefresh("Profile_Murid");
                                                     }
-                                                }, 'json');
+                                                }, 'json').fail(function() {
+                                                    alert("Tidak ada Koneksi internet!");
+                                                })
                                             }
                                             //kosongkan status di iuran bulanan
                                             //
@@ -2692,7 +2728,9 @@ class MuridWebHelper extends WebService
                                                     }
                                                     console.log(data);
                                                     //                                                                $('#balikan_<? //= $val->bln_id;                                                                                                                          ?>//').html(data);
-                                                }, 'json');
+                                                }, 'json').fail(function() {
+                                                alert("Tidak ada Koneksi internet!");
+                                            });
                                         });
                                         //
 
