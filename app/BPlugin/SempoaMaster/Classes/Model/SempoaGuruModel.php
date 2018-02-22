@@ -43,7 +43,7 @@ class SempoaGuruModel extends SempoaModel
     public $removeAutoCrudClick = array("guru_first_register", "profile");
     public $hideColoums = array("guru_ak_id", "guru_kpo_id", "guru_ibo_id","guru_app_pwd");
     public $crud_setting = array("add" => 0, "search" => 1, "viewall" => 0, "export" => 1, "toggle" => 1, "import" => 0, "webservice" => 0);
-    public $APPWS = "kode_guru,nama_guru,email_guru,guru_tc_id,guru_id";
+    public $APPWS = "kode_guru,nama_guru,email_guru,guru_tc_id,guru_id,nomor_hp";
 
     public function overwriteForm($return, $returnfull)
     {
