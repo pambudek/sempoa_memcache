@@ -446,8 +446,11 @@ class MuridWebHelper extends WebService
             $first->bln_no_invoice = $noInvoiceFP;
             $first->murid_biaya_serial = serialize($arrSerial);
             $succ = $first->save();
-        } else {
-            if ($first->murid_pay_value > 0) {
+        }
+
+
+        else {
+            if (($first->murid_pay_value > 0) && ($murid->pay_firsttime != 0)){
                 $json['murid_pay_value'] = $first->murid_pay_value;
                 $json['status_code'] = 0;
                 $json['status_message'] = "Sudah melakukan pembayaran pertama";
