@@ -1623,6 +1623,18 @@ class CoretCoret extends WebService
     public function printObj()
     {
 
+        //1550
+
+        $a = new BarangWebHelper();
+        pr($a->getNoBuku(8,5,3,"ibo"));
+        $a->setNoBuku(8,5,3,3,"ibo",1550);
+
+//        public function setNoBuku($id_barang, $qty, $org_id_pemilik, $org_id_peminta, $org_type, $po_id)
+
+        die();
+
+//        public function getNoBuku($id_barang, $qty, $org_id_pemilik, $org_type)
+
         $withDraw = new LogWebServices();
         $withDraw->printColumlistAsAttributes();
         die();
@@ -1742,12 +1754,61 @@ die();
     }
 
 
+    public function uploadFoto(){
+        $attr = $_POST['image'];
+
+        $file = self::savePic($_POST[$attr]);
+
+        $json = array();
+        $json['status_code'] = $file==0?0:1;
+        $json['result']['url'] = $file;
+        echo json_encode($json);
+        die();
+
+    }
+    public static function savePic($data)
+    {
+
+        if ($_GET['ios'] == "1") {
+            $data = base64_decode(str_replace(" ", " + ", $data));
+        } else
+            $data = base64_decode($data);
+
+        $im = imagecreatefromstring($data);
+        if ($im !== false) {
+            $ff = md5(mt_rand()) . '.png';
+            $filename = _PHOTOPATH . $ff;
+
+            //header('Content-Type: image/png');
+            $succ = imagepng($im, $filename);
+            //imagedestroy($im);
+            if ($succ) {
+                return $filename;
+            } else {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+
 
 
 
     function crawl_sklh_satuan(){
 
 
+        $email = new Leapmail();
+        $subject = "coba";
+        $content = "ini cuma email";
+        $to = "efindi.ongso@gmail.com";
+
+
+
+        $email->sendEmail($to,$subject,$content);
+
+
+        die();
         $urlWeb = "http://akupintar.info/";
         $url = "http://www.akupintar.info/cari.php?jenjang=KB&mode=sekolah&GoSearch=Search&propinsi=Banten&kota=Tangerang+Selatan&nama=&alamat=";
 
