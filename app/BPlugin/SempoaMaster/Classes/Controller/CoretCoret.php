@@ -1757,11 +1757,12 @@ class CoretCoret extends WebService
     {
 
 
-        $json['status_code'] = isset($_POST) ? 1 : 0;
+
         $datas = array();
         foreach ($_POST as $key => $value) {
             $datas[$key] = $value;
         }
+        $json['status_code'] =count($datas)>0 ? 1 : 0;
         $json['result']['data'] = $datas;
         echo json_encode($json);
         die();
