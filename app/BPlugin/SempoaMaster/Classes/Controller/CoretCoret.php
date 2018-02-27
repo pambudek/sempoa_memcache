@@ -1626,8 +1626,8 @@ class CoretCoret extends WebService
         //1550
 
         $a = new BarangWebHelper();
-        pr($a->getNoBuku(8,5,3,"ibo"));
-        $a->setNoBuku(8,5,3,3,"ibo",1550);
+        pr($a->getNoBuku(8, 5, 3, "ibo"));
+        $a->setNoBuku(8, 5, 3, 3, "ibo", 1550);
 
 //        public function setNoBuku($id_barang, $qty, $org_id_pemilik, $org_id_peminta, $org_type, $po_id)
 
@@ -1662,7 +1662,7 @@ class CoretCoret extends WebService
 
         $soal = new SoalChallangeModel();
         $arrChallangeSoal = $soal->getSoalChallangeByLevel(1);
-        foreach($arrChallangeSoal as $val){
+        foreach ($arrChallangeSoal as $val) {
 
         }
         $label = implode(".", $arrChallangeSoal);
@@ -1673,17 +1673,17 @@ class CoretCoret extends WebService
         $start_date = new DateTime('now');
         $end_date = new DateTime("2018-2-2 06:45:00");
         $interval = $start_date->diff($end_date);
-        $hours   = $interval->format('%h');
+        $hours = $interval->format('%h');
         $minutes = $interval->format('%i');
         pr($interval);
         pr($interval->invert);
         pr($interval->days);
         pr($start_date);
-        echo  'Diff. in minutes is: '.($hours * 60 + $minutes);
+        echo 'Diff. in minutes is: ' . ($hours * 60 + $minutes);
 
 //        pr("now: " . $now);
 //        pr("your_date: " . $your_date);
-die();
+        die();
 //        $date = new DateTime('now');
 //
 //        pr($date->format("Y-m-d"));
@@ -1710,9 +1710,9 @@ die();
         foreach ($halBuku as $val) {
             $progress = new ProgressModel();
             $i = 1;
-            foreach($val as $jenisBuku => $hal){
+            foreach ($val as $jenisBuku => $hal) {
                 $b = "progress_total_hal_" . $i;
-                $c = "progress_nama_buku_". $i;
+                $c = "progress_nama_buku_" . $i;
                 $progress->$c = $jenisBuku;
                 $progress->$b = $hal;
                 $i++;
@@ -1753,19 +1753,34 @@ die();
 //        pr(unserialize($a));
     }
 
+    public function demoUpload()
+    {
 
-    public function uploadFoto(){
+
+        $json['status_code'] = isset($_POST) ? 1 : 0;
+        $datas = array();
+        foreach ($_POST as $key => $value) {
+            $datas[$key] = $value;
+        }
+        $json['result']['data'] = $datas;
+        echo json_encode($json);
+        die();
+    }
+
+    public function uploadFoto()
+    {
         $attr = $_POST['image'];
 
         $file = self::savePic($_POST[$attr]);
 
         $json = array();
-        $json['status_code'] = $file==0?0:1;
+        $json['status_code'] = $file == 0 ? 0 : 1;
         $json['result']['url'] = $file;
         echo json_encode($json);
         die();
 
     }
+
     public static function savePic($data)
     {
 
@@ -1792,10 +1807,8 @@ die();
     }
 
 
-
-
-
-    function crawl_sklh_satuan(){
+    function crawl_sklh_satuan()
+    {
 
 
         $email = new Leapmail();
@@ -1804,8 +1817,7 @@ die();
         $to = "efindi.ongso@gmail.com";
 
 
-
-        $email->sendEmail($to,$subject,$content);
+        $email->sendEmail($to, $subject, $content);
 
 
         die();
@@ -1815,8 +1827,8 @@ die();
         $html = file_get_html($url);
 
         $i = 0;
-        foreach ($html->find(".center .search",0) as $div) {
-            echo  $div->find("a", 1)->href . "<br>";
+        foreach ($html->find(".center .search", 0) as $div) {
+            echo $div->find("a", 1)->href . "<br>";
         }
 //        foreach ($html->find("a",0) as $div) {
 //
