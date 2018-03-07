@@ -877,12 +877,13 @@ class WSSempoaApp extends WebService
 
         $arrFinal = array();
         foreach ($arrBuku as $val) {
+            $arrHlp = array();
             foreach ($val as $key => $hasil) {
-                $arrHlp = array();
-                $arrHlp[$key] = $val;
+                $arrHlp[$key] = $hasil;
                 $arrHlp['tglUpdate'] = $progress->progress_updated;
                 $arrHlp['progress'] = ($total / $totalHalBuku) * 100;
             }
+
             $arrFinal[] = $arrHlp;
 
         }
