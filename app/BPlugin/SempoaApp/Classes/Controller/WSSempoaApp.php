@@ -260,7 +260,10 @@ class WSSempoaApp extends WebService
                 }
                 $objWallet = new WalletModel();
                 $arrHlp['wallet'] = $objWallet->getMyCoin($val);
-                $arrHlp['progress'][] = "Halam 10";
+
+                $arrProgress = self::getLastProgressMyChild($val);
+//                pr($arrProgress);
+                $arrHlp['progress'][] = $arrProgress;
                 $arrHlp['rank_Challange'] = "1";
                 $jsonHlp['list murid'][] = $arrHlp;
                 // Wallet
@@ -454,12 +457,11 @@ class WSSempoaApp extends WebService
         // check anaknya orang tua
         $objParent = new ParentSempoa();
         $objParent->getByID($parent_id);
-        if(is_null($objParent->parent_id)) {
+        if (is_null($objParent->parent_id)) {
             Generic::errorMsg(KEYAPP::$PARENT_ID_KOSONG);
-        }
-        else{
-            $arrKodeMurid = explode(",",$objParent->parent_kode_anak);
-            if(!in_array($kode_siswa,$arrKodeMurid)){
+        } else {
+            $arrKodeMurid = explode(",", $objParent->parent_kode_anak);
+            if (!in_array($kode_siswa, $arrKodeMurid)) {
                 Generic::errorMsg(KEYAPP::$PARENT_ID_KOSONG);
             }
         }
@@ -844,4 +846,30 @@ class WSSempoaApp extends WebService
         echo json_encode($json);
         die();
     }
+
+    public function getLastProgressMyChild($kode_siswa)
+    {
+//        $kode_siswa = "1406030001";
+        $progress = new ProgressModel();
+        $progress->getWhereOne("kode_siswa='$kode_siswa' AND progress_active = 1 ORDER by progress_updated  DESC");
+        $i =1;
+        $arrProgressAnak = array();
+        $namaBuku = "progress_nama_buku_$i";
+        $halBuku = "progress_hal_buku_$i";
+        $totalHalBukuSatuan = "progress_total_hal_$i";
+        $total = 0;
+        $totalHalBuku = 0;
+        while($progress->$namaBuku != ""){
+            $arrProgressAnak[$progress->$namaBuku] = $progress->$halBuku;
+            $total = $total + $progress->$halBuku;
+            $totalHalBuku = $totalHalBuku + $progress->$totalHalBukuSatuan;
+            $i++;
+            $namaBuku = "progress_nama_buku_$i";
+            $halBuku = "progress_hal_buku_$i";
+        }
+        $arrProgressAnak['progress'] = ($total/$totalHalBuku) * 100;
+        return $arrProgressAnak;
+    }
+
+
 }
