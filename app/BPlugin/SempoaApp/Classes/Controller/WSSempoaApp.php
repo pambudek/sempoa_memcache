@@ -868,6 +868,7 @@ class WSSempoaApp extends WebService
             $halBuku = "progress_hal_buku_$i";
         }
         $arrProgressAnak['progress'] = ($total/$totalHalBuku) * 100;
+        $arrProgressAnak['tglUpdate'] = $progress->progress_updated;
         return $arrProgressAnak;
     }
 
