@@ -263,7 +263,7 @@ class WSSempoaApp extends WebService
 
                 $arrProgress = self::getLastProgressMyChild($val);
 //                pr($arrProgress);
-                $arrHlp['progress'][] = $arrProgress;
+                $arrHlp['progress'] = $arrProgress;
                 $arrHlp['rank_Challange'] = "1";
                 $jsonHlp['list murid'][] = $arrHlp;
                 // Wallet
@@ -852,25 +852,42 @@ class WSSempoaApp extends WebService
 //        $kode_siswa = "1406030001";
         $progress = new ProgressModel();
         $progress->getWhereOne("kode_siswa='$kode_siswa' AND progress_active = 1 ORDER by progress_updated  DESC");
-        $i =1;
+        $i = 1;
         $arrProgressAnak = array();
         $namaBuku = "progress_nama_buku_$i";
         $halBuku = "progress_hal_buku_$i";
         $totalHalBukuSatuan = "progress_total_hal_$i";
         $total = 0;
         $totalHalBuku = 0;
-        while($progress->$namaBuku != ""){
-            $arrProgressAnak[$progress->$namaBuku] = $progress->$halBuku;
+        $arrBuku = array();
+
+
+        while ($progress->$namaBuku != "") {
+            unset($arrProgressAnak);
+            $arrProgressAnak['nama_buku'] = $progress->$namaBuku;
+            $arrProgressAnak['hal_buku'] = $progress->$halBuku;
             $total = $total + $progress->$halBuku;
             $totalHalBuku = $totalHalBuku + $progress->$totalHalBukuSatuan;
+            $arrBuku[$i] = $arrProgressAnak;
             $i++;
             $namaBuku = "progress_nama_buku_$i";
             $halBuku = "progress_hal_buku_$i";
-        }
-        $arrProgressAnak['progress'] = ($total/$totalHalBuku) * 100;
-        $arrProgressAnak['tglUpdate'] = $progress->progress_updated;
-        return $arrProgressAnak;
-    }
 
+        }
+
+        $arrFinal = array();
+        foreach ($arrBuku as $val) {
+            foreach ($val as $key => $hasil) {
+                $arrHlp = array();
+                $arrHlp[$key] = $val;
+                $arrHlp['tglUpdate'] = $progress->progress_updated;
+                $arrHlp['progress'] = ($total / $totalHalBuku) * 100;
+            }
+            $arrFinal[] = $arrHlp;
+
+        }
+        return $arrFinal;
+
+    }
 
 }
