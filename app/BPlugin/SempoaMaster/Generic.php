@@ -570,6 +570,15 @@ class Generic
     public static function getLastKodeSiswa($tc_id)
     {
         $objMurid = new MuridModel();
+        $objMurid->getWhereOne("murid_tc_id='$tc_id'  AND kode_siswa != '' ORDER BY id_murid DESC");
+
+        if(is_null($objMurid->id_murid)){
+            return "";
+        }
+        else{
+            return $objMurid->kode_siswa;
+        }
+
         global $db;
         $q = "SELECT * FROM {$objMurid->table_name} WHERE murid_tc_id='$tc_id' ORDER BY id_murid DESC Limit 1";
         $arrMurid = $db->query($q, 2);
@@ -2177,5 +2186,11 @@ class Generic
         else
             $ipaddress = 'UNKNOWN';
         return $ipaddress;
+    }
+
+    static function getNamaSiswaByKodeSiswa($kode_siswa){
+        $murid = new MuridModel();
+        $murid->getWhereOne("kode_siswa='$kode_siswa'");
+        return $murid->nama_siswa;
     }
 }

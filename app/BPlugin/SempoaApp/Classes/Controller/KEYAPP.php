@@ -47,7 +47,10 @@ class KEYAPP
 
 
     // TOP UP
+    public static $PEMBAYARAN_CREDIT_CARD = "1";
+    public static $PEMBAYARAN_BANK_TRANSFER = "2";
 
+//    public static $PEMBAYARAN_EDC = "1";
     // status
     public static $STATUS_TOP_UP_PENDING = 2;
     public static $STATUS_TOP_UP_APPROVED = 1;

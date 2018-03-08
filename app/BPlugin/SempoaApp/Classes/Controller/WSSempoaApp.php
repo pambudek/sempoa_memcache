@@ -503,7 +503,11 @@ class WSSempoaApp extends WebService
             unset($arrHlp);
             foreach ($arrWS as $val) {
                 $arrHlp[$val] = $historyTopup->$val;
+                if($val == 'topup_kodesiswa'){
+                    $arrHlp['nama_siswa'] = Generic::getNamaSiswaByKodeSiswa($historyTopup->$val);
+                }
             }
+
             $arrJsonHlp[] = $arrHlp;
         }
         $json = array();
