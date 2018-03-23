@@ -271,6 +271,9 @@ class MuridModel extends SempoaModel
                         $obj->no_pay_firsttime = "";
                     }
                 }
+                else{
+                    $obj->no_pay_firsttime = "";
+                }
 
                 $obj->pay_firsttime = "<button onclick=\"openLw('Payment_Murid','" . _SPPATH . "MuridWebHelper/firsttime_payment?id_murid=" . $obj->id_murid . "','fade');\">Payment First Time</button>";
             } else {
