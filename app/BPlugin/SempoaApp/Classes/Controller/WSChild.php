@@ -520,6 +520,8 @@ class WSChild extends WebService
 
     }
 
+/*
+ * Buatan EF di kommentari tgl 23.3.2018
 
     public function ViewChallange()
     {
@@ -662,6 +664,170 @@ class WSChild extends WebService
         echo json_encode($json);
         die();
 
+
+    }
+*/
+
+    public function ViewChallange()
+    {
+
+        if (Efiwebsetting::getData('checkOAuth') == 'yes')
+            IMBAuth::checkOAuth();
+
+        $ibo_id = addslashes($_POST['ibo_id']);
+        Generic::checkFieldKosong($ibo_id, KEYAPP::$PARENT_ID_KOSONG);
+        $objChallange = new ChallangeModel();
+        $arrChallange = $objChallange->getWhere("challange_ibo='$ibo_id' ORDER BY challange_date DESC");
+
+
+        $arrWs = explode(",", $objChallange->crud_webservice_allowed);
+        $arrHlp[] = array();
+        foreach ($arrChallange as $challange) {
+            unset($arrHlp);
+            foreach ($arrWs as $val) {
+                $arrHlp[$val] = $challange->$val;
+                if($val == "challange_status"){
+                    $date1 = new DateTime('now');
+                    $date2 = new DateTime($challange->challange_date);
+                    $diff =  Generic::diffTwoDays($date1, $date2);
+                    if($challange->$val == KEYAPP::$STATUS_CHALLANGE_AKTIV){
+                        if($diff >=0){
+                            $arrHlp['allow'] = "Allow";
+                            $arrHlp['status_allow'] = "Now open";
+                        }
+                        else{
+                            $arrHlp['allow'] = "Not Allow";
+                            $arrHlp['status_allow'] = $diff . " days left";
+                        }
+                    }
+                    else{
+                        if($diff >=0){
+                            $arrHlp['allow'] = "Not Allow";
+                            $arrHlp['status_allow'] = "Will be announced";
+                        }
+                        else{
+                            $arrHlp['allow'] = "Not Allow";
+                            $arrHlp['status_allow'] = $diff . " days left";
+                        }
+                    }
+
+
+                }
+            }
+            $arrJsonHlp[] = $arrHlp;
+        }
+        // status aktiv, tgl challange lebih besar  dr skrg => open
+        // status aktiv, tgl challange lbh kexil dr skrg => tutup
+// status tidak aktiv, tgl challange masa depan => will be announced
+
+        // sstatus tdk aktiv, tgl chal lbh kecil dr skrg => tutup
+        $json['status_code'] = 1;
+        $json['result'] = $arrJsonHlp;
+        $json['status_message'] = KEYAPP::$SUCCESS;
+        echo json_encode($json);
+        die();
+
+    }
+
+    public function joinChallange(){
+
+        if (Efiwebsetting::getData('checkOAuth') == 'yes')
+            IMBAuth::checkOAuth();
+
+        $challange_id = addslashes($_POST['challange_id']);
+        $join_id = addslashes($_POST['join_id']);
+        $kode_siswa = addslashes($_POST['kode_siswa']);
+        $join_hasil = addslashes($_POST['join_hasil']);
+        $join_total_waktu = addslashes($_POST['join_total_waktu']);
+        $join_total_nilai = addslashes($_POST['join_total_nilai']);
+        $challange_level =  addslashes($_POST['challange_level']);
+
+        $joinchallange = new ChallangeModel();
+        $joinchallange->getByID($challange_id);
+
+        $obj= new MuridModel();
+        $obj->getWhereOne("kode_siswa='$kode_siswa' AND id_level_sekarang='$challange_level'");
+        if(is_null($obj->kode_siswa)){
+            Generic::errorMsg(KEYAPP::$MURID_SALAH_LEVEL);
+        }
+
+        if($joinchallange->challange_murid_ikut == ""){$joinchallange->challange_murid_ikut="kode_siswa";
+        }else{
+            $joinchallange->challange_murid_ikut = $joinchallange->challange_murid_ikut . "," . $kode_siswa;
+        }
+
+        $date1 = new DateTime("now");
+        $date2 = new DateTime($joinchallange->challange_date);
+        $date = Generic::diffTwoDays($date1, $date2);
+        if($date >= 0){
+            $json['status_code'] = 1;
+            $json['status_message'] = "Berhasil";
+
+        }else{
+            $json['status_code'] = 0;
+            $json['status_message'] = "gagal";
+        }
+
+
+        $joinchallange->save(1);
+
+        $objJoin= new JoinChallangeModel();
+        $count = $objJoin->getJumlah("join_challange_id='$challange_id' AND join_kode_siswa='$kode_siswa'");
+        if($count ){
+            $json['status_code'] = 0;
+            $json['status_message'] = KEYAPP::$MURID_SUDAH_JOIN;
+            echo json_encode($json);
+            die();
+        }
+
+        $join = new JoinChallangeModel();
+        $join->join_challange_id = $challange_id;
+        $join->join_kode_siswa = $kode_siswa;
+        $join->join_hasil = $join_hasil;
+        $join->join_total_waktu = $join_total_waktu;
+        $join->join_total_nilai = $join_total_nilai;
+        $join->join_created_date = leap_mysqldate();
+        $join->join_updated = leap_mysqldate();
+        $join->join_active = 1;
+        $join->save();
+
+        $json = array();
+        $json['status_code'] = 1;
+        $json['status_message'] = "Berhasil Join";
+        echo json_encode($json);
+        die();
+    }
+
+
+    public function HistoryChallange(){
+
+        if (Efiwebsetting::getData('checkOAuth') == 'yes')
+            IMBAuth::checkOAuth();
+
+        $kode_siswa = addslashes($_POST['kode_siswa']);
+        Generic::checkFieldKosong($kode_siswa, KEYAPP::$PARENT_ID_KOSONG);
+
+        $challange = new JoinChallangeModel();
+        $arrMychallange = $challange->getMuridChallange($kode_siswa);
+
+        $arrWS = explode(",", $challange->crud_webservice_allowed);
+        $arrHlp = array();
+        $arrJsonHlp = array();
+        foreach ($arrMychallange as $historychallange) {
+            unset($arrHlp);
+            foreach ($arrWS as $val) {
+                $arrHlp[$val] = $historychallange->$val;
+            }
+            $arrJsonHlp[] = $arrHlp;
+        }
+
+
+        $json = array();
+        $json['status_code'] = 1;
+        $json['result'] = $arrJsonHlp;
+        $json['status_message'] = KEYAPP::$SUCCESS;
+        echo json_encode($json);
+        die();
 
     }
 }
