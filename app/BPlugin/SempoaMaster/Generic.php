@@ -1074,6 +1074,15 @@ class Generic
         return $obj->level;
     }
 
+    public static function getLevelNameLamaByID($id)
+    {
+
+        if ($id == "" || $id == 0) return "<i>Not Set</i>";
+        $obj = new SempoaLevelLama();
+        $obj->getByID($id);
+        return $obj->level_lama;
+    }
+
     public static function printerKelas($kelas_id)
     {
 

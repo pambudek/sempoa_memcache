@@ -707,6 +707,10 @@ class BarangWebHelper extends WebService
         $json['id_status'] = $id_status;
         $po_id = addslashes($_GET['po_id']);
         $json['po_id'] = $po_id;
+
+
+        // cek stocknya cukup gak
+
         $myID = AccessRight::getMyOrgID();
 
         if ($id_status != "") {
@@ -950,7 +954,15 @@ class BarangWebHelper extends WebService
 
     public function setNoBuku($id_barang, $qty, $org_id_pemilik, $org_id_peminta, $org_type, $po_id)
     {
-
+        $po = new POItemModel();
+        $po->getWhereOne("item_id='$po_id'");
+        if(($po->status == 1)|| ($po->status == 99)){
+            $json['status_code'] = 0;
+            $json['status_message'] = "PO sdh tidak bisa dikerjakan!";
+            echo json_encode($json);
+            die();
+        }
+//        pr($po);
         $stockBuku = new StockBuku();
         if ($org_type == KEY::$KPO) {
             $arrStockBuku = $stockBuku->getWhere("stock_id_buku=$id_barang AND stock_buku_status_kpo=1 AND stock_buku_kpo = $org_id_pemilik ORDER BY stock_buku_no ASC LIMIT $qty");

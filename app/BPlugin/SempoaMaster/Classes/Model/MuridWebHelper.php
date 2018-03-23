@@ -10,12 +10,12 @@ class MuridWebHelper extends WebService
 {
 
 
-    protected  $modelLogWebservices = '';
+    protected $modelLogWebservices = '';
     protected $logStatus = 1;
 
     function __construct()
     {
-        $this->modelLogWebservices= new LogWebServices();
+        $this->modelLogWebservices = new LogWebServices();
         $this->modelLogWebservices->startLog(Account::getMyName(), Generic::get_client_ip(), get_browser());
         $logStatus = SempoaAuth::isLoggedTransaksi();
         if (!$logStatus) {
@@ -309,8 +309,8 @@ class MuridWebHelper extends WebService
                                     } else {
                                         alert(data.status_message);
                                     }
-                                }, 'json').fail(function() {
-                                alert( "Tidak ada Koneksi internet!" );
+                                }, 'json').fail(function () {
+                                alert("Tidak ada Koneksi internet!");
                             });
                         } else {
                             alert("Stock Buku atau perlengkapan habis!");
@@ -330,12 +330,11 @@ class MuridWebHelper extends WebService
     function process_firstpayment()
     {
 
-        if(!$this->logStatus){
-            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
             $this->modelLogWebservices->endLog();
-        }
-        else{
-            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
             $this->modelLogWebservices->endLog();
         }
 
@@ -446,11 +445,8 @@ class MuridWebHelper extends WebService
             $first->bln_no_invoice = $noInvoiceFP;
             $first->murid_biaya_serial = serialize($arrSerial);
             $succ = $first->save();
-        }
-
-
-        else {
-            if (($first->murid_pay_value > 0) && ($murid->pay_firsttime != 0)){
+        } else {
+            if (($first->murid_pay_value > 0) && ($murid->pay_firsttime != 0)) {
                 $json['murid_pay_value'] = $first->murid_pay_value;
                 $json['status_code'] = 0;
                 $json['status_message'] = "Sudah melakukan pembayaran pertama";
@@ -2028,7 +2024,6 @@ class MuridWebHelper extends WebService
         $id = addslashes($_GET['id']);
         $murid = new MuridModel();
         $murid->getByID($id);
-//        $tc_id = AccessRight::getMyOrgID();
         $tc_id = AccessRight::getMyOrgID();
         $mk = new IuranBulanan();
         $arrMK = $mk->getWhere("bln_murid_id='$id' ORDER BY bln_tahun DESC,bln_mon DESC LIMIT $begin,$limit");
@@ -2333,7 +2328,7 @@ class MuridWebHelper extends WebService
 
                                         $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').click(function () {
                                             var noKupon = '<?= $mk->bln_kupon_id; ?>';
-                                            if(noKupon == 0){
+                                            if (noKupon == 0) {
                                                 $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').prop('disabled', true);
                                                 var bln_id = '<?= $mk->bln_id; ?>';
                                                 if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
@@ -2347,13 +2342,13 @@ class MuridWebHelper extends WebService
                                                                 lwrefresh(selected_page);
                                                                 lwrefresh("Profile_Murid");
                                                             }
-                                                        }, 'json').fail(function() {
+                                                        }, 'json').fail(function () {
                                                         alert("Tidak ada Koneksi internet!");
                                                     });
                                                 }
                                             }
-                                            else{
-                                                alert("Anda tidak dapat menghapus iuran bulanan, karena no kupon: " + noKupon +  " masih tersedia!");
+                                            else {
+                                                alert("Anda tidak dapat menghapus iuran bulanan, karena no kupon: " + noKupon + " masih tersedia!");
                                             }
 
 
@@ -2383,7 +2378,7 @@ class MuridWebHelper extends WebService
                                                             lwrefresh(selected_page);
                                                             lwrefresh("Profile_Murid");
                                                         }
-                                                    }, 'json').fail(function() {
+                                                    }, 'json').fail(function () {
                                                         alert("Tidak ada Koneksi internet!");
                                                     });
                                             }
@@ -2422,7 +2417,7 @@ class MuridWebHelper extends WebService
                                                         lwrefresh(selected_page);
                                                         lwrefresh("Profile_Murid");
                                                     }
-                                                }, 'json').fail(function() {
+                                                }, 'json').fail(function () {
                                                     alert("Tidak ada Koneksi internet!");
                                                 });
                                             }
@@ -2464,10 +2459,12 @@ class MuridWebHelper extends WebService
                     <?
                     $iuranBuku = new IuranBuku();
                     $arrIuranBuku = $iuranBuku->getWhere("bln_murid_id='$id' ORDER by bln_id DESC LIMIT $begin,$limit");
-                    //                    pr($arrIuranBuku);
+                    //                                        pr($arrIuranBuku);
                     $jumlahTotal = $iuranBuku->getJumlah("bln_murid_id='$id'");
                     $jumlahHalamanTotalBuku = ceil($jumlahTotal / $limit);
                     $arrPembayaran = Generic::getJenisPembayaran();
+                    $arrKur[0] = "Baru";
+                    $arrKur[1] = "Lama";
                     ?>
                     <div class="tab-pane <? if ($active_tab == "buku") {
                         ?>active<?
@@ -2478,6 +2475,9 @@ class MuridWebHelper extends WebService
                             <tr>
                                 <th>
                                     Tanggal
+                                </th>
+                                <th>
+                                    Kurikulum
                                 </th>
                                 <th>
                                     Level
@@ -2529,7 +2529,17 @@ class MuridWebHelper extends WebService
                                 ?>
                                 <tr>
                                     <td><?= $val->bln_date_pembayaran; ?></td>
-                                    <td><?= Generic::getLevelNameByID($val->bln_buku_level); ?></td>
+                                    <td><?= $arrKur[$val->bln_kur]; ?></td>
+                                    <td><?
+                                        if ($val->bln_kur == 0) {
+                                            echo Generic::getLevelNameByID($val->bln_buku_level);
+                                        } else {
+                                            $id_level_lama = Generic::convertLevelBaruKeLama($val->bln_buku_level);
+                                            $level_lama = Generic::getLevelNameLamaByID($id_level_lama);
+                                            echo $level_lama . "(Lama)/ " . Generic::getLevelNameByID($val->bln_buku_level) . "(Baru)";
+                                        }
+
+                                        Generic::getLevelNameByID($val->bln_buku_level); ?></td>
                                     <td><?
                                         if ($val->bln_status)
                                             echo $arrSTatus[$val->bln_status];
@@ -2548,17 +2558,57 @@ class MuridWebHelper extends WebService
                                         ?></td>
                                     <td>
                                         <?
+
                                         $allowDelete = true;
                                         $stock = new StockBuku();
                                         $res = $stock->getBukuNoByInvoiceID($val->bln_id);
                                         if (count($res) > 0) {
                                             foreach ($res as $key => $nobuku) {
                                                 $allowDelete = false;
-                                                echo $nobuku . "/" . $key . "<br>";
                                             }
                                         }
+                                        if (AccessRight::getMyOrgType() == "tc") {
+                                            if ($val->bln_status == 1) {
+                                                if ($nobuku != "") {
+                                                    echo $nobuku . "/" . $key . "<br>";
+                                                }
+
+                                            } else {
+                                                if ($val->bln_kur == 1) {
+                                                    $arrNoBuku = $stock->getAllMyNoBukuFreiTCByInvoiceId($id_level_lama, $val->bln_tc_id, $val->bln_kur);
+//                                                    pr($arrNoBuku);
+                                                } else {
+                                                    $arrNoBuku = $stock->getAllMyNoBukuFreiTCByInvoiceId($val->bln_buku_level, $val->bln_tc_id, $val->bln_kur);
+                                                }
+                                                ?>
+
+                                                <input type="text" id="no_buku_<?= $val->bln_id; ?>"/>
+                                                <script>
+                                                    $(function () {
+                                                        var availableTags = <? echo json_encode($arrNoBuku);?>;
+                                                        $("#no_buku_<?= $val->bln_id; ?>").autocomplete({
+                                                            source: availableTags
+                                                        });
+
+                                                    });
+                                                </script>
+                                                <?
+
+                                            }
+
+                                        } else {
+                                            if ($val->bln_status == 1) {
+                                                if ($nobuku != "") {
+                                                    echo $nobuku . "/" . $key . "<br>";
+                                                }
+
+                                            }
+
+                                        }
+
 
                                         ?>
+
 
                                     </td>
                                     <td><?
@@ -2649,7 +2699,7 @@ class MuridWebHelper extends WebService
                                     <script>
                                         var bln_id = '<?= $val->bln_id; ?>';
                                         $('#delete_invoice_buku_<?= $val->bln_id . "_" . $t; ?>').click(function () {
-                                            if('<?=$allowDelete;?>'){
+                                            if ('<?=$allowDelete;?>') {
                                                 $('#delete_invoice_buku_<?= $val->bln_id . "_" . $t; ?>').prop('disabled', true);
 
                                                 var bln_id = '<?= $val->bln_id; ?>';
@@ -2664,12 +2714,12 @@ class MuridWebHelper extends WebService
                                                             lwrefresh(selected_page);
                                                             lwrefresh("Profile_Murid");
                                                         }
-                                                    }, 'json').fail(function() {
+                                                    }, 'json').fail(function () {
                                                         alert("Tidak ada Koneksi internet!");
                                                     })
                                                 }
                                             }
-                                            else{
+                                            else {
                                                 alert("No Buku harus di Retour dulu, baru bisa menghapus Invoice!")
                                             }
 
@@ -2678,7 +2728,7 @@ class MuridWebHelper extends WebService
                                             $("#undo_iuran_buku_<?= $val->bln_id; ?>").prop('disabled', true);
 
                                             var bln_id = '<?= $val->bln_id; ?>';
-                                            if (confirm("Apakah Anda Yakin akan membatalkan transaksi Iuran Buku?" )) {
+                                            if (confirm("Apakah Anda Yakin akan membatalkan transaksi Iuran Buku?")) {
                                                 $.post("<?= _SPPATH; ?>LaporanWebHelper/undo_iuran_buku_2", {
                                                     bln_id: bln_id
                                                 }, function (data) {
@@ -2688,7 +2738,7 @@ class MuridWebHelper extends WebService
                                                         lwrefresh(selected_page);
                                                         lwrefresh("Profile_Murid");
                                                     }
-                                                }, 'json').fail(function() {
+                                                }, 'json').fail(function () {
                                                     alert("Tidak ada Koneksi internet!");
                                                 })
                                             }
@@ -2709,31 +2759,39 @@ class MuridWebHelper extends WebService
                                         <?
                                         }
                                         ?>
+
+
                                         $('#pay_now_bulanan_<?= $val->bln_id . $t; ?>').click(function () {
 
                                             $('#pay_now_bulanan_<?= $val->bln_id . $t; ?>').prop('disabled', true);
                                             var jpb = $('#jenis_pmbr_invoice_<?= $val->bln_id ?>').val();
                                             var bln_id = <?= $val->bln_id; ?>;
-                                            $.post("<?= _SPPATH; ?>LaporanWebHelper/pay_iuran_buku_roy", {
-                                                    bln_id: bln_id,
-                                                    cara_pby: jpb
-                                                },
-                                                function (data) {
-                                                    alert(data.status_message);
-                                                    if (data.status_code) {
-                                                        $('.td .belumbayar_<?= $val->bln_id; ?>').hide();
-                                                        $('.sudahbayar').show();
-                                                        $('#jenis_pmbr_invoice_<?= $val->bln_id ?>').attr("disabled", "true");
-                                                        lwrefresh(selected_page);
-                                                        // Refresh profile muridnya
-                                                        lwrefresh("Profile_Murid");
-                                                    } else {
-                                                    }
-                                                    console.log(data);
-                                                    //                                                                $('#balikan_<? //= $val->bln_id;                                                                                                                          ?>//').html(data);
-                                                }, 'json').fail(function() {
-                                                alert("Tidak ada Koneksi internet!");
-                                            });
+                                            var no_buku = $('#no_buku_<?= $val->bln_id; ?>').val();
+
+                                            if (no_buku != "") {
+                                                $.post("<?= _SPPATH; ?>LaporanWebHelper/pay_iuran_buku_roy", {
+                                                        bln_id: bln_id,
+                                                        cara_pby: jpb,
+                                                        no_buku: no_buku
+                                                    },
+                                                    function (data) {
+                                                        alert(data.status_message);
+                                                        if (data.status_code) {
+                                                            $('.td .belumbayar_<?= $val->bln_id; ?>').hide();
+                                                            $('.sudahbayar').show();
+                                                            $('#jenis_pmbr_invoice_<?= $val->bln_id ?>').attr("disabled", "true");
+                                                            lwrefresh(selected_page);
+                                                            // Refresh profile muridnya
+                                                            lwrefresh("Profile_Murid");
+                                                        } else {
+                                                        }
+                                                        console.log(data);
+                                                        //                                                                $('#balikan_<? //= $val->bln_id;                                                                                                                          ?>//').html(data);
+                                                    }, 'json').fail(function () {
+                                                    alert("Tidak ada Koneksi internet!");
+                                                });
+                                            }
+
                                         });
                                         //
 
@@ -2952,7 +3010,7 @@ class MuridWebHelper extends WebService
 
                 $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').click(function () {
                     var noKupon = '<?= $mk->bln_kupon_id; ?>';
-                    if(noKupon == 0){
+                    if (noKupon == 0) {
                         $('#delete_iuran_bulanan_<?= $mk->bln_id . "_" . $t; ?>').prop('disabled', true);
                         var bln_id = '<?= $mk->bln_id; ?>';
                         if (confirm("Apakah Anda Yakin akan menghapus transaksi Iuran Bulanan?")) {
@@ -2969,8 +3027,8 @@ class MuridWebHelper extends WebService
                                 }, 'json');
                         }
                     }
-                    else{
-                        alert("Anda tidak dapat menghapus iuran bulanan, karena no kupon: " + noKupon +  " masih tersedia!");
+                    else {
+                        alert("Anda tidak dapat menghapus iuran bulanan, karena no kupon: " + noKupon + " masih tersedia!");
                     }
 
 
@@ -6454,7 +6512,7 @@ class MuridWebHelper extends WebService
         } else {
 
             $jumlah = $iuranbulanan->getJumlah("bln_mon=$bln AND bln_tahun=$thn AND bln_murid_id=$id_murid");
-            $idInvoice = $iuranbulanan->createIuranBulananManualSecond($id_murid, $pilih_kapan, $bln, $thn, $jumlah+1, $murid->murid_ak_id, $murid->murid_kpo_id, $murid->murid_ibo_id, $murid->murid_tc_id);
+            $idInvoice = $iuranbulanan->createIuranBulananManualSecond($id_murid, $pilih_kapan, $bln, $thn, $jumlah + 1, $murid->murid_ak_id, $murid->murid_kpo_id, $murid->murid_ibo_id, $murid->murid_tc_id);
 
             if ($idInvoice > 0) {
                 $json['status_code'] = 1;
@@ -6462,7 +6520,7 @@ class MuridWebHelper extends WebService
 
             } else {
                 $json['status_code'] = 0;
-                $json['status_message'] = "jumllah : " .  $jumlah . "Invoice gagal tercetak";
+                $json['status_message'] = "jumllah : " . $jumlah . "Invoice gagal tercetak";
             }
 
 

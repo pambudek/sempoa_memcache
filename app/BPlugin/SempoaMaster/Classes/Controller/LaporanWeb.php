@@ -89,7 +89,7 @@ class LaporanWeb extends WebService
     //TC
     public function create_operasional_pembayaran_iuran_bulanan_tc()
     {
-        $myorg = AccessRight::getMyOrgID();
+
         $bln = isset($_GET['bln']) ? addslashes($_GET['bln']) : date("n");
         $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
         $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
@@ -100,8 +100,8 @@ class LaporanWeb extends WebService
         $arrIuranBulanan = $iuranBulanan->getWhere("bln_mon = '$bln' AND bln_tahun = '$thn' AND bln_tc_id='$tc_id' ORDER BY bln_murid_id ASC");
 
         $jumlahMuridAktiv = Generic::getJumlahMuridAktivByTC($tc_id);
-
         if ((count($arrIuranBulanan) == 0) or count($arrIuranBulanan) < $jumlahMuridAktiv) {
+
             $murid = new MuridModel();
             // Status cuti dikeluarkan
             $lastday = date('t', strtotime($bln . "/1/" . $thn));
@@ -124,16 +124,11 @@ class LaporanWeb extends WebService
             $arrSTatus[$st->id_status_murid] = $st->status;
 
         }
-//        echo "2<br>";
+
         $arrBulan = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
-        // Kupon
-//        $kupon = new KuponSatuan();
-//        $arrkupon = $kupon->getWhere("kupon_owner_id = '$tc_id' AND kupon_status = 0 ORDER BY kupon_id ASC");
-//        $checkKupon = count($arrkupon);
-//        $checkKupon = 0;
         $arrSTatus = array("<b>Unpaid</b>", "Paid");
-        $t = time();;
+        $t = time();
         ?>
 
         <section class="content-header">
@@ -269,6 +264,10 @@ class LaporanWeb extends WebService
                     }
                     } else {
 //                    echo "invoiceCreated = " . $invoiceCreated . "<br>";
+//                    foreach ($arrMurid as $mk){
+//                        echo $mk->nama_siswa . "<br>";
+//                    }
+//                    die();
                     foreach ($arrMurid as $mk) {
 
                     $iuranBulanan = new IuranBulanan();

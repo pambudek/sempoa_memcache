@@ -144,18 +144,20 @@ class BarangWebModel extends SempoaModel
         return $this->nama_barang;
     }
 
-    public function getStockByIdJenisBarang($idJenisBarang){
+    public function getStockByIdJenisBarang($idJenisBarang)
+    {
         $arrStock = $this->getWhere("jenis_biaya=$idJenisBarang");
         $res = array();
-        foreach($arrStock as $val){
-            $res[$val->id_barang_harga]  = $val->nama_barang;
+        foreach ($arrStock as $val) {
+            $res[$val->id_barang_harga] = $val->nama_barang;
         }
         return $res;
     }
 
-    public function getHalBuku($level, $kurikulum){
+    public function getHalBuku($level, $kurikulum)
+    {
         $this->getWhereOne("level=$level AND jenis_kurikulum=$kurikulum AND jenis_biaya=1");
-        if(!is_null($this->id_barang_harga)){
+        if (!is_null($this->id_barang_harga)) {
             $halBukuTotal = $this->halaman_buku;
             $halBuku = \GuzzleHttp\json_decode($halBukuTotal);
 
@@ -163,5 +165,11 @@ class BarangWebModel extends SempoaModel
         }
         return null;
 
+    }
+
+    public function getIdBarangByLevelKurikulum($level, $kurikulum)
+    {
+        $this->getWhereOne("jenis_kurikulum='$kurikulum' AND level='$level'");
+        return $this->id_barang_harga;
     }
 }

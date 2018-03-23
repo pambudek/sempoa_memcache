@@ -1840,4 +1840,9 @@ class CoretCoret extends WebService
 //        }
 
     }
+
+    public function cobaIdBuku(){
+        $brg = new BarangWebModel();
+        pr($brg->getIdBarangByLevelKurikulum(2,1));
+    }
 }

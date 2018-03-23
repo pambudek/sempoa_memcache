@@ -13,12 +13,12 @@
 class LaporanWebHelper extends WebService
 {
 
-    protected  $modelLogWebservices = '';
+    protected $modelLogWebservices = '';
     protected $logStatus = 1;
 
     function __construct()
     {
-        $this->modelLogWebservices= new LogWebServices();
+        $this->modelLogWebservices = new LogWebServices();
         $this->modelLogWebservices->startLog(Account::getMyName(), Generic::get_client_ip(), get_browser());
         $logStatus = SempoaAuth::isLoggedTransaksi();
         if (!$logStatus) {
@@ -87,12 +87,11 @@ class LaporanWebHelper extends WebService
     function update_iuran_bulanan()
     {
 
-        if(!$this->logStatus){
-            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
             $this->modelLogWebservices->endLog();
-        }
-        else{
-            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
             $this->modelLogWebservices->endLog();
         }
 
@@ -119,7 +118,7 @@ class LaporanWebHelper extends WebService
         $bln_skrg = date("n");
         $iuranBulanan = new IuranBulanan();
         $iuranBulanan->getByID($bln_id);
-        if($iuranBulanan->bln_status == 1){
+        if ($iuranBulanan->bln_status == 1) {
             $json['status_code'] = 0;
             $json['status_message'] = "Sudah melakukan pembayaran!";
             echo json_encode($json);
@@ -171,12 +170,11 @@ class LaporanWebHelper extends WebService
     function undo_iuran_bulanan()
     {
 
-        if(!$this->logStatus){
-            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
             $this->modelLogWebservices->endLog();
-        }
-        else{
-            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
             $this->modelLogWebservices->endLog();
         }
 
@@ -200,7 +198,7 @@ class LaporanWebHelper extends WebService
 
         $iuranBulanan = new IuranBulanan();
         $iuranBulanan->getByID($bln_id);
-        if($iuranBulanan->bln_status ==0){
+        if ($iuranBulanan->bln_status == 0) {
             $json['status_code'] = 0;
             $json['status_message'] = "Kupon sudah di Undo! ";
             echo json_encode($json);
@@ -239,14 +237,14 @@ class LaporanWebHelper extends WebService
     }
 
 
-    function undo_iuran_buku_2(){
+    function undo_iuran_buku_2()
+    {
 
-        if(!$this->logStatus){
-            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
             $this->modelLogWebservices->endLog();
-        }
-        else{
-            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
             $this->modelLogWebservices->endLog();
         }
 
@@ -254,13 +252,13 @@ class LaporanWebHelper extends WebService
 
         $iuranBuku = new IuranBuku();
         $iuranBuku->getWhereOne("bln_id=$bln_id");
-        if($iuranBuku->bln_status == 0){
+        if ($iuranBuku->bln_status == 0) {
             $json['status_code'] = 0;
             $json['status_message'] = "Iuran Buku sudah di retour!";
             echo json_encode($json);
             die();
         }
-        if(is_null($iuranBuku->bln_id)){
+        if (is_null($iuranBuku->bln_id)) {
             $json['status_code'] = 0;
             $json['status_message'] = "Retour gagal!";
             echo json_encode($json);
@@ -286,6 +284,7 @@ class LaporanWebHelper extends WebService
         die();
 
     }
+
     function paymentDetails()
     {
         $bln_id = addslashes($_GET['bln_id']);
@@ -517,33 +516,163 @@ class LaporanWebHelper extends WebService
     public function pay_iuran_buku_roy()
     {
 
-        if(!$this->logStatus){
-            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
             $this->modelLogWebservices->endLog();
-        }
-        else{
-            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
             $this->modelLogWebservices->endLog();
         }
 
-        $bln = isset($_GET['bln']) ? addslashes($_GET['bln']) : date("n");
-        $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
         $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
         $bln_id = addslashes($_POST['bln_id']);
         $cara_pby = addslashes($_POST['cara_pby']);
+        $no_buku = addslashes($_POST['no_buku']);
 
         $iuranBuku = new IuranBuku();
         $iuranBuku->getByID($bln_id);
-        if($iuranBuku->bln_status == 1){
+
+
+        if ($iuranBuku->bln_status == 1) {
             $json['status_code'] = 0;
             $json['status_message'] = "Murid sudah melakukan pembayaran!";
             echo json_encode($json);
             die();
         }
-        $myOrg = AccessRight::getMyOrgID();
-        $myParentID = Generic::getMyParentID($myOrg);
-        $myGrandParentID = Generic::getMyParentID($myParentID);
-        $noBukuYgdikirim = "";
+
+        $setNoBuku = new StockBuku();
+        $setNoBuku->getWhereOne("stock_buku_no='$no_buku' AND stock_status_tc = 1 AND stock_buku_tc = '$tc_id' ");
+
+
+        if (is_null($setNoBuku->stock_buku_id)) {
+            $json['status_code'] = 0;
+            $json['status_message'] = "No Buku sudah tidak tersedia. Hubungi Admin!";
+            echo json_encode($json);
+            die();
+        }
+
+
+        // Kurangi stock dulu
+        $id_barang = $setNoBuku->stock_id_buku;
+        $stockBarang = new StockModel();
+        $stockBarang->getWhereOne("id_barang='$id_barang' AND org_id='$tc_id'");
+        if ($stockBarang->jumlah_stock > 0) {
+
+            $stockBarang->jumlah_stock--;
+            if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
+                $arrJumlahbrg[$id_barang] = $stockBarang->jumlah_stock + 1;
+            }
+            $stockBarang->save(1);
+            // Kirim Notif jika barang tinggal sedikit
+            if($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU){
+                $strmsg = "Sisa buku " . $setNoBuku->stock_name_buku . " : <b>" . $stockBarang->jumlah_stock . "</b><br>";
+                SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", $strmsg);
+            }
+        }
+        else{
+            $json['status_code'] = 0;
+            $json['status_message'] = "Stock barang habis, hubungi Admin!";
+            echo json_encode($json);
+            die();
+        }
+
+
+
+
+        //iuran buku dibayar
+        $iuranBuku->bln_status = 1;
+        $iuranBuku->bln_cara_bayar = $cara_pby;
+        $iuranBuku->bln_date_pembayaran = leap_mysqldate();
+        $thn_skrg = date("Y");
+        $bln_skrg = date("n");
+        $iuranBuku->bln_no_urut_inv = $iuranBuku->getLastNoUrutInvoice($thn_skrg, $bln_skrg, AccessRight::getMyOrgID());
+        $iuranBuku->bln_no_invoice = "IB/" . $thn_skrg . "/" . $bln_skrg . "/" . $iuranBuku->bln_no_urut_inv;
+        $iuranBuku->save(1);
+
+        // set no buku
+        $setNoBuku->stock_buku_no = $no_buku;
+        $setNoBuku->stock_status_tc = 0;
+        $setNoBuku->stock_buku_tgl_keluar_tc = leap_mysqldate();
+        $setNoBuku->stock_murid_id = $iuranBuku->bln_murid_id;
+        $setNoBuku->stock_murid = 1;
+        $setNoBuku->stock_invoice_murid = $iuranBuku->bln_id;
+        $setNoBuku->save(1);
+
+        $objMurid = new MuridModel();
+        $objMurid->getByID($iuranBuku->bln_murid_id);
+
+        $level_murid = $objMurid->id_level_sekarang;
+        $level_invoice = $iuranBuku->bln_buku_level;
+
+        // jika naik level
+        if ($level_murid != $level_invoice) {
+            $objMurid = new MuridModel();
+            $objMurid->getByID($iuranBuku->bln_murid_id);
+            $objMurid->id_level_sekarang = $iuranBuku->bln_buku_level;
+            // Jika ganti kurikulum
+            if ($iuranBuku->bln_ganti_kur == 1) {
+                $objMurid->murid_kurikulum = 0;
+            }
+            if ($objMurid->save()) {
+                //journey
+                //journey lama diupdate
+                $mj = new MuridJourney();
+                $mj->getWhereOne("journey_murid_id='$iuranBuku->bln_murid_id' AND journey_level_mulai = '$level_murid'");
+                $mj->journey_level_end = $objMurid->id_level_sekarang;
+                $mj->journey_end_date = leap_mysqldate();
+                $mj->save(1);
+
+
+                //journey baru ditambah
+                $mj_new = new MuridJourney();
+                $mj_new->journey_murid_id = $iuranBuku->bln_murid_id;
+                $mj_new->journey_level_mulai = $iuranBuku->bln_buku_level;
+                $mj_new->journey_mulai_date = leap_mysqldate();
+                $mj_new->journey_tc_id = AccessRight::getMyOrgID();
+                $mj_new->save();
+
+                // Laporan
+                $myID = AccessRight::getMyOrgID();
+                Generic::createLaporanDebet($myID, $myID, KEY::$DEBET_IURAN_BUKU_TC, KEY::$BIAYA_IURAN_BUKU, "Iuran Buku: Siswa: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id), 1, 0, "Utama");
+
+                // Check apakah butuh sertifikat
+                $needCertificate = Generic::istLevelNeedCertificate($level_murid);
+                if ($needCertificate) {
+                    $parent_id = Generic::getMyParentID(AccessRight::getMyOrgID());
+                    $certificate = new SertifikatModel();
+                    $certificate->createSertifikatTC($tc_id, $iuranBuku->bln_murid_id, $level_murid);
+                    SempoaInboxModel::sendMsg($parent_id, AccessRight::getMyOrgID(), "Permintaan Sertifikat", Generic::getTCNamebyID($tc_id) . " request Sertifikat untuk murid: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id));
+
+                }
+                $json['status_code'] = 1;
+                // Buku Junior 2A dgn No. dan Buku Junior 2B dgn No. yang diberikan.
+                $json['status_message'] = "Pembayaran Berhasil!\nSilahkan sesuaikan Kelasnya. Buku yang diberikan: \n" . $no_buku;
+                echo json_encode($json);
+                die();
+            } else {
+                $json['status_code'] = 0;
+                $json['status_message'] = "Gagal Update Murid";
+                echo json_encode($json);
+                die();
+            }
+        }
+
+        // Jika cuma beli buku pengganti
+        else{
+            // Laporan
+            $myID = AccessRight::getMyOrgID();
+            Generic::createLaporanDebet($myID, $myID, KEY::$DEBET_IURAN_BUKU_TC, KEY::$BIAYA_IURAN_BUKU, "Iuran Buku: Siswa: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id), 1, 0, "Utama");
+            $json['status_code'] = 1;
+            // Buku Junior 2A dgn No. dan Buku Junior 2B dgn No. yang diberikan.
+            $json['status_message'] = "Pembayaran Berhasil!\nSilahkan sesuaikan Kelasnya. Buku yang diberikan: \n" . $no_buku;
+            echo json_encode($json);
+            die();
+        }
+
+
+        die();
+
+
 
 
         // Check No Buku
@@ -571,12 +700,12 @@ class LaporanWebHelper extends WebService
         $json['bln_murid_id'] = $iuranBuku->bln_murid_id;
         $json['bln_kur'] = $iuranBuku->bln_kur;
         $json['KEY::$JENIS_BUKU'] = KEY::$JENIS_BUKU;
-        $resBuku = $setNoBuku->getBukuYgdReservMurid($level_baru, $myOrg, $iuranBuku->bln_murid_id, $iuranBuku->bln_kur,KEY::$JENIS_BUKU);
+        $resBuku = $setNoBuku->getBukuYgdReservMurid($level_baru, $myOrg, $iuranBuku->bln_murid_id, $iuranBuku->bln_kur, KEY::$JENIS_BUKU);
 
         $weiter = true;
 
-        // ambil id barang dari level
-        $jumlahBukuIst = Generic::getIdBarangByLevelDanJenisBiaya($level_baru, $iuranBuku->bln_kur,KEY::$JENIS_BUKU);
+// ambil id barang dari level
+        $jumlahBukuIst = Generic::getIdBarangByLevelDanJenisBiaya($level_baru, $iuranBuku->bln_kur, KEY::$JENIS_BUKU);
 
         if (count($resBuku) == 0) {
             $weiter = false;
@@ -627,7 +756,7 @@ class LaporanWebHelper extends WebService
             die();
         } else {
             $arrJumlahbrg = array();
-            $arrIDNoBuku = $setNoBuku->setStatusBuku($resBuku, $iuranBuku->bln_murid_id,$bln_id);
+            $arrIDNoBuku = $setNoBuku->setStatusBuku($resBuku, $iuranBuku->bln_murid_id, $bln_id);
             foreach ($resBuku as $val) {
                 $setNoBuku = new StockBuku();
                 $id_barang = $setNoBuku->getBarangIDbyPk($val);
@@ -657,12 +786,366 @@ class LaporanWebHelper extends WebService
             $strmsg = "";
 
             foreach ($arrJumlahbrg as $key => $val) {
-                if($strmsg == ""){
+                if ($strmsg == "") {
                     $a = new BarangWebModel();
-                    $strmsg = "Sisa buku " . $a->getNamaBukuByID($key) .  " : <b>" . $val . "</b><br>";
+                    $strmsg = "Sisa buku " . $a->getNamaBukuByID($key) . " : <b>" . $val . "</b><br>";
+                } else {
+                    $strmsg = $strmsg . "Sisa buku " . $a->getNamaBukuByID($key) . " : <b>" . $val . "</b><br>";
                 }
-                else{
-                    $strmsg = $strmsg .  "Sisa buku " . $a->getNamaBukuByID($key) .  " : <b>" . $val . "</b><br>";
+            }
+            SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", $strmsg);
+
+        }
+
+
+//iuran buku dibayar
+        $iuranBuku->bln_status = 1;
+        $iuranBuku->bln_cara_bayar = $cara_pby;
+        $iuranBuku->bln_date_pembayaran = leap_mysqldate();
+        $thn_skrg = date("Y");
+        $bln_skrg = date("n");
+        $iuranBuku->bln_no_urut_inv = $iuranBuku->getLastNoUrutInvoice($thn_skrg, $bln_skrg, AccessRight::getMyOrgID());
+        $iuranBuku->bln_no_invoice = "IB/" . $thn_skrg . "/" . $bln_skrg . "/" . $iuranBuku->bln_no_urut_inv;
+
+        if ($iuranBuku->save()) {
+            //murid update level
+            $objMurid = new MuridModel();
+            $objMurid->getByID($iuranBuku->bln_murid_id);
+            $level_sebelumnya = $objMurid->id_level_sekarang;
+            $objMurid->id_level_sekarang = $iuranBuku->bln_buku_level;
+
+            if ($objMurid->save()) {
+
+                //journey
+                //journey lama diupdate
+                $mj = new MuridJourney();
+                $mj->getWhereOne("journey_murid_id='$iuranBuku->bln_murid_id' AND journey_level_mulai = '$level_sebelumnya'");
+                $mj->journey_level_end = $objMurid->id_level_sekarang;
+                $mj->journey_end_date = leap_mysqldate();
+                $mj->save(1);
+
+
+                //journey baru ditambah
+                $mj_new = new MuridJourney();
+                $mj_new->journey_murid_id = $iuranBuku->bln_murid_id;
+                $mj_new->journey_level_mulai = $iuranBuku->bln_buku_level;
+                $mj_new->journey_mulai_date = leap_mysqldate();
+                $mj_new->journey_tc_id = AccessRight::getMyOrgID();
+                $mj_new->save();
+
+                // Laporan
+                $myID = AccessRight::getMyOrgID();
+                Generic::createLaporanDebet($myID, $myID, KEY::$DEBET_IURAN_BUKU_TC, KEY::$BIAYA_IURAN_BUKU, "Iuran Buku: Siswa: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id), 1, 0, "Utama");
+
+                // Check apakah butuh sertifikat
+                $needCertificate = Generic::istLevelNeedCertificate($level_sebelumnya);
+                if ($needCertificate) {
+                    $parent_id = Generic::getMyParentID(AccessRight::getMyOrgID());
+                    $certificate = new SertifikatModel();
+                    $certificate->createSertifikatTC($tc_id, $iuranBuku->bln_murid_id, $level_sebelumnya);
+                    SempoaInboxModel::sendMsg($parent_id, AccessRight::getMyOrgID(), "Permintaan Sertifikat", Generic::getTCNamebyID($tc_id) . " request Sertifikat untuk murid: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id));
+
+                }
+                $json['status_code'] = 1;
+                // Buku Junior 2A dgn No. dan Buku Junior 2B dgn No. yang diberikan.
+                $json['status_message'] = "Pembayaran Berhasil!\nSilahkan sesuaikan Kelasnya. Buku yang diberikan: \n" . $noBukuYgdikirim;
+                echo json_encode($json);
+                die();
+            } else {
+                $json['status_code'] = 0;
+                $json['status_message'] = "Gagal Update Murid";
+                echo json_encode($json);
+                die();
+            }
+        } else {
+            $json['status_code'] = 0;
+            $json['status_message'] = "Gagal Save Iuran Buku";
+            echo json_encode($json);
+            die();
+        }
+
+
+        die();
+
+        $resStokBuku = $setNoBuku->setStatusBuku($resBuku, $iuranBuku->bln_murid_id);
+        if ($iuranBuku->bln_ganti_kur == 1) {
+
+        } else {
+
+            if (!$resStokBuku) {
+//                $json['status_message'] = $iuranBuku->bln_buku_level . " -  " . $myOrg . " - " .$iuranBuku->bln_murid_id . " - " . $iuranBuku->bln_kur ;
+                $json['status_code'] = 0;
+                $json['status_message'] = "Persediaan Buku Habis!";
+                echo json_encode($json);
+                die();
+            }
+        }
+
+
+// update stock buku
+
+        $weiter = true;
+
+        foreach ($resBuku as $val) {
+            $stockBarang = new StockModel();
+            $stockBarang->getWhereOne("id_barang='$val' AND org_id='$myOrg'");
+            if ($stockBarang->jumlah_stock > 0) {
+                $stockBarang->jumlah_stock--;
+                $stockBarang->save();
+            } else {
+                $weiter = $weiter & false;
+            }
+        }
+
+
+        $myBuku = new BarangWebModel();
+        $arrMyBuku = $myBuku->getWhere("level=$iuranBuku->bln_buku_level  AND jenis_biaya = 1 AND kpo_id = $myGrandParentID LIMIT 0,1");
+
+
+        if (count($arrMyBuku) > 0) {
+            // Check Stock
+
+            $stockBarang = new StockModel();
+            $buku_active = array_pop($arrMyBuku);
+
+            $stockBarang->getWhereOne("id_barang='$buku_active->id_barang_harga' AND org_id='$myOrg'");
+
+
+            if ($stockBarang->jumlah_stock > 0) {
+                //ada stok
+                //kurangi stok
+                $stockBarang->jumlah_stock--;
+                $stockBarang->save();
+
+                //iuran buku dibayar
+                $iuranBuku->bln_status = 1;
+                $iuranBuku->bln_cara_bayar = $cara_pby;
+                $iuranBuku->bln_date_pembayaran = leap_mysqldate();
+                $thn_skrg = date("Y");
+                $bln_skrg = date("n");
+                $iuranBuku->bln_no_urut_inv = $iuranBuku->getLastNoUrutInvoice($thn_skrg, $bln_skrg, AccessRight::getMyOrgID());
+                $iuranBuku->bln_no_invoice = "IB/" . $thn_skrg . "/" . $bln_skrg . "/" . $iuranBuku->bln_no_urut_inv;
+
+                if ($iuranBuku->save()) {
+                    //murid update level
+                    $objMurid = new MuridModel();
+                    $objMurid->getByID($iuranBuku->bln_murid_id);
+                    $level_sebelumnya = $objMurid->id_level_sekarang;
+                    $objMurid->id_level_sekarang = $iuranBuku->bln_buku_level;
+
+                    if ($objMurid->save()) {
+
+                        //journey
+                        //journey lama diupdate
+                        $mj = new MuridJourney();
+                        $mj->getWhereOne("journey_murid_id='$iuranBuku->bln_murid_id' AND journey_level_mulai = '$level_sebelumnya'");
+                        $mj->journey_level_end = $objMurid->id_level_sekarang;
+                        $mj->journey_end_date = leap_mysqldate();
+                        $mj->save(1);
+
+
+                        //journey baru ditambah
+                        $mj_new = new MuridJourney();
+                        $mj_new->journey_murid_id = $iuranBuku->bln_murid_id;
+                        $mj_new->journey_level_mulai = $iuranBuku->bln_buku_level;
+                        $mj_new->journey_mulai_date = leap_mysqldate();
+                        $mj_new->journey_tc_id = AccessRight::getMyOrgID();
+                        $mj_new->save();
+
+                        // Laporan
+                        $myID = AccessRight::getMyOrgID();
+                        Generic::createLaporanDebet($myID, $myID, KEY::$DEBET_IURAN_BUKU_TC, KEY::$BIAYA_IURAN_BUKU, "Iuran Buku: Siswa: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id), 1, 0, "Utama");
+
+                        // Check apakah butuh sertifikat
+                        $needCertificate = Generic::istLevelNeedCertificate($level_sebelumnya);
+                        if ($needCertificate) {
+                            $parent_id = Generic::getMyParentID(AccessRight::getMyOrgID());
+                            $certificate = new SertifikatModel();
+                            $certificate->createSertifikatTC($tc_id, $iuranBuku->bln_murid_id, $level_sebelumnya);
+                            SempoaInboxModel::sendMsg($parent_id, AccessRight::getMyOrgID(), "Permintaan Sertifikat", Generic::getTCNamebyID($tc_id) . " request Sertifikat untuk murid: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id));
+
+                        }
+
+
+                        $json['status_code'] = 1;
+                        $json['status_message'] = "Pembayaran Berhasil! Silahkan sesuaikan Kelasnya";
+                        echo json_encode($json);
+                        die();
+                    } else {
+                        $json['status_code'] = 0;
+                        $json['status_message'] = "Gagal Update Murid";
+                        echo json_encode($json);
+                        die();
+                    }
+                } else {
+                    $json['status_code'] = 0;
+                    $json['status_message'] = "Gagal Save Iuran Buku";
+                    echo json_encode($json);
+                    die();
+                }
+            }
+
+
+            //tidak ada stok
+            $json['status_code'] = 0;
+            $json['status_message'] = "Jumlah stock buku habis!";
+            echo json_encode($json);
+            die();
+        }
+        $json['status_code'] = 0;
+        $json['status_message'] = "Pembayaran gagal!";
+        echo json_encode($json);
+        die();
+// update level siswa
+    }
+
+    public
+    function pay_iuran_buku_roy_tmp()
+    {
+
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
+            $this->modelLogWebservices->endLog();
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
+            $this->modelLogWebservices->endLog();
+        }
+
+        $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
+        $bln_id = addslashes($_POST['bln_id']);
+        $cara_pby = addslashes($_POST['cara_pby']);
+        $no_buku = addslashes($_POST['no_buku']);
+
+        $iuranBuku = new IuranBuku();
+        $iuranBuku->getByID($bln_id);
+        if ($iuranBuku->bln_status == 1) {
+            $json['status_code'] = 0;
+            $json['status_message'] = "Murid sudah melakukan pembayaran!";
+            echo json_encode($json);
+            die();
+        }
+        $myOrg = AccessRight::getMyOrgID();
+        $myParentID = Generic::getMyParentID($myOrg);
+        $myGrandParentID = Generic::getMyParentID($myParentID);
+        $noBukuYgdikirim = "";
+
+
+        // Check No Buku
+        // Check stock bu no ada ngak
+        // Check Buku ada ngak;
+//bln_ganti_kur
+
+// Kurikulum lama = 1
+        $setNoBuku = new StockBuku();
+        if (($iuranBuku->bln_kur == KEY::$KURIKULUM_LAMA) && ($iuranBuku->bln_ganti_kur != 1)) {
+
+            $level_baru = Generic::convertLevelBaruKeLama($iuranBuku->bln_buku_level);
+
+            $json['ganti'] = "ganti kuri: " . $level_baru;
+        } else {
+            $level_baru = $iuranBuku->bln_buku_level;
+            $json['bln_kur'] = $iuranBuku->bln_kur;
+        }
+
+        if (($iuranBuku->bln_kur == KEY::$KURIKULUM_LAMA) && ($iuranBuku->bln_ganti_kur == 1)) {
+            $iuranBuku->bln_kur = 0;
+        }
+        $json['level_baru'] = $level_baru;
+        $json['myOrg'] = $myOrg;
+        $json['bln_murid_id'] = $iuranBuku->bln_murid_id;
+        $json['bln_kur'] = $iuranBuku->bln_kur;
+        $json['KEY::$JENIS_BUKU'] = KEY::$JENIS_BUKU;
+        $resBuku = $setNoBuku->getBukuYgdReservMurid($level_baru, $myOrg, $iuranBuku->bln_murid_id, $iuranBuku->bln_kur, KEY::$JENIS_BUKU);
+
+        $weiter = true;
+
+        // ambil id barang dari level
+        $jumlahBukuIst = Generic::getIdBarangByLevelDanJenisBiaya($level_baru, $iuranBuku->bln_kur, KEY::$JENIS_BUKU);
+
+        if (count($resBuku) == 0) {
+            $weiter = false;
+            $json['status_code'] = 0;
+            $json['status_message'] = "Persediaan Buku Habis!!";
+            echo json_encode($json);
+            die();
+        } elseif (count($jumlahBukuIst) <> count($resBuku)) {
+            $weiter = false;
+            $json['status_code'] = 0;
+            $json['level'] = $level_baru;
+            $json['res'] = $resBuku;
+            $json['jumlahBukuIst'] = $jumlahBukuIst;
+            $json['status_message'] = "Persediaan Buku Habis!";
+            echo json_encode($json);
+            die();
+        }
+
+
+        foreach ($resBuku as $val) {
+            $setNoBuku = new StockBuku();
+            $id_barang = $setNoBuku->getBarangIDbyPk($val);
+
+            $stockBarang = new StockModel();
+            $stockBarang->getWhereOne("id_barang='$id_barang' AND org_id='$myOrg'");
+            $objBarang = new BarangWebModel();
+            $objBarang->getNamaBukuByID($id_barang);
+
+            // Buku Junior 2A dgn No. dan Buku Junior 2B dgn No. yang diberikan.
+            if ($noBukuYgdikirim == "") {
+                $noBukuYgdikirim = $objBarang->getNamaBukuByID($id_barang) . " dengan No. " . $setNoBuku->getNoBukuById($val);
+            } else {
+                $noBukuYgdikirim = $objBarang->getNamaBukuByID($id_barang) . " dengan No. " . $setNoBuku->getNoBukuById($val) . "\n" . $noBukuYgdikirim;
+            }
+
+
+            if ($stockBarang->jumlah_stock <= 0) {
+                $weiter = $weiter & false;
+            }
+
+        }
+
+
+        if (!weiter) {
+            $json['status_code'] = 0;
+            $json['status_message'] = "Persediaan Buku Habis!";
+            echo json_encode($json);
+            die();
+        } else {
+            $arrJumlahbrg = array();
+            $arrIDNoBuku = $setNoBuku->setStatusBuku($resBuku, $iuranBuku->bln_murid_id, $bln_id);
+            foreach ($resBuku as $val) {
+                $setNoBuku = new StockBuku();
+                $id_barang = $setNoBuku->getBarangIDbyPk($val);
+                $stockBarang = new StockModel();
+                $stockBarang->getWhereOne("id_barang='$id_barang' AND org_id='$myOrg'");
+                if ($stockBarang->jumlah_stock > 0) {
+
+                    $stockBarang->jumlah_stock--;
+                    if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
+                        $arrJumlahbrg[$id_barang] = $stockBarang->jumlah_stock + 1;
+                    }
+                    $stockBarang->save();
+                }
+            }
+
+
+            // Convert ke level lama
+            if ($iuranBuku->bln_ganti_kur == 1) {
+                $objMurid = new MuridModel();
+                $objMurid->getByID($iuranBuku->bln_murid_id);
+                $objMurid->murid_kurikulum = 0;
+                $objMurid->save(1);
+
+            }
+        }
+        if (count($arrJumlahbrg) > 0) {
+            $strmsg = "";
+
+            foreach ($arrJumlahbrg as $key => $val) {
+                if ($strmsg == "") {
+                    $a = new BarangWebModel();
+                    $strmsg = "Sisa buku " . $a->getNamaBukuByID($key) . " : <b>" . $val . "</b><br>";
+                } else {
+                    $strmsg = $strmsg . "Sisa buku " . $a->getNamaBukuByID($key) . " : <b>" . $val . "</b><br>";
                 }
             }
             SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", $strmsg);
@@ -875,7 +1358,8 @@ class LaporanWebHelper extends WebService
     }
 
 // tidak dibutuhkan lagi
-    public function undo_iuran_buku()
+    public
+    function undo_iuran_buku()
     {
         $bln = isset($_GET['bln']) ? addslashes($_GET['bln']) : date("n");
         $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
@@ -1030,7 +1514,8 @@ class LaporanWebHelper extends WebService
         <?
     }
 
-    public function getWeekInYear()
+    public
+    function getWeekInYear()
     {
         $year = $_POST['thn'];
         $arrWeek = Generic::getDateRangeByWeek($year);
@@ -1057,14 +1542,14 @@ class LaporanWebHelper extends WebService
     }
 
 
-    function hapusIuranBuku(){
+    function hapusIuranBuku()
+    {
 
-        if(!$this->logStatus){
-            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
             $this->modelLogWebservices->endLog();
-        }
-        else{
-            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
             $this->modelLogWebservices->endLog();
         }
 
@@ -1072,26 +1557,25 @@ class LaporanWebHelper extends WebService
         $bln_id = $_POST['bln_id'];
         $iuranBuku = new IuranBuku();
         $iuranBuku->getWhereOne("bln_id='$bln_id'");
-        if(is_null($iuranBuku->bln_id)){
+        if (is_null($iuranBuku->bln_id)) {
             $json['status_code'] = 0;
-            $json['status_message'] =  "Iuran Buku gagal dihapus!";
+            $json['status_message'] = "Iuran Buku gagal dihapus!";
             echo json_encode($json);
             die();
-        }
-        else{
+        } else {
             $logDelete = new SempoaLogDelete();
             $logDelete->delete_table = $iuranBuku->table_name;
             $logDelete->delete_tgl = leap_mysqldate();
             $logDelete->delete_siapa = Account::getMyName();
 
             $obj = array();
-            foreach($iuranBuku as $key=>$val){
+            foreach ($iuranBuku as $key => $val) {
                 $obj[$key] = $val;
             }
             $logDelete->delete_data = serialize($obj);
             $arrSerial[] = $obj;
             $hasil = $iuranBuku->delete($iuranBuku->bln_id);
-            if($hasil){
+            if ($hasil) {
                 $json['status_code'] = 1;
                 $json['status_message'] = "Iuran Buku berhasil dihapus!";
                 $logDelete->save();
@@ -1101,14 +1585,14 @@ class LaporanWebHelper extends WebService
         }
     }
 
-    function hapusIuranBulanan(){
+    function hapusIuranBulanan()
+    {
 
-        if(!$this->logStatus){
-            $this->modelLogWebservices->logFunction(__FUNCTION__,0);
+        if (!$this->logStatus) {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 0);
             $this->modelLogWebservices->endLog();
-        }
-        else{
-            $this->modelLogWebservices->logFunction(__FUNCTION__,1);
+        } else {
+            $this->modelLogWebservices->logFunction(__FUNCTION__, 1);
             $this->modelLogWebservices->endLog();
         }
 
@@ -1116,26 +1600,25 @@ class LaporanWebHelper extends WebService
         $iuranBulanan = new IuranBulanan();
         $iuranBulanan->getWhereOne("bln_id='$bln_id'");
 
-        if(is_null($iuranBulanan->bln_id)){
+        if (is_null($iuranBulanan->bln_id)) {
             $json['status_code'] = 0;
-            $json['status_message'] =  "Iuran bulanan gagal dihapus!";
+            $json['status_message'] = "Iuran bulanan gagal dihapus!";
             echo json_encode($json);
             die();
-        }
-        else{
+        } else {
             $logDelete = new SempoaLogDelete();
             $logDelete->delete_table = $iuranBulanan->table_name;
             $logDelete->delete_tgl = leap_mysqldate();
             $logDelete->delete_siapa = Account::getMyName();
 
             $obj = array();
-            foreach($iuranBulanan as $key=>$val){
+            foreach ($iuranBulanan as $key => $val) {
                 $obj[$key] = $val;
             }
             $logDelete->delete_data = serialize($obj);
             $arrSerial[] = $obj;
             $hasil = $iuranBulanan->delete($iuranBulanan->bln_id);
-            if($hasil){
+            if ($hasil) {
                 $json['status_code'] = 1;
                 $json['status_message'] = "Iuran bulanan berhasil dihapus!";
                 $logDelete->save();

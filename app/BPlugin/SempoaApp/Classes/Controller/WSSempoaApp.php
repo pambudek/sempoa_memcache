@@ -895,4 +895,48 @@ class WSSempoaApp extends WebService
 
     }
 
+
+    public function getListProgressMyChild($kode_siswa)
+    {
+//        $kode_siswa = "1406030001";
+        $progress = new ProgressModel();
+        $arrProgress = $progress->getWhereOne("kode_siswa='$kode_siswa' AND progress_active = 1 ORDER by progress_updated  DESC");
+        $i = 1;
+        $arrProgressAnak = array();
+        $namaBuku = "progress_nama_buku_$i";
+        $halBuku = "progress_hal_buku_$i";
+        $totalHalBukuSatuan = "progress_total_hal_$i";
+        $total = 0;
+        $totalHalBuku = 0;
+        $arrBuku = array();
+
+
+        while ($progress->$namaBuku != "") {
+            unset($arrProgressAnak);
+            $arrProgressAnak['nama_buku'] = $progress->$namaBuku;
+            $arrProgressAnak['hal_buku'] = $progress->$halBuku;
+            $total = $total + $progress->$halBuku;
+            $totalHalBuku = $totalHalBuku + $progress->$totalHalBukuSatuan;
+            $arrBuku[$i] = $arrProgressAnak;
+            $i++;
+            $namaBuku = "progress_nama_buku_$i";
+            $halBuku = "progress_hal_buku_$i";
+
+        }
+
+        $arrFinal = array();
+        foreach ($arrBuku as $val) {
+            $arrHlp = array();
+            foreach ($val as $key => $hasil) {
+                $arrHlp[$key] = $hasil;
+                $arrHlp['tglUpdate'] = $progress->progress_updated;
+                $arrHlp['progress'] = ($total / $totalHalBuku) * 100;
+            }
+
+            $arrFinal[] = $arrHlp;
+
+        }
+        return $arrFinal;
+
+    }
 }

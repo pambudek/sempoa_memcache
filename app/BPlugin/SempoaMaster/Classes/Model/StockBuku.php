@@ -157,15 +157,13 @@ class StockBuku extends Model
 
     public function getBukuNoByInvoiceID($stock_invoice_murid)
     {
-        $buno = new $this();
-        $arr = $buno->getWhere("stock_invoice_murid='$stock_invoice_murid'");
-        $res = array();
-        foreach ($arr as $val) {
-            $brg = new BarangWebModel();
-//            $brg->getNamaBukuByNoBuku(substr($val->stock_buku_no,0,3));
-            $res[$val->stock_buku_no] = $val->stock_name_buku;
+        $res = $this->getWhere("stock_invoice_murid='$stock_invoice_murid'");
+        $erg = array();
+        foreach($res as $val){
+            $erg[$val->stock_buku_no] = $val->stock_name_buku;
         }
-        return $res;
+
+        return $erg;
     }
 
     public function retourBukuMurid($invoice_id)
@@ -257,5 +255,17 @@ class StockBuku extends Model
         } elseif ($org_type == KEY::$TC) {
 
         }
+    }
+
+    public function getAllMyNoBukuFreiTCByInvoiceId($level,$tc_id, $kurikulum){
+
+        $brg = new BarangWebModel();
+        $id_buku =$brg->getIdBarangByLevelKurikulum($level,$kurikulum);
+        $arrNoBuku = $this->getWhere("stock_buku_tc='$tc_id' AND stock_status_tc='1' AND stock_grup_level='$level' AND stock_id_buku='$id_buku'");
+        $arrResult = array();
+        foreach($arrNoBuku as $val){
+            $arrResult[] = $val->stock_buku_no;
+        }
+        return $arrResult;
     }
 }
