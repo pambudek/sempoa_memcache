@@ -282,19 +282,19 @@ class MuridWebHelper extends WebService
 
             <div style="text-align: center;">
                 <?
-                    if(AccessRight::getMyOrgType() == KEY::$TC){
-                        $click = "enabled";
-                    }
-                else{
+                if (AccessRight::getMyOrgType() == KEY::$TC) {
+                    $click = "enabled";
+                } else {
                     $click = "disabled";
                 }
                 ?>
-                <button id="payfirst_button" class="btn btn-lg btn-default <?=$click;?>" style="width: 50%;">SUBMIT PEMBAYARAN
+                <button id="payfirst_button" class="btn btn-lg btn-default <?= $click; ?>" style="width: 50%;">SUBMIT
+                    PEMBAYARAN
                 </button>
             </div>
             <script>
                 $('#payfirst_button').click(function () {
-                    if('<?=$click == "enabled" ?>'){
+                    if ('<?=$click == "enabled" ?>') {
                         if (confirm("Anda yakin akan melakukan pembayaran?")) {
                             if (<?= $lanjut; ?>) {
                                 var post = {};
@@ -329,7 +329,7 @@ class MuridWebHelper extends WebService
 
                         }
                     }
-                    else{
+                    else {
                         alert("Anda tidak bisa melakukan pembayaran!");
                     }
 
@@ -753,17 +753,43 @@ class MuridWebHelper extends WebService
         $id = addslashes($_GET['id_murid']);
         $murid = new MuridModel();
         $murid->getByID($id);
-        $arrStatusMurid = Generic::getAllStatusMurid();
+
         $arrLevelMurid = Generic::getAllLevel();
-        $html = "\"<select id='select_status_$murid->id_murid'>";
-        foreach ($arrStatusMurid as $key => $value) {
-            if ($key == $murid->status) {
-                $html = $html . "<option value='$key' selected>$value</option>";
-            } else {
-                $html = $html . "<option value='$key'>$value</option>";
+
+        if (AccessRight::getMyOrgType() == KEY::$IBO) {
+            $arrStatusMurid = Generic::getAllStatusMurid();
+            $html = "\"<select id='select_status_$murid->id_murid'>";
+            foreach ($arrStatusMurid as $key => $value) {
+                if ($key == $murid->status) {
+                    $html = $html . "<option value='$key' selected>$value</option>";
+                } else {
+                    $html = $html . "<option value='$key'>$value</option>";
+                }
             }
+            $html = $html . "</select>\"";
+        } elseif (AccessRight::getMyOrgType() == KEY::$TC) {
+            $arrStatusMurid = array();
+            if($murid->status == 1){
+                $arrStatusMurid[1] = "Aktif";
+                $arrStatusMurid[2] = "Cuti";
+                $arrStatusMurid[3] = "Keluar";
+                $arrStatusMurid[4] = "Lulus";
+            }
+            elseif($murid->status == 2){
+                $arrStatusMurid[2] = "Cuti";
+                $arrStatusMurid[3] = "Keluar";
+            }
+
+            $html = "\"<select id='select_status_$murid->id_murid'>";
+            foreach ($arrStatusMurid as $key => $value) {
+                if ($key == $murid->status) {
+                    $html = $html . "<option value='$key' selected>$value</option>";
+                } else {
+                    $html = $html . "<option value='$key'>$value</option>";
+                }
+            }
+            $html = $html . "</select>\"";
         }
-        $html = $html . "</select>\"";
 
 
         $htmlLevel = "\"<select id='select_lvl_$murid->id_murid'>";
@@ -6485,7 +6511,7 @@ class MuridWebHelper extends WebService
             $obj->getByID($_GET['id']);
         if ($obj->pay_firsttime == '0')
             $obj->onAjaxSuccess = "openLw('Payment_Murid','" . _SPPATH . "MuridWebHelper/firsttime_payment?id_murid='+data.bool,'fade');";
-        $obj->removeAutoCrudClick = array("pay_firsttime", "profile","no_pay_firsttime");
+        $obj->removeAutoCrudClick = array("pay_firsttime", "profile", "no_pay_firsttime");
         $obj->read_filter_array = array("murid_tc_id" => $myOrgID);
         $obj->hideColoums = array("murid_tc_id", "murid_ak_id", "murid_kpo_id", "murid_ibo_id");
         $crud = new CrudCustom();

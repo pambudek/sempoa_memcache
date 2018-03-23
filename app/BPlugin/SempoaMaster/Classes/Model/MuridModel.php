@@ -119,18 +119,13 @@ class MuridModel extends SempoaModel
         }
 
         $return['jenis_kelamin'] = new Leap\View\InputSelect(array("" => "Not Set", "m" => "Male", "f" => "Female"), "jenis_kelamin", "jenis_kelamin", strtolower($this->jenis_kelamin));
-//        $return['agama'] = new Leap\View\InputAttribute("status", "agama", "agama", $this->agama);
         $arrAgama = Generic::getAllAgama();
         $return['agama'] = new Leap\View\InputSelect($arrAgama, "agama", "agama", $this->agama);
-
-
         $return['kode_guru'] = new Leap\View\InputText("hidden", "kode_guru", "kode_guru", $this->kode_guru);
-
         $return['tanggal_lahir'] = new Leap\View\InputText("date", "tanggal_lahir", "tanggal_lahir", $this->tanggal_lahir);
         $return['tanggal_masuk'] = new Leap\View\InputText("date", "tanggal_masuk", "tanggal_masuk", $this->tanggal_masuk);
         $return['telepon'] = new Leap\View\InputText("text", "telepon", "telepon", $this->telepon);
         $return['gambar'] = new Leap\View\InputFoto("foto", "gambar", $this->gambar);
-
 
         $arrLevelTrainer = Generic::getAllLevel();
 //        $arClassSetting = Generic::getClassSettingByKPOID($myGrandParentID);
@@ -142,6 +137,7 @@ class MuridModel extends SempoaModel
         $return['murid_ibo_id']->setReadOnly();
         $return['pay_firsttime'] = new Leap\View\InputText("hidden", "pay_firsttime", "pay_firsttime", $this->pay_firsttime);
         $return['nama_siswa'] = new Leap\View\InputTextPattern("text", "nama_siswa", "nama_siswa", $this->nama_siswa, KEY::$PATTERN_NAME);
+        $return['status'] = new Leap\View\InputText("hidden", "status", "status", $this->status);
 
         $return['murid_kurikulum'] = new Leap\View\InputText("hidden", "murid_kurikulum", "murid_kurikulum", $this->murid_kurikulum);
         if ($this->pay_firsttime == 0) {
@@ -161,6 +157,7 @@ class MuridModel extends SempoaModel
         $return['murid_updated'] = new Leap\View\InputText("hidden", "murid_updated", "murid_updated", $this->murid_updated);
         $return['murid_active'] = new Leap\View\InputText("hidden", "murid_active", "murid_active", $this->murid_active);
         $return['murid_parent_id'] = new Leap\View\InputText("hidden", "murid_parent_id", "murid_parent_id", $this->murid_parent_id);
+        $return['no_pay_firsttime'] = new Leap\View\InputText("hidden", "no_pay_firsttime", "no_pay_firsttime", $this->no_pay_firsttime);
 
         return $return;
     }
