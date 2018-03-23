@@ -51,7 +51,7 @@ class MuridModel extends SempoaModel
     public $murid_created_date;
     public $murid_updated;
     public $murid_active;
-    public $removeAutoCrudClick = array("pay_firsttime", "profile","no_pay_firsttime");
+    public $removeAutoCrudClick = array("pay_firsttime", "profile", "no_pay_firsttime");
     public $statushelp;
     public $hideColoums = array("murid_ak_id", "murid_kpo_id", "murid_ibo_id", "murid_kurikulum", "murid_parent_id");
 
@@ -260,16 +260,18 @@ class MuridModel extends SempoaModel
 
 
             if ($obj->pay_firsttime == '0') {
-                if ($obj->no_pay_firsttime == '') {
-                    $obj->no_pay_firsttime = "<button onclick=\"setnofirstpayment($obj->id_murid);\">Tidak ada biaya pertama kali</button>";
+                if (AccessRight::getMyOrgType() == KEY::$IBO) {
+                    if ($obj->no_pay_firsttime == '') {
+                        $obj->no_pay_firsttime = "<button onclick=\"setnofirstpayment($obj->id_murid);\">Tidak ada biaya pertama kali</button>";
 
-                } elseif ($obj->no_pay_firsttime == '0') {
-                    $obj->no_pay_firsttime = "<button onclick=\"openLw('Payment_Murid','" . _SPPATH . "MuridWebHelper/firsttime_payment?id_murid=" . $obj->id_murid . "','fade');\">Tidak ada biaya pertama kali</button>";
+                    } elseif ($obj->no_pay_firsttime == '0') {
+                        $obj->no_pay_firsttime = "<button onclick=\"setnofirstpayment($obj->id_murid);\">Tidak ada biaya pertama kali</button>";
 
-                } else {
-                    $obj->no_pay_firsttime = "";
+                    } else {
+                        $obj->no_pay_firsttime = "";
+                    }
                 }
-//                $obj->removeAutoCrudClick = array("pay_firsttime");
+
                 $obj->pay_firsttime = "<button onclick=\"openLw('Payment_Murid','" . _SPPATH . "MuridWebHelper/firsttime_payment?id_murid=" . $obj->id_murid . "','fade');\">Payment First Time</button>";
             } else {
 
@@ -286,7 +288,7 @@ class MuridModel extends SempoaModel
 
         ?>
         <script>
-            function setnofirstpayment(murid_id){
+            function setnofirstpayment(murid_id) {
                 if (murid_id != "") {
                     $.post("<?= _SPPATH; ?>MuridController/setNoFirstPayment", {
                             murid_id: murid_id
