@@ -45,12 +45,13 @@ class MuridModel extends SempoaModel
     public $murid_ibo_id;
     public $murid_tc_id;
     public $pay_firsttime;
+    public $no_pay_firsttime;
     public $murid_parent_id;
     public $murid_app_pwd;
     public $murid_created_date;
     public $murid_updated;
     public $murid_active;
-    public $removeAutoCrudClick = array("pay_firsttime", "profile");
+    public $removeAutoCrudClick = array("pay_firsttime", "profile","no_pay_firsttime");
     public $statushelp;
     public $hideColoums = array("murid_ak_id", "murid_kpo_id", "murid_ibo_id", "murid_kurikulum", "murid_parent_id");
 
@@ -259,16 +260,52 @@ class MuridModel extends SempoaModel
 
 
             if ($obj->pay_firsttime == '0') {
+                if ($obj->no_pay_firsttime == '') {
+                    $obj->no_pay_firsttime = "<button onclick=\"setnofirstpayment($obj->id_murid);\">Tidak ada biaya pertama kali</button>";
+
+                } elseif ($obj->no_pay_firsttime == '0') {
+                    $obj->no_pay_firsttime = "<button onclick=\"openLw('Payment_Murid','" . _SPPATH . "MuridWebHelper/firsttime_payment?id_murid=" . $obj->id_murid . "','fade');\">Tidak ada biaya pertama kali</button>";
+
+                } else {
+                    $obj->no_pay_firsttime = "";
+                }
 //                $obj->removeAutoCrudClick = array("pay_firsttime");
                 $obj->pay_firsttime = "<button onclick=\"openLw('Payment_Murid','" . _SPPATH . "MuridWebHelper/firsttime_payment?id_murid=" . $obj->id_murid . "','fade');\">Payment First Time</button>";
             } else {
+
+                $obj->no_pay_firsttime = "";
+
                 $obj->pay_firsttime = "<a target=\"_blank\" href=" . _SPPATH . "MuridWebHelper/printRegister2?id_murid=" . $obj->id_murid . "><span  style=\"vertical-align:middle\" class=\"glyphicon glyphicon-print\"  aria-hidden=\"true\"></span>
                                             </a>";
             }
 
+
             $obj->profile = "<button onclick=\"openLw('Profile_Murid','" . _SPPATH . "MuridWebHelper/profile?id_murid=" . $obj->id_murid . "','fade');\">Profile</button>";
+
         }
 
+        ?>
+        <script>
+            function setnofirstpayment(murid_id){
+                if (murid_id != "") {
+                    $.post("<?= _SPPATH; ?>MuridController/setNoFirstPayment", {
+                            murid_id: murid_id
+                        },
+                        function (data) {
+                            alert(data.status_message);
+                            if (data.status_code) {
+                                lwrefresh(selected_page);
+                            } else {
+                            }
+                            console.log(data);
+                            //                                                                                                                                                                                     ?>//').html(data);
+                        }, 'json').fail(function () {
+                        alert("Tidak ada Koneksi internet!");
+                    });
+                }
+            }
+        </script>
+        <?
         //pr($return);
         return $return;
     }

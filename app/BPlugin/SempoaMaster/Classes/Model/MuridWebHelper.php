@@ -281,44 +281,58 @@ class MuridWebHelper extends WebService
             </table>
 
             <div style="text-align: center;">
-                <button id="payfirst_button" class="btn btn-lg btn-default" style="width: 50%;">SUBMIT PEMBAYARAN
+                <?
+                    if(AccessRight::getMyOrgType() == KEY::$TC){
+                        $click = "enabled";
+                    }
+                else{
+                    $click = "disabled";
+                }
+                ?>
+                <button id="payfirst_button" class="btn btn-lg btn-default <?=$click;?>" style="width: 50%;">SUBMIT PEMBAYARAN
                 </button>
             </div>
             <script>
                 $('#payfirst_button').click(function () {
-                    if (confirm("Anda yakin akan melakukan pembayaran?")) {
-                        if (<?= $lanjut; ?>) {
-                            var post = {};
-                            post.murid_id = '<?= $id; ?>';
-                            post.jenis_pmbr = $('#jenis_pmbr').val();
-                            post.pilih_kupon = $('#pilih_kupon_<?= $t; ?>').val();
-                            post.pilih_kapan = $('#pilih_kapan').val();
-                            post.id_buku = '<?= $id_buku; ?>';
-                            post.id_perlengkapan = '<?= $id_perlengkapan; ?>';
-                            $.post("<?= _SPPATH; ?>MuridWebHelper/process_firstpayment",
-                                post,
-                                function (data) {
-                                    console.log(data);
-                                    if (data.status_code) {
-                                        alert(data.status_message);
+                    if('<?=$click == "enabled" ?>'){
+                        if (confirm("Anda yakin akan melakukan pembayaran?")) {
+                            if (<?= $lanjut; ?>) {
+                                var post = {};
+                                post.murid_id = '<?= $id; ?>';
+                                post.jenis_pmbr = $('#jenis_pmbr').val();
+                                post.pilih_kupon = $('#pilih_kupon_<?= $t; ?>').val();
+                                post.pilih_kapan = $('#pilih_kapan').val();
+                                post.id_buku = '<?= $id_buku; ?>';
+                                post.id_perlengkapan = '<?= $id_perlengkapan; ?>';
+                                $.post("<?= _SPPATH; ?>MuridWebHelper/process_firstpayment",
+                                    post,
+                                    function (data) {
+                                        console.log(data);
+                                        if (data.status_code) {
+                                            alert(data.status_message);
 
-                                        openLw('create_operasional_kelas', '<?=_SPPATH;?>KelasWeb/create_operasional_kelas' + '?now=' + $.now(), 'fade');
-                                        activkanMenuKiri('create_operasional_kelas');
-                                        //                                    alert(data.buku);
+                                            openLw('create_operasional_kelas', '<?=_SPPATH;?>KelasWeb/create_operasional_kelas' + '?now=' + $.now(), 'fade');
+                                            activkanMenuKiri('create_operasional_kelas');
+                                            //                                    alert(data.buku);
 //                                    openLw('read_murid_tc', '<?//= _SPPATH; ?>//MuridWeb/read_murid_tc?t=' + $.now(), 'fade');
-                                    } else {
-                                        alert(data.status_message);
-                                    }
-                                }, 'json').fail(function () {
-                                alert("Tidak ada Koneksi internet!");
-                            });
-                        } else {
-                            alert("Stock Buku atau perlengkapan habis!");
+                                        } else {
+                                            alert(data.status_message);
+                                        }
+                                    }, 'json').fail(function () {
+                                    alert("Tidak ada Koneksi internet!");
+                                });
+                            } else {
+                                alert("Stock Buku atau perlengkapan habis!");
+                            }
+                        }
+                        else {
+
                         }
                     }
-                    else {
-
+                    else{
+                        alert("Anda tidak bisa melakukan pembayaran!");
                     }
+
 
                 });
             </script>
@@ -6471,7 +6485,7 @@ class MuridWebHelper extends WebService
             $obj->getByID($_GET['id']);
         if ($obj->pay_firsttime == '0')
             $obj->onAjaxSuccess = "openLw('Payment_Murid','" . _SPPATH . "MuridWebHelper/firsttime_payment?id_murid='+data.bool,'fade');";
-        $obj->removeAutoCrudClick = array("pay_firsttime", "profile");
+        $obj->removeAutoCrudClick = array("pay_firsttime", "profile","no_pay_firsttime");
         $obj->read_filter_array = array("murid_tc_id" => $myOrgID);
         $obj->hideColoums = array("murid_tc_id", "murid_ak_id", "murid_kpo_id", "murid_ibo_id");
         $crud = new CrudCustom();
