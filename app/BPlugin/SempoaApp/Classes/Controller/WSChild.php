@@ -735,15 +735,20 @@ class WSChild extends WebService
             IMBAuth::checkOAuth();
 
         $challange_id = addslashes($_POST['challange_id']);
-        $join_id = addslashes($_POST['join_id']);
         $kode_siswa = addslashes($_POST['kode_siswa']);
         $join_hasil = addslashes($_POST['join_hasil']);
         $join_total_waktu = addslashes($_POST['join_total_waktu']);
         $join_total_nilai = addslashes($_POST['join_total_nilai']);
         $challange_level =  addslashes($_POST['challange_level']);
-
+//
         $joinchallange = new ChallangeModel();
         $joinchallange->getByID($challange_id);
+        $murid = new MuridModel();
+        $murid->getByID($kode_siswa);
+        $joinchallange->challange_ak = $murid->murid_ak_id;
+        $joinchallange->challange_kpo = $murid->murid_kpo_id;
+        $joinchallange->challange_ibo = $murid->murid_ibo_id;
+        $joinchallange->challange_tc = $murid->murid_tc_id;
 
         $obj= new MuridModel();
         $obj->getWhereOne("kode_siswa='$kode_siswa' AND id_level_sekarang='$challange_level'");
@@ -751,7 +756,7 @@ class WSChild extends WebService
             Generic::errorMsg(KEYAPP::$MURID_SALAH_LEVEL);
         }
 
-        if($joinchallange->challange_murid_ikut == ""){$joinchallange->challange_murid_ikut="kode_siswa";
+        if($joinchallange->challange_murid_ikut == ""){$joinchallange->challange_murid_ikut=$kode_siswa;
         }else{
             $joinchallange->challange_murid_ikut = $joinchallange->challange_murid_ikut . "," . $kode_siswa;
         }
@@ -768,9 +773,6 @@ class WSChild extends WebService
             $json['status_message'] = "gagal";
         }
 
-
-        $joinchallange->save(1);
-
         $objJoin= new JoinChallangeModel();
         $count = $objJoin->getJumlah("join_challange_id='$challange_id' AND join_kode_siswa='$kode_siswa'");
         if($count ){
@@ -779,6 +781,19 @@ class WSChild extends WebService
             echo json_encode($json);
             die();
         }
+
+        $objJoin->getWhereOne("join_total_nilai='$join_total_nilai' AND join_total_waktu='$join_total_waktu'");
+        if (is_numeric($objJoin->join_total_nilai)) {
+            Generic::errorMsg(KEYAPP::$INPUT_HARUS_ANGKA);
+        }
+        if (is_numeric($objJoin->join_total_waktu)) {
+            Generic::errorMsg(KEYAPP::$INPUT_HARUS_ANGKA);
+        }
+
+
+        $joinchallange->save(1);
+
+
 
         $join = new JoinChallangeModel();
         $join->join_challange_id = $challange_id;

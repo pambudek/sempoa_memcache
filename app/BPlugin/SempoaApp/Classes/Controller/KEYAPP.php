@@ -123,4 +123,9 @@ class KEYAPP
     // Challange
     public static $STATUS_CHALLANGE_AKTIV = 1;
     public static $STATUS_CHALLANGE_TDK_AKTIV = 0;
+
+    // challange
+//    public static $MURID_SUDAH_JOIN = "Murid sudah join di challange ini, silahkan tunggu challange berikutnya";
+    public static $MURID_SALAH_LEVEL = "Murid ini bukan ada di level challange ini";
+    public static $INPUT_HARUS_ANGKA = "Inputan harus berupa angka";
 }
