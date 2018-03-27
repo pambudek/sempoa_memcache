@@ -13,4 +13,10 @@ class Generic2
         $barang = new BarangWebModel();
 
     }
+
+    static function getKodeSiswaByMuridId($murid_id){
+        $murid = new MuridModel();
+        $murid->getWhereOne("id_murid='$murid_id'");
+        return $murid->kode_siswa;
+    }
 }

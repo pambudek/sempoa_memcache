@@ -134,6 +134,8 @@ class WSTeacher extends WebService
             foreach ($arrKelasWS as $val) {
                 if ($val == "murid_id") {
                     $arrMurid["nama_murid"] = Generic::getMuridNamebyID($murid->$val);
+//                    $kode_siswa = Generic2::getKodeSiswaByMuridId($murid->$val);
+                    $arrMurid["kode_siswa"] =  Generic2::getKodeSiswaByMuridId($murid->$val);
                 }
                 if ($val == "level_murid") {
                     $arrMurid["Level"] = Generic::getLevelNameByID($murid->$val);
@@ -645,4 +647,43 @@ class WSTeacher extends WebService
         pr($progress->listProgressByDate($kode_siswa, $progress_level));
     }
 
+    /*
+     *  public function getMuridsByKelasID()
+    {
+
+        if (Efiwebsetting::getData('checkOAuth') == 'yes')
+            IMBAuth::checkOAuth();
+
+//        $guru_id = addslashes($_POST['guru_id']);
+//        Generic::checkFieldKosong($guru_id, KEYAPP::$GURU_ID_KOSONG);
+
+        $kelas_id = addslashes($_POST['kelas_id']);
+        Generic::checkFieldKosong($kelas_id, "Kelas ID Kosong");
+        $objKelasMatrix = new MuridKelasMatrix();
+        $arrMurids = $objKelasMatrix->getAllMuridAktivByKelas($kelas_id);
+
+        $arrKelasWS = explode(",", $objKelasMatrix->crud_webservice_allowed);
+        $arrMurid = array();
+        $jsonMurid = array();
+        foreach ($arrMurids as $murid) {
+            unset($arrMurid);
+            foreach ($arrKelasWS as $val) {
+                if ($val == "murid_id") {
+                    $arrMurid["nama_murid"] = Generic::getMuridNamebyID($murid->$val);
+                }
+                if ($val == "level_murid") {
+                    $arrMurid["Level"] = Generic::getLevelNameByID($murid->$val);
+                }
+
+                $arrMurid[$val] = $murid->$val;
+            }
+            $jsonMurid[] = $arrMurid;
+        }
+
+        $json['result']['Murids'] = $jsonMurid;
+        $json['status_message'] = KEYAPP::$SUCCESS;
+        echo json_encode($json);
+        die();
+    }
+     */
 }

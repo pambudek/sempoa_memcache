@@ -109,4 +109,26 @@ class ProgressModel extends Model
         }
         return $arrHlp;
     }
+
+    /*
+     * return true => punya progress
+     * return false => tidak punya progress
+     */
+    public function hasMuridProgress($kode_siswa, $level)
+    {
+        $this->getWhereOne("kode_siswa='$kode_siswa' AND progress_level=$level");
+        if(is_null($this->progress_id)){
+            return false;
+        }
+        return true;
+    }
+
+    public function getMuridProgress($kode_siswa, $level)
+    {
+        $this->getWhereOne("kode_siswa='$kode_siswa' AND progress_level=$level");
+        if(is_null($this->progress_id)){
+            return null;
+        }
+        return $this;
+    }
 }
