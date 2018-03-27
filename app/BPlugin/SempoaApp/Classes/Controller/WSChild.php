@@ -845,4 +845,40 @@ class WSChild extends WebService
         die();
 
     }
+
+    public function getSoalChallange(){
+        if (Efiwebsetting::getData('checkOAuth') == 'yes')
+            IMBAuth::checkOAuth();
+
+        $challange_id = addslashes($_POST['challange_id']);
+        $ibo_id = addslashes($_POST['ibo_id']);
+        Generic::checkFieldKosong($challange_id, KEYAPP::$CHALLANGE_ID_KOSONG);
+        Generic::checkFieldKosong($ibo_id, KEYAPP::$IBO_ID_KOSONG);
+
+        $objChallange = new ChallangeModel();
+        $objChallange->getWhereOne("challange_id='$challange_id' AND challange_ibo='$ibo_id'");
+        if(is_null($objChallange->challange_id)){
+            $json['status_code'] = 0;
+            $json['status_message'] = KEYAPP::$CHALLANGE_ID_KOSONG;
+            echo json_encode($json);
+            die();
+        }
+        $arrSoalUjian = explode(",",$objChallange->challange_soal_id);
+        $arrSoal = array();
+        $arrSoalGabungan = array();
+        foreach($arrSoalUjian as $soalid){
+            unset($arrSoal);
+            $soalChallange = new SoalChallangeModel();
+            $soalChallange->getByID($soalid);
+            $arrSoal['soal'] = $soalChallange->soal_challange_soal;
+            $arrSoal['jawaban'] = $soalChallange->soal_challange_jawaban;
+            $arrSoalGabungan[] = $arrSoal;
+        }
+
+        $json['status_code'] = 1;
+        $json['result'] = $arrSoalGabungan;
+        $json['status_message'] = KEYAPP::$SUCCESS;
+        echo json_encode($json);
+        die();
+    }
 }

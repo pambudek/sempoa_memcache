@@ -128,4 +128,6 @@ class KEYAPP
 //    public static $MURID_SUDAH_JOIN = "Murid sudah join di challange ini, silahkan tunggu challange berikutnya";
     public static $MURID_SALAH_LEVEL = "Murid ini bukan ada di level challange ini";
     public static $INPUT_HARUS_ANGKA = "Inputan harus berupa angka";
+    public static $CHALLANGE_ID_KOSONG = "Challange id kosong";
+    public static $IBO_ID_KOSONG = "IBO id kosong";
 }
