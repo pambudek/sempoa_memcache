@@ -874,6 +874,7 @@ class WSChild extends WebService
             $arrSoal['jawaban'] = $soalChallange->soal_challange_jawaban;
             $arrSoalGabungan[] = $arrSoal;
         }
+        pr(count($arrSoalGabungan));
         if(count($arrSoalGabungan) == 0){
             $json['status_code'] = 0;
             $json['status_message'] = "Kosong";
