@@ -863,6 +863,12 @@ class WSChild extends WebService
             echo json_encode($json);
             die();
         }
+        if($objChallange->challange_soal_id == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Soal masih kosong hubungi Admin";
+            echo json_encode($json);
+            die();
+        }
         $arrSoalUjian = explode(",",$objChallange->challange_soal_id);
         $arrSoal = array();
         $arrSoalGabungan = array();
@@ -874,13 +880,7 @@ class WSChild extends WebService
             $arrSoal['jawaban'] = $soalChallange->soal_challange_jawaban;
             $arrSoalGabungan[] = $arrSoal;
         }
-        pr(count($arrSoalGabungan));
-        if(count($arrSoalGabungan) == 0){
-            $json['status_code'] = 0;
-            $json['status_message'] = "Kosong";
-            echo json_encode($json);
-            die();
-        }
+
         $json['status_code'] = 1;
         $json['result'] = $arrSoalGabungan;
         $json['status_message'] = KEYAPP::$SUCCESS;
