@@ -58,43 +58,36 @@ class ProgressModel extends Model
     }
 
 
-    public function createProgress($kode_siswa, $progress_level, $progress_guru_id, $date)
+    public function createProgress($kode_siswa, $progress_level, $progress_guru_id)
     {
-        if (!$this->isProgressCreated($kode_siswa, $progress_level, $date)) {
-            echo "isProgressCreated";
-            $objProg = new ProgressModel();
-            $objProg->kode_siswa = $kode_siswa;
-            $objProg->progress_level = $progress_level;
-            $objProg->progress_guru_id = $progress_guru_id;
-            $objProg->progress_created = leap_mysqldate();
-            $objProg->progress_updated = leap_mysqldate();
-            $objProg->progress_active = 1;
+        $this->kode_siswa = $kode_siswa;
+        $this->progress_level = $progress_level;
+        $this->progress_guru_id = $progress_guru_id;
+        $this->progress_created = leap_mysqldate();
+        $this->progress_updated = leap_mysqldate();
+        $this->progress_active = 1;
 
-            $objMurid = new MuridModel();
-            $objMurid->getWhereOne("kode_siswa='$kode_siswa' AND id_level_sekarang='$progress_level'");
-
-
-            $buku = new BarangWebModel();
-            $arrBuku = $buku->getHalBuku($progress_level, $objMurid->murid_kurikulum);
-            if (!$arrBuku == null) {
-                foreach ($arrBuku as $val) {
-                    $i = 1;
-                    foreach ($val as $jenisBuku => $hal) {
-                        $b = "progress_total_hal_" . $i;
-                        $c = "progress_nama_buku_" . $i;
-                        $objProg->$c = $jenisBuku;
-                        $objProg->$b = $hal;
-                        $i++;
-                    }
-
+        $objMurid = new MuridModel();
+        $objMurid->getWhereOne("kode_siswa='$kode_siswa' AND id_level_sekarang='$progress_level'");
+        pr($progress_level);
+        $buku = new BarangWebModel();
+        $arrBuku = $buku->getHalBuku($progress_level, $objMurid->murid_kurikulum);
+        pr($kode_siswa . " - " . $arrBuku);
+        if ($arrBuku != null) {
+            foreach ($arrBuku as $val) {
+                $i = 1;
+                foreach ($val as $jenisBuku => $hal) {
+                    $b = "progress_total_hal_" . $i;
+                    $c = "progress_nama_buku_" . $i;
+                    $this->$c = $jenisBuku;
+                    $this->$b = $hal;
+                    $i++;
                 }
-                $objProg->save();
-                return $objProg;
-            }
 
-        } else {
-            return $this->getProgressByDate($kode_siswa, $progress_level, $date);
+            }
+            $this->save();
         }
+
 
     }
 
@@ -102,9 +95,9 @@ class ProgressModel extends Model
     public function listProgressByDate($kode_siswa, $progress_level)
     {
         $this->getWhereOne("kode_siswa='$kode_siswa' AND progress_level=$progress_level ORDER BY progress_created DESC");
-        $arrWS = explode(",",$this->crud_webservice_allowed);
+        $arrWS = explode(",", $this->crud_webservice_allowed);
         $arrHlp = array();
-        foreach($arrWS as $val){
+        foreach ($arrWS as $val) {
             $arrHlp[$val] = $this->$val;
         }
         return $arrHlp;
@@ -117,18 +110,70 @@ class ProgressModel extends Model
     public function hasMuridProgress($kode_siswa, $level)
     {
         $this->getWhereOne("kode_siswa='$kode_siswa' AND progress_level=$level");
-        if(is_null($this->progress_id)){
+        if (is_null($this->progress_id)) {
             return false;
         }
         return true;
     }
 
-    public function getMuridProgress($kode_siswa, $level)
+    public function getMuridProgressByDate($kode_siswa, $level, $date)
     {
-        $this->getWhereOne("kode_siswa='$kode_siswa' AND progress_level=$level");
-        if(is_null($this->progress_id)){
+        //select DATE_FORMAT(`progress_updated`,"%Y-%m-%d") as a From sempoa__app_progress
+        $this->getWhereOne("kode_siswa='$kode_siswa' AND progress_level='$level' AND DATE_FORMAT(`progress_updated`,\"%Y-%m-%d\") = '$date'");
+        if (is_null($this->progress_id)) {
             return null;
         }
         return $this;
     }
+
+    public function getMuridLastProgress($kode_siswa, $level)
+    {
+        //
+        $this->getWhereOne("kode_siswa='$kode_siswa' AND progress_level='$level' ORDER BY progress_updated DESC");
+        if (is_null($this->progress_id)) {
+            return null;
+        }
+        return $this;
+    }
+
+    public function createProgress_backup($kode_siswa, $progress_level, $progress_guru_id, $date)
+    {
+        if (!$this->isProgressCreated($kode_siswa, $progress_level, $date)) {
+
+            $this->kode_siswa = $kode_siswa;
+            $this->progress_level = $progress_level;
+            $this->progress_guru_id = $progress_guru_id;
+            $this->progress_created = leap_mysqldate();
+            $this->progress_updated = leap_mysqldate();
+            $this->progress_active = 1;
+
+            $objMurid = new MuridModel();
+            $objMurid->getWhereOne("kode_siswa='$kode_siswa' AND id_level_sekarang='$progress_level'");
+
+            $buku = new BarangWebModel();
+            $arrBuku = $buku->getHalBuku($progress_level, $objMurid->murid_kurikulum);
+//            pr($arrBuku);
+            if ($arrBuku != null) {
+                foreach ($arrBuku as $val) {
+                    $i = 1;
+                    foreach ($val as $jenisBuku => $hal) {
+                        $b = "progress_total_hal_" . $i;
+                        $c = "progress_nama_buku_" . $i;
+                        $this->$c = $jenisBuku;
+                        $this->$b = $hal;
+                        $i++;
+                    }
+
+                }
+                $this->save();
+                return $this;
+            }
+
+        } else {
+
+            return $this->getProgressByDate($kode_siswa, $progress_level, $date);
+        }
+
+    }
+
 }

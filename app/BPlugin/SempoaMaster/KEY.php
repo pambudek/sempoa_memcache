@@ -348,4 +348,7 @@ class KEY
     public static $RETOUR_STATUS_CLAIM_TEXT = "Claim";
     public static $RETOUR_STATUS_CLAIMED_TEXT = "Claimed";
 
+    // Inovice
+    public static $INVOICE_NAIK_KELAS = 1;
+
 }

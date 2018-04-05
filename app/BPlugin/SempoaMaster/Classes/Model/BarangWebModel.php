@@ -156,11 +156,12 @@ class BarangWebModel extends SempoaModel
 
     public function getHalBuku($level, $kurikulum)
     {
+
         $this->getWhereOne("level=$level AND jenis_kurikulum=$kurikulum AND jenis_biaya=1");
         if (!is_null($this->id_barang_harga)) {
             $halBukuTotal = $this->halaman_buku;
-            $halBuku = \GuzzleHttp\json_decode($halBukuTotal);
-
+            $halBuku = json_decode($halBukuTotal);
+            pr($halBuku);
             return $halBuku;
         }
         return null;
@@ -169,7 +170,7 @@ class BarangWebModel extends SempoaModel
 
     public function getIdBarangByLevelKurikulum($level, $kurikulum)
     {
-        $this->getWhereOne("jenis_kurikulum='$kurikulum' AND level='$level'");
+        $this->getWhereOne("jenis_kurikulum='$kurikulum' AND level='$level' AND jenis_biaya=1 ");
         return $this->id_barang_harga;
     }
 }

@@ -38,6 +38,7 @@ class IuranBuku extends Model
     public $bln_no_invoice;
     public $bln_kur;
     public $bln_ganti_kur;
+    public $bln_invoice_type;
 
     function getLastNoUrutInvoice($thn, $bln, $tc_id)
     {

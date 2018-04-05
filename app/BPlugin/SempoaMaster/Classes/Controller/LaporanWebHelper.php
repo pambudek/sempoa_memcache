@@ -267,6 +267,42 @@ class LaporanWebHelper extends WebService
         $murid_id = $iuranBuku->bln_murid_id;
         $iuranBuku->bln_status = 0;
         $iuranBuku->bln_date_pembayaran = KEY::$TGL_KOSONG;
+
+        if($iuranBuku->bln_invoice_type == KEY::$INVOICE_NAIK_KELAS){
+            // History level di turunkan
+            // level murid dirurunkan
+            $objMurid = new MuridModel();
+            $objMurid->getByID($murid_id);
+            $level_murid = $objMurid->id_level_sekarang;
+            $level_turun_level =  Generic2::getMyPreviousLevel($level_murid);
+
+            $mj = new MuridJourney();
+            $mj->getWhereOne("journey_murid_id='$murid_id' AND journey_level_mulai = '$level_murid'");
+            $mj->journey_level_end = $level_turun_level;
+            $mj->journey_end_date = leap_mysqldate();
+            $mj->save(1);
+
+
+
+            //journey baru ditambah
+            $mj_new = new MuridJourney();
+            $mj_new->journey_murid_id = $murid_id;
+            $mj_new->journey_level_mulai = $level_turun_level;
+            $mj_new->journey_mulai_date = leap_mysqldate();
+            $mj_new->journey_tc_id = AccessRight::getMyOrgID();
+            $mj_new->save();
+
+
+            $objMurid->id_level_sekarang = $level_turun_level;
+            $objMurid->save(1);
+
+
+
+
+
+
+
+        }
         $iuranBuku->save(1);
 
         $stockBukuNo = new StockBuku();

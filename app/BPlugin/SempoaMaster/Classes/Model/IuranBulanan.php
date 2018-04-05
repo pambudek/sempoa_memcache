@@ -88,7 +88,7 @@ class IuranBulanan extends Model{
     }
 
     // Untuk Create Invoice di FirstPayment
-    public function createIuranBulananFirstPayment($murid_id,$pilih_kapan,$pilih_kupon, $ibo_id, $kpo_id, $ak_id, $tc_id, $jenis_pmbr){
+    public function createIuranBulananFirstPayment($murid_id,$pilih_kapan,$pilih_kupon, $ibo_id, $kpo_id, $ak_id, $tc_id, $jenis_pmbr,$no_invoice){
 
         $arrKapan = explode("-",$pilih_kapan);
         $thn_skrg = $arrKapan[1];
@@ -108,6 +108,7 @@ class IuranBulanan extends Model{
         $this->bln_cara_bayar = $jenis_pmbr;
         $this->bln_date_pembayaran = leap_mysqldate();
         $this->bln_id = $murid_id . "_" . $bln_skrg . "_" . $thn_skrg;
+        $this->bln_no_invoice = $no_invoice;
         $succ2 = $this->save();
         return $succ2;
     }

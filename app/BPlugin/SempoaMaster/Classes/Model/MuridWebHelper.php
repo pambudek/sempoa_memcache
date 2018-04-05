@@ -497,7 +497,7 @@ class MuridWebHelper extends WebService
             //bayar pakai kupon
             $iu = new IuranBulanan();
 
-            $succ2 = $iu->createIuranBulananFirstPayment($murid_id, $pilih_kapan, $pilih_kupon, $myParentID, $myGrandParentID, $myGrandGrandParentID, AccessRight::getMyOrgID(), $jenis_pmbr);
+            $succ2 = $iu->createIuranBulananFirstPayment($murid_id, $pilih_kapan, $pilih_kupon, $myParentID, $myGrandParentID, $myGrandGrandParentID, AccessRight::getMyOrgID(), $jenis_pmbr, $noInvoiceFP);
 
             if ($succ2) {
                 $ksatuan = new KuponSatuan();
@@ -769,13 +769,12 @@ class MuridWebHelper extends WebService
             $html = $html . "</select>\"";
         } elseif (AccessRight::getMyOrgType() == KEY::$TC) {
             $arrStatusMurid = array();
-            if($murid->status == 1){
+            if ($murid->status == 1) {
                 $arrStatusMurid[1] = "Aktif";
                 $arrStatusMurid[2] = "Cuti";
                 $arrStatusMurid[3] = "Keluar";
                 $arrStatusMurid[4] = "Lulus";
-            }
-            elseif($murid->status == 2){
+            } elseif ($murid->status == 2) {
                 $arrStatusMurid[2] = "Cuti";
                 $arrStatusMurid[3] = "Keluar";
             }
@@ -2216,6 +2215,7 @@ class MuridWebHelper extends WebService
                                 <tbody id='container_load_invoices_<?= $t; ?>'>
 
                                 <?
+                                //                                pr($arrMK);
                                 foreach ($arrMK as $mk) {
                                     $kuponSatuan->getByID($mk->bln_kupon_id);
                                     ?>
@@ -2336,16 +2336,19 @@ class MuridWebHelper extends WebService
                                         <td>
                                             <?
                                             if ((AccessRight::getMyOrgType() == KEY::$IBO) AND ($mk->bln_date_pembayaran != KEY::$TGL_KOSONG)) {
-                                                $now = time();
-                                                $your_date = strtotime($mk->bln_date_pembayaran);
-                                                $datediff = $now - $your_date;
-                                                $datediff = floor($datediff / (60 * 60 * 24));
-                                                if ($datediff <= KEY::$MAX_UNDO_SPP) {
-                                                    ?>
-                                                    <span id="undo_<?= $mk->bln_id; ?>" class="fa fa-undo"
-                                                          aria-hidden="true"></span>
-                                                    <?
+                                                if (substr($mk->bln_no_invoice, 0, 2) != KEY::$AWALAN_FIRST_PAYMENT) {
+                                                    $now = time();
+                                                    $your_date = strtotime($mk->bln_date_pembayaran);
+                                                    $datediff = $now - $your_date;
+                                                    $datediff = floor($datediff / (60 * 60 * 24));
+                                                    if ($datediff <= KEY::$MAX_UNDO_SPP) {
+                                                        ?>
+                                                        <span id="undo_<?= $mk->bln_id; ?>" class="fa fa-undo"
+                                                              aria-hidden="true"></span>
+                                                        <?
+                                                    }
                                                 }
+
                                             }
                                             ?>
                                         <td>
@@ -2618,7 +2621,9 @@ class MuridWebHelper extends WebService
                                                     $arrNoBuku = $stock->getAllMyNoBukuFreiTCByInvoiceId($id_level_lama, $val->bln_tc_id, $val->bln_kur);
 //                                                    pr($arrNoBuku);
                                                 } else {
+
                                                     $arrNoBuku = $stock->getAllMyNoBukuFreiTCByInvoiceId($val->bln_buku_level, $val->bln_tc_id, $val->bln_kur);
+//                                                    pr($arrNoBuku);
                                                 }
                                                 ?>
 
@@ -3653,7 +3658,7 @@ class MuridWebHelper extends WebService
             $objIuranBuku->bln_kpo_id = $objMurid->murid_kpo_id;
             $objIuranBuku->bln_ibo_id = $objMurid->murid_ibo_id;
             $objIuranBuku->bln_ak_id = $objMurid->murid_ak_id;
-
+            $objIuranBuku->bln_invoice_type = KEY::$INVOICE_NAIK_KELAS;
             // Kurikulum lama
 
             if ($kur == KEY::$KURIKULUM_LAMA) {

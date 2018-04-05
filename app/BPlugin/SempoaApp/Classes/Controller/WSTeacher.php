@@ -129,6 +129,7 @@ class WSTeacher extends WebService
         $arrKelasWS = explode(",", $objKelasMatrix->crud_webservice_allowed);
         $arrMurid = array();
         $jsonMurid = array();
+//        $today = new Dat
         foreach ($arrMurids as $murid) {
             unset($arrMurid);
             foreach ($arrKelasWS as $val) {
@@ -136,12 +137,26 @@ class WSTeacher extends WebService
                     $arrMurid["nama_murid"] = Generic::getMuridNamebyID($murid->$val);
 //                    $kode_siswa = Generic2::getKodeSiswaByMuridId($murid->$val);
                     $arrMurid["kode_siswa"] =  Generic2::getKodeSiswaByMuridId($murid->$val);
+
+
                 }
                 if ($val == "level_murid") {
                     $arrMurid["Level"] = Generic::getLevelNameByID($murid->$val);
                 }
 
                 $arrMurid[$val] = $murid->$val;
+            }
+            $hariini = new DateTime('now');
+            $tgl = $hariini->format("Y-m-d");
+            $progress = new ProgressModel();
+            $lastProgress = $progress->getMuridProgressByDate($arrMurid["kode_siswa"],$arrMurid["level_murid"],$tgl);
+            $arrMurid['prog'] = $lastProgress;
+            // jika tdk ada last progress, create new
+            if($lastProgress == null){
+                $progress = new ProgressModel();
+                $progress->createProgress($arrMurid["kode_siswa"], $arrMurid["level_murid"], $arrMurid["guru_id"], $tgl);
+                $lastProgress = $progress->getMuridProgressByDate($arrMurid["kode_siswa"],$arrMurid["level_murid"],$tgl);
+                $arrMurid['prog'] = $lastProgress;
             }
             $jsonMurid[] = $arrMurid;
         }
@@ -356,10 +371,10 @@ class WSTeacher extends WebService
     public function absensiGuru()
     {
 
-        $guru_id = addslashes($_POST['guru_id']);
+        $guru_id = addslashes($_GET['guru_id']);
         Generic::checkFieldKosong($guru_id, KEYAPP::$GURU_ID_KOSONG_LOGOUT);
 
-        $kelas_id = addslashes($_POST['kelas_id']);
+        $kelas_id = addslashes($_GET['kelas_id']);
         Generic::checkFieldKosong($guru_id, KEYAPP::$KELAS_ID_KOSONG_ABSENSI);
 
         $kelas = new KelasWebModel();

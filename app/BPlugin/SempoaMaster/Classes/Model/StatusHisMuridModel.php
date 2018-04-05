@@ -11,7 +11,8 @@
  *
  * @author efindiongso
  */
-class StatusHisMuridModel extends Model {
+class StatusHisMuridModel extends Model
+{
 
     public $table_name = "sempoa__history_status";
     var $main_id = "status_id";
@@ -31,7 +32,8 @@ class StatusHisMuridModel extends Model {
     public $status_ibo_id;
     public $status_tc_id;
 
-    public function getJumlahMuridAktivByMonth($ibo_id, $level, $bln, $thn) {
+    public function getJumlahMuridAktivByMonth($ibo_id, $level, $bln, $thn)
+    {
 //         $q = "SELECT * FROM {$murid->table_name} murid INNER JOIN {$statusMurid->table_name} status ON status.status_murid_id = murid.id_murid WHERE murid.murid_tc_id='$keytc' AND YEAR(status.status_tanggal_mulai ) = $thn AND MONTH(status.status_tanggal_mulai ) = $bln  AND status.status_tanggal_akhir ='1970-01-01 07:00:00'  AND status.status=$status GROUP BY murid.id_murid";
 //      
         $arrJumlahMurid = $this->getWhere("status_ibo_id=$ibo_id AND status=1 AND status_level_murid=$level AND status_tanggal_akhir='1970-01-01 07:00:00' AND MONTH(status_tanggal_mulai)<=$bln AND YEAR(status_tanggal_mulai)<=$thn");
@@ -39,28 +41,31 @@ class StatusHisMuridModel extends Model {
         return count($arrJumlahMurid);
     }
 
-    public function getJumlahMuridCutiByMonth($ibo_id, $level, $bln, $thn) {
+    public function getJumlahMuridCutiByMonth($ibo_id, $level, $bln, $thn)
+    {
 
         $arrJumlahMurid = $this->getWhere("status_ibo_id=$ibo_id AND status=2 AND status_level_murid=$level AND YEAR(status_tanggal_mulai)=$thn AND MONTH(status_tanggal_mulai)=$bln");
         return count($arrJumlahMurid);
     }
 
-    public function getJumlahMuridKeluarByMonth($ibo_id, $level, $bln, $thn) {
+    public function getJumlahMuridKeluarByMonth($ibo_id, $level, $bln, $thn)
+    {
 
         $arrJumlahMurid = $this->getWhere("status_ibo_id=$ibo_id AND status=3 AND status_level_murid=$level AND YEAR(status_tanggal_mulai)=$thn AND MONTH(status_tanggal_mulai)=$bln");
         return count($arrJumlahMurid);
     }
 
-    public function getJumlahMuridAktivByMonthTC($tc_id, $bln, $thn) {
+    public function getJumlahMuridAktivByMonthTC($tc_id, $bln, $thn)
+    {
         $arrJumlahMurid = $this->getWhere("status_tc_id=$tc_id AND status=1  AND status_tanggal_akhir='1970-01-01 07:00:00'");
 //        pr($arrJumlahMurid);
 //        return $tc_id;
         return count($arrJumlahMurid);
     }
 
-       
-    
-    public function createHistory($id_murid) {
+
+    public function createHistory($id_murid)
+    {
         $objMurid = new MuridModel();
         $objMurid->getByID($id_murid);
         $this->status_murid_id = $objMurid->id_murid;
@@ -76,7 +81,8 @@ class StatusHisMuridModel extends Model {
 //        $logMurid->createLogMurid($id_murid);
     }
 
-    public function updateHistory($id_murid) {
+    public function updateHistory($id_murid)
+    {
         $objStatus = new StatusHisMuridModel();
         $objStatus = $this->getLastDataMurid($id_murid);
         $objStatus->status_tanggal_akhir = leap_mysqldate();
@@ -95,18 +101,17 @@ class StatusHisMuridModel extends Model {
         $this->save();
     }
 
-    public function getLastDataMurid($id_murid) {
-        $objStatus = $this->getWhereOne("status_murid_id=$id_murid  ORDER BY status_tanggal_mulai DESC");
-        return $objStatus;
+    public function getLastDataMurid($id_murid)
+    {
+        $this->getWhereOne("status_murid_id=$id_murid  ORDER BY status_tanggal_mulai DESC");
+        return $this;
     }
 
-    public function  updateHistoryMurid($id_murid){
-        $status = new $this();
-        $status->getWhereOne("status_murid_id='$id_murid'  ORDER BY status_tanggal_mulai DESC");
-        $status->status_tanggal_akhir = leap_mysqldate();
-        $status->save(1);
-//        $logMurid = new LogStatusMurid();
-//        $logMurid->createLogMurid($id_murid);
+    public function updateHistoryMurid($id_murid)
+    {
+        $this->getWhereOne("status_murid_id='$id_murid'  ORDER BY status_tanggal_mulai DESC");
+        $this->status_tanggal_akhir = leap_mysqldate();
+        $this->save(1);
     }
 
 }

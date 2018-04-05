@@ -1842,7 +1842,100 @@ class CoretCoret extends WebService
     }
 
     public function cobaIdBuku(){
+
+        $a = new DateTime('now');
+        $b = $a->format("Y-m-d");
+        pr($b);
+        //2018-02-06
+        $progress = new ProgressModel();
+        pr($progress->getMuridProgressByDate("1406030001",10,"2018-02-06"));
+
+        die();
         $brg = new BarangWebModel();
         pr($brg->getIdBarangByLevelKurikulum(2,1));
+    }
+
+
+    public function halBuku2()
+    {
+
+        $murid_id = 12909;
+        $objMurid = new MuridModel();
+        $objMurid->getByID($murid_id);
+        $level_murid = $objMurid->id_level_sekarang;
+        $objMurid->id_level_sekarang = Generic2::getMyPreviousLevel($objMurid->id_level_sekarang);
+        $objMurid->save(1);
+
+
+        $mj = new MuridJourney();
+        $mj->getWhereOne("journey_murid_id='$murid_id' AND journey_level_mulai = '$level_murid' ORDER BY journey_id DESC");
+        $mj->journey_level_end = $objMurid->$level_murid;
+        $mj->journey_end_date = leap_mysqldate();
+        pr($mj);
+        $mj->save(1);
+
+        die();
+        $id_level = 3;
+        pr(Generic2::getMyPreviousLevel($id_level));
+        die();
+        $id_murid = 4364;
+
+        $murid = new MuridModel();
+        $murid->getByID($id_murid);
+        $level_murid = $murid->id_level_sekarang;
+        $kur = $murid->murid_kurikulum;
+
+        // ambil jumlah buku
+        $buku = new BarangWebModel();
+        $buku->getWhereOne("level=$level_murid AND jenis_kurikulum=$kur AND jenis_biaya=1");
+        $halBukuTotal = $buku->halaman_buku;
+        $halBuku =json_decode($halBukuTotal);
+
+        pr($halBuku);
+
+        foreach ($halBuku as $val) {
+            $progress = new ProgressModel();
+            $i = 1;
+            foreach ($val as $jenisBuku => $hal) {
+                $b = "progress_total_hal_" . $i;
+                $c = "progress_nama_buku_" . $i;
+                $progress->$c = $jenisBuku;
+                $progress->$b = $hal;
+                $i++;
+            }
+            $progress->save();
+        }
+//        pr($b);
+        die();
+        $a = new ProgressModel();
+        $a->printColumlistAsAttributes();
+        die();
+        $a = "19121121k";
+        echo $a;
+        if (is_numeric($a)) {
+            echo "ja";
+        } else {
+            echo "nein";
+        }
+//        pr(Generic::checkNumeric($a));
+//
+//        pr(Efiwebsetting::getData("lama_undo"));
+////        pr(SempoaWebSetting::getData("lama_undo"));
+
+
+//        pr(Generic::generateRandomString(5));
+//        $arrBuku[1]['A'] = 52;
+//        $arrBuku[1]['B'] = 42;
+////        $arrBuku[1]['C'] = 58;?
+//        pr($arrBuku);
+//        $j = json_encode($arrBuku);
+//
+//        $b = \GuzzleHttp\json_decode($j);
+//        pr($j);
+//        pr($b);
+////        pr(json_encode($arrBuku));
+//        $a = serialize($arrBuku);
+//        pr($a);
+//        pr(unserialize($a));
     }
 }
