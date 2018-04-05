@@ -268,38 +268,32 @@ class LaporanWebHelper extends WebService
         $iuranBuku->bln_status = 0;
         $iuranBuku->bln_date_pembayaran = KEY::$TGL_KOSONG;
 
-        if($iuranBuku->bln_invoice_type == KEY::$INVOICE_NAIK_KELAS){
-            // History level di turunkan
+        if ($iuranBuku->bln_invoice_type == KEY::$INVOICE_NAIK_KELAS) {
             // level murid dirurunkan
             $objMurid = new MuridModel();
             $objMurid->getByID($murid_id);
             $level_murid = $objMurid->id_level_sekarang;
-            $level_turun_level =  Generic2::getMyPreviousLevel($level_murid);
+            if ($iuranBuku->bln_kur == KEY::$KURIKULUM_LAMA) {
+                $level_turun_level = Generic2::getMyPreviousLevelLama($level_murid);
+            } else {
+                // History level di turunkan
+                $level_turun_level = Generic2::getMyPreviousLevel($level_murid);
 
+            }
             $mj = new MuridJourney();
             $mj->getWhereOne("journey_murid_id='$murid_id' AND journey_level_mulai = '$level_murid'");
             $mj->journey_level_end = $level_turun_level;
             $mj->journey_end_date = leap_mysqldate();
             $mj->save(1);
-
-
-
-            //journey baru ditambah
+//journey baru ditambah
             $mj_new = new MuridJourney();
             $mj_new->journey_murid_id = $murid_id;
             $mj_new->journey_level_mulai = $level_turun_level;
             $mj_new->journey_mulai_date = leap_mysqldate();
             $mj_new->journey_tc_id = AccessRight::getMyOrgID();
             $mj_new->save();
-
-
             $objMurid->id_level_sekarang = $level_turun_level;
             $objMurid->save(1);
-
-
-
-
-
 
 
         }
@@ -600,19 +594,16 @@ class LaporanWebHelper extends WebService
             }
             $stockBarang->save(1);
             // Kirim Notif jika barang tinggal sedikit
-            if($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU){
+            if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
                 $strmsg = "Sisa buku " . $setNoBuku->stock_name_buku . " : <b>" . $stockBarang->jumlah_stock . "</b><br>";
                 SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", $strmsg);
             }
-        }
-        else{
+        } else {
             $json['status_code'] = 0;
             $json['status_message'] = "Stock barang habis, hubungi Admin!";
             echo json_encode($json);
             die();
         }
-
-
 
 
         //iuran buku dibayar
@@ -691,10 +682,8 @@ class LaporanWebHelper extends WebService
                 echo json_encode($json);
                 die();
             }
-        }
-
-        // Jika cuma beli buku pengganti
-        else{
+        } // Jika cuma beli buku pengganti
+        else {
             // Laporan
             $myID = AccessRight::getMyOrgID();
             Generic::createLaporanDebet($myID, $myID, KEY::$DEBET_IURAN_BUKU_TC, KEY::$BIAYA_IURAN_BUKU, "Iuran Buku: Siswa: " . Generic::getMuridNamebyID($iuranBuku->bln_murid_id), 1, 0, "Utama");
@@ -707,8 +696,6 @@ class LaporanWebHelper extends WebService
 
 
         die();
-
-
 
 
         // Check No Buku
