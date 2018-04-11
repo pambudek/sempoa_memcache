@@ -955,7 +955,7 @@ class BarangWebHelper extends WebService
     public function setNoBuku($id_barang, $qty, $org_id_pemilik, $org_id_peminta, $org_type, $po_id)
     {
         $po = new POItemModel();
-        $po->getWhereOne("item_id='$po_id'");
+        $po->getWhereOne("po_id='$po_id'");
         if(($po->status == 1)|| ($po->status == 99)){
             $json['status_code'] = 0;
             $json['status_message'] = "PO sdh tidak bisa dikerjakan!";
