@@ -109,141 +109,160 @@ class MuridWebHelper extends WebService
                             ?>
                             <?
                             if ($id_biaya == 4) {
-                                //TODO check stok buku
-//                            echo "<b>Check stok buku ya..</b>";
-//                                pr($murid->id_level_masuk);
-                                $arrBukuYgDiperlukan = Generic::getIdBarangByLevelDanJenisBiaya($murid->id_level_masuk, 0, KEY::$JENIS_BUKU);
-//                                pr($arrBukuYgDiperlukan);
-                                $myBuku = new BarangWebModel();
-                                $arrMyBuku = $myBuku->getWhere("level=$murid->id_level_sekarang  AND jenis_biaya = 1 AND kpo_id = $myGrandParentID LIMIT 0,1");
-                                $stockBarang = new StockModel();
-                                $buku_active = array_pop($arrMyBuku);
-                                $stockBarang->getWhereOne("id_barang='$buku_active->id_barang_harga' AND org_id='$org'");
+                            //TODO check stok buku
+                            //                            echo "<b>Check stok buku ya..</b>";
+                            //                                pr($murid->id_level_masuk);
+                            $arrBukuYgDiperlukan = Generic::getIdBarangByLevelDanJenisBiaya($murid->id_level_masuk, 0, KEY::$JENIS_BUKU);
+                            //                                pr($arrBukuYgDiperlukan);
+                            $myBuku = new BarangWebModel();
+                            $arrMyBuku = $myBuku->getWhere("level=$murid->id_level_sekarang  AND jenis_biaya = 1 AND kpo_id = $myGrandParentID LIMIT 0,1");
+                            $stockBarang = new StockModel();
+                            $buku_active = array_pop($arrMyBuku);
+                            $stockBarang->getWhereOne("id_barang='$buku_active->id_barang_harga' AND org_id='$org'");
 
 
-                                foreach ($arrBukuYgDiperlukan as $val) {
-                                    $stockBarang->getWhereOne("id_barang='$val' AND org_id='$org'");
+                            foreach ($arrBukuYgDiperlukan as $val) {
+                                $stockBarang->getWhereOne("id_barang='$val' AND org_id='$org'");
 //                                    pr($stockBarang);
-                                    if ($stockBarang->jumlah_stock <= 0) {
-                                        $lanjut = $lanjut & false;
-                                        echo "<b> Stock Habis!</b>";
-                                    } else {
-                                        $lanjut = $lanjut & true;
-
-
-                                    }
-                                }
-
-                                if ($lanjut) {
-                                    echo Generic::getLevelNameByID($murid->id_level_masuk);
-                                    $id_buku = implode(",", $arrBukuYgDiperlukan);
-                                }
-
-
-                            }
-                            ?>
-                            <?
-                            // Perlengkapan
-                            if ($id_biaya == 7) {
-
-                                $myBuku = new BarangWebModel();
-                                $id_barang = $myBuku->getPerlengkapanJunior($myGrandParentID);
-                                $myBuku->getWhereOne("level='1'  AND jenis_biaya = 2 AND kpo_id = $myGrandParentID LIMIT 0,1");
-                                $id_perlengkapan = $myBuku->id_barang_harga;
-                                $stockBarang = new StockModel();
-                                $stockBarang->getWhereOne("org_id=$org  AND id_barang=$id_barang");
-                                $jmlhStock = $stockBarang->jumlah_stock;
-
-                                if ($jmlhStock > 0) {
-                                    $id_perlengkapan = $myBuku->id_barang_harga;
-                                    $lanjut = $lanjut & true;
-                                } else {
+                                if ($stockBarang->jumlah_stock <= 0) {
                                     $lanjut = $lanjut & false;
                                     echo "<b> Stock Habis!</b>";
-                                }
-
-                            }
-                            ?>
-                            <?
-                            if ($id_biaya == 8) {
-
-                                $myBuku = new BarangWebModel();
-                                $id_barang = $myBuku->getPerlengkapanFoundation($myGrandParentID);
-                                $stockBarang = new StockModel();
-
-                                $stockBarang->getWhereOne("org_id=$org  AND id_barang=$id_barang");
-                                $jmlhStock = $stockBarang->jumlah_stock;
-
-
-                                if ($jmlhStock > 0) {
-                                    $id_perlengkapan = $myBuku->id_barang_harga;
-                                    $lanjut = $lanjut & true;
                                 } else {
-                                    $lanjut = $lanjut & false;
-                                    echo "<b> Stock Habis!</b>";
-                                }
+                                    $lanjut = $lanjut & true;
 
+
+                                }
                             }
+
+                            if ($lanjut) {
+                            echo Generic::getLevelNameByID($murid->id_level_masuk);
+                            $id_buku = implode(",", $arrBukuYgDiperlukan);
+                            $stock = new StockBuku();
+                            $arrNoBuku = $stock->getAllMyNoBukuFreiTCByInvoiceId($murid->id_level_masuk, $murid->murid_tc_id, $murid->murid_kurikulum);
                             ?>
-                            <? if (($id_biaya == $jenisBiayaSPP)) {
-                            $jenisbm->getByID(AccessRight::getMyOrgID() . "_" . $jenisBiayaSPP);
-                            $kuponSatuan = new KuponSatuan();
-                            $arrkupon = $kuponSatuan->getWhere("kupon_owner_id = '$org' AND kupon_status = 0 ORDER BY kupon_id ASC");
-                            $arrkuponHlp = array();
-                            foreach ($arrkupon as $kpn) {
-                                $arrkuponHlp[] = $kpn->kupon_id;
-                            }
-                            ?>
-                            <div class="pilih-kupon">
-                                Pilih Kupon
-                                <input type="text" id="pilih_kupon_<?= $t; ?>"/>
+
+
+                            <div class="pilih-buku">
+                                Pilih Buku
+                                <input type="text" id="pilih_buku_<?= $murid->id_murid . $t; ?>"/>
                                 <script>
                                     $(function () {
-                                        var availableKupons = <? echo json_encode($arrkuponHlp);?>;
-                                        $("#pilih_kupon_<?= $t; ?>").autocomplete({
-                                            source: availableKupons
+                                        var availableTags = <? echo json_encode($arrNoBuku);?>;
+                                        $("#pilih_buku_<?= $murid->id_murid  . $t; ?>").autocomplete({
+                                            source: availableTags
                                         });
 
                                     });
                                 </script>
-
-                                &nbsp; Pilih Bulan
                                 <?
-                                $arrBulan = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                                ?>
+                                }
 
-                                <select id="pilih_kapan">
+
+                                }
+                                ?>
+                                <?
+                                // Perlengkapan
+                                if ($id_biaya == 7) {
+
+                                    $myBuku = new BarangWebModel();
+                                    $id_barang = $myBuku->getPerlengkapanJunior($myGrandParentID);
+                                    $myBuku->getWhereOne("level='1'  AND jenis_biaya = 2 AND kpo_id = $myGrandParentID LIMIT 0,1");
+                                    $id_perlengkapan = $myBuku->id_barang_harga;
+                                    $stockBarang = new StockModel();
+                                    $stockBarang->getWhereOne("org_id=$org  AND id_barang=$id_barang");
+                                    $jmlhStock = $stockBarang->jumlah_stock;
+
+                                    if ($jmlhStock > 0) {
+                                        $id_perlengkapan = $myBuku->id_barang_harga;
+                                        $lanjut = $lanjut & true;
+                                    } else {
+                                        $lanjut = $lanjut & false;
+                                        echo "<b> Stock Habis!</b>";
+                                    }
+
+                                }
+                                ?>
+                                <?
+                                if ($id_biaya == 8) {
+
+                                    $myBuku = new BarangWebModel();
+                                    $id_barang = $myBuku->getPerlengkapanFoundation($myGrandParentID);
+                                    $stockBarang = new StockModel();
+
+                                    $stockBarang->getWhereOne("org_id=$org  AND id_barang=$id_barang");
+                                    $jmlhStock = $stockBarang->jumlah_stock;
+
+
+                                    if ($jmlhStock > 0) {
+                                        $id_perlengkapan = $myBuku->id_barang_harga;
+                                        $lanjut = $lanjut & true;
+                                    } else {
+                                        $lanjut = $lanjut & false;
+                                        echo "<b> Stock Habis!</b>";
+                                    }
+
+                                }
+                                ?>
+                                <? if (($id_biaya == $jenisBiayaSPP)) {
+                                $jenisbm->getByID(AccessRight::getMyOrgID() . "_" . $jenisBiayaSPP);
+                                $kuponSatuan = new KuponSatuan();
+                                $arrkupon = $kuponSatuan->getWhere("kupon_owner_id = '$org' AND kupon_status = 0 ORDER BY kupon_id ASC");
+                                $arrkuponHlp = array();
+                                foreach ($arrkupon as $kpn) {
+                                    $arrkuponHlp[] = $kpn->kupon_id;
+                                }
+                                ?>
+                                <div class="pilih-kupon">
+                                    Pilih Kupon
+                                    <input type="text" id="pilih_kupon_<?= $t; ?>"/>
+                                    <script>
+                                        $(function () {
+                                            var availableKupons = <? echo json_encode($arrkuponHlp);?>;
+                                            $("#pilih_kupon_<?= $t; ?>").autocomplete({
+                                                source: availableKupons
+                                            });
+
+                                        });
+                                    </script>
+
+                                    &nbsp; Pilih Bulan
                                     <?
-                                    for ($x = date("Y"); $x < date("Y") + 2; $x++) {
-                                        foreach ($arrBulan as $bln) {
-                                            $sel = "";
-                                            if ($bln == date("n") && $x == date("Y")) {
-                                                $sel = "selected";
-                                            }
-                                            ?>
-                                            <?
-                                            if ($x == date("Y")) {
-                                                if ($bln >= date("n")) {
+                                    $arrBulan = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+                                    ?>
+
+                                    <select id="pilih_kapan">
+                                        <?
+                                        for ($x = date("Y"); $x < date("Y") + 2; $x++) {
+                                            foreach ($arrBulan as $bln) {
+                                                $sel = "";
+                                                if ($bln == date("n") && $x == date("Y")) {
+                                                    $sel = "selected";
+                                                }
+                                                ?>
+                                                <?
+                                                if ($x == date("Y")) {
+                                                    if ($bln >= date("n")) {
+                                                        ?>
+                                                        <option
+                                                            value="<?= $bln; ?>-<?= $x; ?>" <?= $sel; ?>><?= $bln; ?>
+                                                            -<?= $x; ?></option>
+                                                        <?
+                                                    }
+                                                } else {
                                                     ?>
                                                     <option value="<?= $bln; ?>-<?= $x; ?>" <?= $sel; ?>><?= $bln; ?>
                                                         -<?= $x; ?></option>
                                                     <?
                                                 }
-                                            } else {
-                                                ?>
-                                                <option value="<?= $bln; ?>-<?= $x; ?>" <?= $sel; ?>><?= $bln; ?>
-                                                    -<?= $x; ?></option>
-                                                <?
+
+
                                             }
-
-
                                         }
-                                    }
+                                        ?>
+                                    </select>
+                                    <? }
                                     ?>
-                                </select>
-                                <? }
-                                ?>
-                            </div>
+                                </div>
                         </td>
                         <td style="text-align: right;">
                             IDR <?= idr($jenisbm->harga); ?>
@@ -304,6 +323,7 @@ class MuridWebHelper extends WebService
                                 post.pilih_kapan = $('#pilih_kapan').val();
                                 post.id_buku = '<?= $id_buku; ?>';
                                 post.id_perlengkapan = '<?= $id_perlengkapan; ?>';
+                                post.no_buku = $("#pilih_buku_<?= $murid->id_murid  . $t; ?>").val();
                                 $.post("<?= _SPPATH; ?>MuridWebHelper/process_firstpayment",
                                     post,
                                     function (data) {
@@ -358,7 +378,7 @@ class MuridWebHelper extends WebService
         $pilih_kapan = addslashes($_POST['pilih_kapan']);
         $id_perlengkapan = addslashes($_POST['id_perlengkapan']);
         $id_buku = addslashes($_POST['id_buku']);
-
+        $no_buku = addslashes($_POST['no_buku']);
 
         $myOrgID = AccessRight::getMyOrgID();
         $myParentID = Generic::getMyParentID($myOrgID);
@@ -556,11 +576,51 @@ class MuridWebHelper extends WebService
                 $objIuranBuku->bln_no_invoice = $noInvoiceFP;
                 $id_iuranbuku = $objIuranBuku->save();
                 $json['noinvice'] = $noInvoiceFP;
-                $setNoBuku = new StockBuku();
-                $resBuNo = $setNoBuku->getBukuYgdReservMurid($murid->id_level_sekarang, $murid->murid_tc_id, $murid_id, 0, KEY::$JENIS_BUKU);
-                $setNoBuku->setStatusBuku($resBuNo, $murid_id, $id_iuranbuku);
+//                $setNoBuku = new StockBuku();
+//                $resBuNo = $setNoBuku->getBukuYgdReservMurid($murid->id_level_sekarang, $murid->murid_tc_id, $murid_id, 0, KEY::$JENIS_BUKU);
+//                $setNoBuku->setStatusBuku($resBuNo, $murid_id, $id_iuranbuku);
                 // Stock Buku No
+                $setNoBuku = new StockBuku();
+                $setNoBuku->getWhereOne("stock_buku_no='$no_buku' AND stock_status_tc = 1 AND stock_buku_tc = '$murid->murid_tc_id' ");
+//                if (is_null($setNoBuku->stock_buku_id)) {
+//                    $json['status_code'] = 0;
+//                    $json['status_message'] = "No Buku sudah tidak tersedia. Hubungi Admin!";
+//                    echo json_encode($json);
+//                    die();
+//                }
 
+                // Kurangi stock dulu
+                $id_barang = $setNoBuku->stock_id_buku;
+                $stockBarang = new StockModel();
+                $stockBarang->getWhereOne("id_barang='$id_barang' AND org_id='$murid->murid_tc_id'");
+                if ($stockBarang->jumlah_stock > 0) {
+
+                    $stockBarang->jumlah_stock--;
+                    if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
+                        $arrJumlahbrg[$id_barang] = $stockBarang->jumlah_stock + 1;
+                    }
+                    $stockBarang->save(1);
+                    // Kirim Notif jika barang tinggal sedikit
+                    if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
+                        $strmsg = "Sisa buku " . $setNoBuku->stock_name_buku . " : <b>" . $stockBarang->jumlah_stock . "</b><br>";
+                        SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", $strmsg);
+                    }
+                } else {
+                    $json['status_code'] = 0;
+                    $json['status_message'] = "Stock barang habis, hubungi Admin!";
+                    echo json_encode($json);
+                    die();
+                }
+
+
+                // set no buku
+                $setNoBuku->stock_buku_no = $no_buku;
+                $setNoBuku->stock_status_tc = 0;
+                $setNoBuku->stock_buku_tgl_keluar_tc = leap_mysqldate();
+                $setNoBuku->stock_murid_id = $murid->id_murid;
+                $setNoBuku->stock_murid = 1;
+                $setNoBuku->stock_invoice_murid = $id_iuranbuku;
+                $setNoBuku->save(1);
 
                 $myID = AccessRight::getMyOrgID();
                 Generic::createLaporanDebet($myID, $myID, KEY::$DEBET_IURAN_BUKU_TC, KEY::$BIAYA_IURAN_BUKU, "Iuran Buku: Siswa: " . Generic::getMuridNamebyID($murid_id), 1, 0, "Utama");
