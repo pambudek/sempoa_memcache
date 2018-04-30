@@ -525,7 +525,7 @@ class MuridWebHelper extends WebService
                 $ksatuan->kupon_pemakaian_date = leap_mysqldate();
                 $ksatuan->kupon_status = 1;
                 $ksatuan->kupon_pemakaian_id = $succ2;
-                $ksatuan->save();
+
                 //activkan murid
 //                $murid->id_level_masuk =
                 $murid->status = 1;
@@ -535,7 +535,7 @@ class MuridWebHelper extends WebService
                 $j->journey_level_mulai = $murid->id_level_masuk;
                 $j->journey_mulai_date = leap_mysqldate();
                 $j->journey_tc_id = AccessRight::getMyOrgID();
-                $j->save();
+
 
 
                 // StockBarang
@@ -548,15 +548,8 @@ class MuridWebHelper extends WebService
                 $stockBarang = new StockModel();
                 $stockBarang->getWhereOne("id_barang = $id_perlengkapan AND org_id=$org");
                 $stockBarang->jumlah_stock = $stockBarang->jumlah_stock - 1;
-                $stockBarang->save();
 
-//                $arrIDBuku = explode(",", $id_buku);
-//                foreach ($arrIDBuku as $val) {
-//                    $stockBarangBuku = new StockModel();
-//                    $stockBarangBuku->getWhereOne("id_barang = '$val' AND org_id='$org'");
-//                    $stockBarangBuku->jumlah_stock = $stockBarangBuku->jumlah_stock - 1;
-//                    $stockBarangBuku->save(1);
-//                }
+
 
                 $objIuranBuku = new IuranBuku();
                 $bln = date("n");
@@ -574,7 +567,7 @@ class MuridWebHelper extends WebService
                 $objIuranBuku->bln_status = 1;
                 $objIuranBuku->bln_cara_bayar = $jenis_pmbr;
                 $objIuranBuku->bln_no_invoice = $noInvoiceFP;
-                $id_iuranbuku = $objIuranBuku->save();
+
                 $json['noinvice'] = $noInvoiceFP;
 //                $setNoBuku = new StockBuku();
 //                $resBuNo = $setNoBuku->getBukuYgdReservMurid($murid->id_level_sekarang, $murid->murid_tc_id, $murid_id, 0, KEY::$JENIS_BUKU);
@@ -590,27 +583,27 @@ class MuridWebHelper extends WebService
 //                }
 
                 // Kurangi stock dulu
-                $id_barang = $setNoBuku->stock_id_buku;
-                $stockBarang = new StockModel();
-                $stockBarang->getWhereOne("id_barang='$id_barang' AND org_id='$murid->murid_tc_id'");
-                if ($stockBarang->jumlah_stock > 0) {
-
-                    $stockBarang->jumlah_stock--;
-                    if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
-                        $arrJumlahbrg[$id_barang] = $stockBarang->jumlah_stock + 1;
-                    }
-                    $stockBarang->save(1);
-                    // Kirim Notif jika barang tinggal sedikit
-                    if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
-                        $strmsg = "Sisa buku " . $setNoBuku->stock_name_buku . " : <b>" . $stockBarang->jumlah_stock . "</b><br>";
-                        SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", $strmsg);
-                    }
-                } else {
-                    $json['status_code'] = 0;
-                    $json['status_message'] = "Stock barang habis, hubungi Admin!";
-                    echo json_encode($json);
-                    die();
-                }
+//                $id_barang = $setNoBuku->stock_id_buku;
+//                $stockBarang = new StockModel();
+//                $stockBarang->getWhereOne("id_barang='$id_barang' AND org_id='$murid->murid_tc_id'");
+//                if ($stockBarang->jumlah_stock > 0) {
+//
+//                    $stockBarang->jumlah_stock--;
+//                    if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
+//                        $arrJumlahbrg[$id_barang] = $stockBarang->jumlah_stock + 1;
+//                    }
+//                    $stockBarang->save(1);
+//                    // Kirim Notif jika barang tinggal sedikit
+//                    if ($stockBarang->jumlah_stock <= KEY::$MIN_JUMLAH_BUKU) {
+//                        $strmsg = "Sisa buku " . $setNoBuku->stock_name_buku . " : <b>" . $stockBarang->jumlah_stock . "</b><br>";
+//                        SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", $strmsg);
+//                    }
+//                } else {
+//                    $json['status_code'] = 0;
+//                    $json['status_message'] = "Stock barang habis, hubungi Admin!";
+//                    echo json_encode($json);
+//                    die();
+//                }
 
 
                 // set no buku
@@ -619,6 +612,12 @@ class MuridWebHelper extends WebService
                 $setNoBuku->stock_buku_tgl_keluar_tc = leap_mysqldate();
                 $setNoBuku->stock_murid_id = $murid->id_murid;
                 $setNoBuku->stock_murid = 1;
+
+
+                $ksatuan->save();
+                $j->save();
+                $stockBarang->save();
+                $id_iuranbuku = $objIuranBuku->save();
                 $setNoBuku->stock_invoice_murid = $id_iuranbuku;
                 $setNoBuku->save(1);
 
