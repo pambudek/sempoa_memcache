@@ -380,6 +380,49 @@ class MuridWebHelper extends WebService
         $id_buku = addslashes($_POST['id_buku']);
         $no_buku = addslashes($_POST['no_buku']);
 
+        if($murid_id == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Murid ID kosong! ";
+            echo json_encode($json);
+            die();
+        }
+        if($jenis_pmbr == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Jenis Pembayaran kosong! ";
+            echo json_encode($json);
+            die();
+        }
+        if($pilih_kupon == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "No Kupon kosong! ";
+            echo json_encode($json);
+            die();
+        }
+
+        if($pilih_kapan == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "Pembayaran untuk bulan  kosong! ";
+            echo json_encode($json);
+            die();
+        }
+        if($id_perlengkapan == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "ID Perlengkapan kosong! ";
+            echo json_encode($json);
+            die();
+        }
+        if($no_buku == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "No Buku kosong! ";
+            echo json_encode($json);
+            die();
+        }
+        if($id_buku == ""){
+            $json['status_code'] = 0;
+            $json['status_message'] = "ID Buku kosong! ";
+            echo json_encode($json);
+            die();
+        }
         $myOrgID = AccessRight::getMyOrgID();
         $myParentID = Generic::getMyParentID($myOrgID);
         // KPO
