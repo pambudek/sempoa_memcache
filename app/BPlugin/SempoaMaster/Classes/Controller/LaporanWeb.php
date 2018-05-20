@@ -100,6 +100,7 @@ class LaporanWeb extends WebService
         $arrIuranBulanan = $iuranBulanan->getWhere("bln_mon = '$bln' AND bln_tahun = '$thn' AND bln_tc_id='$tc_id' ORDER BY bln_murid_id ASC");
 
         $jumlahMuridAktiv = Generic::getJumlahMuridAktivByTC($tc_id);
+        echo "jumlah: " . $jumlahMuridAktiv . " - " . $bln . " " . $thn . " " . $tc_id;
         if ((count($arrIuranBulanan) == 0) or count($arrIuranBulanan) < $jumlahMuridAktiv) {
 
             $murid = new MuridModel();
