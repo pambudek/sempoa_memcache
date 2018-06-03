@@ -75,7 +75,8 @@ class KEY
     public static $MAX_UNDO_FIRST_PAYMENT = 30;
 //    public static $MAX_UNDO_SPP = 90;
     public static $MAX_UNDO_SPP = 180;
-    public static $MAX_UNDO_IURAN_BUKU = 90;
+//    public static $MAX_UNDO_IURAN_BUKU = 90;
+    public static $MAX_UNDO_IURAN_BUKU = 180;
     /*
      * Load
      */
