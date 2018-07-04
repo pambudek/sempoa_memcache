@@ -51,9 +51,10 @@ class MuridModel extends SempoaModel
     public $murid_created_date;
     public $murid_updated;
     public $murid_active;
+    public $murid_date_cuti_aktiv;
     public $removeAutoCrudClick = array("pay_firsttime", "profile", "no_pay_firsttime");
     public $statushelp;
-    public $hideColoums = array("murid_ak_id", "murid_kpo_id", "murid_ibo_id", "murid_kurikulum", "murid_parent_id");
+    public $hideColoums = array("murid_ak_id", "murid_kpo_id", "murid_ibo_id", "murid_kurikulum", "murid_parent_id","murid_date_cuti_aktiv");
 
     public $APPWS = "id_murid,kode_siswa,nama_siswa,jenis_kelamin,alamat,agama,tempat_lahir,id_level_sekarang,tanggal_lahir,murid_ak_id,murid_kpo_id,murid_ibo_id,murid_tc_id,murid_app_pwd";
 

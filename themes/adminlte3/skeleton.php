@@ -703,7 +703,6 @@
         var id_murid = 0;
 
         function save_murid_to_ujian() {
-            alert(ujian_id + " - " + id_murid);
             $.post("<?= _SPPATH; ?>UjianWebHelper/add_murid_to_ujian", {ujian_id: ujian_id, id_murid: id_murid},
                 function (data) {
                     if (data.status_code) {
@@ -781,11 +780,15 @@
                 </div>
                 <script>
                     var id_murid = 0;
-                    var bln =0;
+                    var bln = 0;
                     var thn = 0;
                     function createinvoicejs() {
                         if (confirm("Anda yakin akan mencetak Invoice?")) {
-                            $.post("<?= _SPPATH; ?>MuridWebHelper/create_invoice_ibo", {bln: bln,thn:thn, id_murid: id_murid},
+                            $.post("<?= _SPPATH; ?>MuridWebHelper/create_invoice_ibo", {
+                                    bln: bln,
+                                    thn: thn,
+                                    id_murid: id_murid
+                                },
                                 function (data) {
                                     if (data.status_code) {
                                         lwrefresh(selected_page);
@@ -801,6 +804,92 @@
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="modal_proses" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    Loadinggg
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal utk add guru di training-->
+    <? $t = time();?>
+    <div class="modal fade" id="modal_cuti_aktiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal_title_murid_aktiv_lagi">Pilih Kapan Mulai Aktiv lagi</h4>
+                </div>
+                <div class="modal-body">
+                    <label for="startDate">Date :</label>
+                    <input name="startDate" id="startDate_<?=$t;?>" class="date-picker"/>
+                    <input type="hidden" name="id_murid_<?=$t;?>" id="id_murid" value="" />
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        $('.date-picker').datepicker({
+                            changeMonth: true,
+                            changeYear: true,
+                            minDate: '+1m',
+                            maxDate: '+3m',
+                            showButtonPanel: true,
+                            dateFormat: 'yy-mm',
+                            onClose: function (dateText, inst) {
+                                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                                $(this).datepicker('setDate', new Date(year, month, 1));
+                            },
+                            beforeShow: function (input, inst) {
+                                var datestr;
+                                if ((datestr = $(this).val()).length > 0) {
+                                    year = datestr.substring(datestr.length - 4, datestr.length);
+                                    month = jQuery.inArray(datestr.substring(0, datestr.length - 5), $(this).datepicker('option', 'monthNamesShort'));
+                                    $(this).datepicker('option', 'defaultDate', new Date(year, month, 1));
+                                    $(this).datepicker('setDate', new Date(year, month, 1));
+                                }
+                            }
+                        });
+                    });
+                </script>
+                <style>
+                    .ui-datepicker-calendar {
+                        display: none;
+                    }
+                </style>
+                <div class="modal-footer">
+                    <button type="button" onclick="setDateAktiv();" class="btn btn-primary">Save</button>
+                </div>
+                <script>
+                    function setDateAktiv(){
+                        var monthAktiv = $('#startDate_<?=$t;?>').val();
+                        var id_murid = $('#id_murid').val();
+                        alert(monthAktiv);
+                        alert(id_murid);
+                        $.post("<?= _SPPATH; ?>MuridWebHelperExt/setStatusCutiAktiv", {id_murid: id_murid, monthAktiv: monthAktiv},
+                            function (data) {
+                                if (data.status_code) {
+                                    lwrefresh(selected_page);
+                                    $('#modal_cuti_aktiv').modal('hide');
+                                } else {
+                                    alert(data.status_message);
+                                }
+                            }, 'json');
+
+
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+
+
     <!-- ./wrapper -->
     <!-- jQuery UI 1.10.3 -->
     <script src="<?= _SPPATH; ?>js/jqueryui.js"></script>

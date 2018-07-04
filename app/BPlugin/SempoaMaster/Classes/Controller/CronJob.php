@@ -43,7 +43,7 @@ class CronJob extends WebService
 
 
             $iur = new IuranBulanan();
-            $idKey = $mur->id_murid . "_" . $bln .  "_" .$thn;
+            $idKey = $mur->id_murid . "_" . $bln . "_" . $thn;
 //            $cnt = $iur->getJumlah("bln_murid_id = '{$mur->id_murid}' AND bln_mon = '$bln' AND bln_tahun = '$thn'");
             $cnt = $iur->getJumlah("bln_id = '$idKey'");
             if ($cnt > 0)
@@ -61,11 +61,10 @@ class CronJob extends WebService
 
             $iuranbulanan = new IuranBulanan();
             $iuranbulanan->getWhereOne("bln_murid_id='$idKey' ORDER by  bln_urutan_invoice_murid  DESC");
-            if(is_null($iuranbulanan->bln_id)){
+            if (is_null($iuranbulanan->bln_id)) {
                 $iur->bln_urutan_invoice_murid = 1;
-            }
-            else{
-                $iur->bln_urutan_invoice_murid =  $iuranbulanan->bln_urutan_invoice_murid +1;
+            } else {
+                $iur->bln_urutan_invoice_murid = $iuranbulanan->bln_urutan_invoice_murid + 1;
             }
 
             if ($iur->save()) {
@@ -75,7 +74,6 @@ class CronJob extends WebService
         }
         echo "Total ter create " . $total . " Invoice(SPP)!";
     }
-
 
 
     public function create_invoice_spp_cronjobAllTC2()
@@ -92,7 +90,7 @@ class CronJob extends WebService
 
 
             $iur = new IuranBulanan();
-            $idKey = $mur->id_murid . "_" . $bln .  "_" .$thn;
+            $idKey = $mur->id_murid . "_" . $bln . "_" . $thn;
 //            $cnt = $iur->getJumlah("bln_murid_id = '{$mur->id_murid}' AND bln_mon = '$bln' AND bln_tahun = '$thn'");
             $cnt = $iur->getJumlah("bln_id = '$idKey'");
             if ($cnt > 0)
@@ -110,17 +108,15 @@ class CronJob extends WebService
 
             $iuranbulanan = new IuranBulanan();
             $iuranbulanan->getWhereOne("bln_murid_id='$idKey' ORDER by  bln_urutan_invoice_murid  DESC");
-            if(is_null($iuranbulanan->bln_id)){
+            if (is_null($iuranbulanan->bln_id)) {
                 $iur->bln_urutan_invoice_murid = 1;
-            }
-            else{
-                $iur->bln_urutan_invoice_murid =  $iuranbulanan->bln_urutan_invoice_murid +1;
+            } else {
+                $iur->bln_urutan_invoice_murid = $iuranbulanan->bln_urutan_invoice_murid + 1;
             }
 
             if ($iur->save()) {
                 $total++;
-            }
-            else{
+            } else {
                 $totaltdksave++;
             }
 //            }
@@ -128,6 +124,7 @@ class CronJob extends WebService
         echo "Total ter create " . $total . " Invoice(SPP)! <br>";
         echo "Total tdk create " . $totaltdksave . " Invoice(SPP)!";
     }
+
     /*
      * Cronjob ini dijalankan spesifikasi tc
      */
@@ -197,7 +194,8 @@ class CronJob extends WebService
                         $rekap_siswa->getWhereOne("bi_rekap_tc_id = '$keyTC' AND bi_rekap_ibo_id='$keyIBO' AND bi_rekap_kpo_id='$keyKPO' AND bi_rekap_ak_id='$keyak' AND bi_rekap_siswa_waktu = '$waktu' ");
                         $logSiswa = new LogStatusMurid();
                         $murid = new MuridModel();
-                        $jmlhMuridAktiv = $murid->getMuridAktiv($keyTC);
+//                        $jmlhMuridAktiv = $murid->getMuridAktiv($keyTC);
+                        $jmlhMuridAktiv = $logSiswa->getCountSiswaByStatusOrgType($bln, $thn, 'A', "tc", $keyTC);
                         $jmlhMuridBaru = $this->getMuridBaruByTC($keyTC, $bln, $thn);
                         $jmlhMuridCuti = $logSiswa->getCountSiswaByStatusOrgType($bln, $thn, 'C', "tc", $keyTC);
                         $jmlhMuridKeluar = $logSiswa->getCountSiswaByStatusOrgType($bln, $thn, 'K', "tc", $keyTC);
@@ -208,7 +206,7 @@ class CronJob extends WebService
 
                         if (!is_null($rekap_siswa->bi_rekap_kode_tc)) {
                             $rekap_siswa->delete($rekap_siswa->bi_rekap_siswa_id);
-                            echo "TC: " . $rekap_siswa->bi_rekap_kode_tc . " " . Generic::getTCNamebyID($rekap_siswa->bi_rekap_kode_tc) . " kedelete untuk bulan " . $waktu  . " nama Murid: " . Generic::getMuridNamebyID($rekap_siswa->bi_rekap_siswa_id)."<br>";
+                            echo "TC: " . $rekap_siswa->bi_rekap_kode_tc . " " . Generic::getTCNamebyID($rekap_siswa->bi_rekap_kode_tc) . " kedelete untuk bulan " . $waktu . " nama Murid: " . Generic::getMuridNamebyID($rekap_siswa->bi_rekap_siswa_id) . "<br>";
                         }
 
                         $rekap_siswa = new RekapSiswaIBOModel();
@@ -235,7 +233,7 @@ class CronJob extends WebService
                         $rekap_siswa->bi_rekap_tahun = $thn;
                         $rekap_siswa->bi_rekap_buku = $this->getPenjualanBukuByTC($keyTC, $bln, $thn);
                         $rekap_siswa->save();
-                        echo Generic::getTCNamebyID($rekap_siswa->bi_rekap_kode_tc) . " create untuk bulan " . $waktu  . "<br>";
+                        echo Generic::getTCNamebyID($rekap_siswa->bi_rekap_kode_tc) . " create untuk bulan " . $waktu . "<br>";
                         $createBaru++;
 
 
@@ -375,7 +373,7 @@ class CronJob extends WebService
 
                         if (!is_null($objRekapKupon->bi_kupon_id)) {
                             $objRekapKupon->delete($objRekapKupon->bi_kupon_id);
-                            echo Generic::getTCNamebyID($tc_id) . " kedelete untuk bulan " . $bln . $thn  . "<br>";
+                            echo Generic::getTCNamebyID($tc_id) . " kedelete untuk bulan " . $bln . $thn . "<br>";
                         }
 
                         $objRekapKupon = new BIRekapKuponModel();
@@ -403,7 +401,7 @@ class CronJob extends WebService
                         $objRekapKupon->bi_kupon_murid_aktiv = $murid->getMuridAktiv($tc_id);
                         $objRekapKupon->save();
                         $createBaru++;
-                        echo Generic::getTCNamebyID($tc_id) . " keCreate untuk bulan " . $bln . $thn  . "<br>";
+                        echo Generic::getTCNamebyID($tc_id) . " keCreate untuk bulan " . $bln . $thn . "<br>";
 
 //                        if (is_null($objRekapKupon->bi_kupon_id)) {
 //                            $objRekapKupon = new BIRekapKuponModel();
@@ -538,17 +536,17 @@ class CronJob extends WebService
      * Cron Job set  status ke keluar setelah lebih dr 2 bulan cuti
      */
 
-    public function setMuridKeluar(){
+    public function setMuridKeluar()
+    {
 
         $muridStatus = new StatusHisMuridModel();
         $arrMuridsCuti = $muridStatus->getWhere("status=2 AND status_tanggal_akhir = 1970-01-01 07:00:00 AND TIMESTAMPDIFF(MONTH, status_tanggal_mulai, now())>2");
 
         $jumlahMurid = 0;
-        foreach($arrMuridsCuti as $mur){
+        foreach ($arrMuridsCuti as $mur) {
             $jumlahMurid++;
             $mur->status_tanggal_akhir = leap_mysqldate();
             $mur->save(1);
-
 
 
             $murid = new MuridModel();
@@ -574,14 +572,24 @@ class CronJob extends WebService
             $logMurid->createLogMurid($mur->status_murid_id);
 
         }
-       echo "Sebanyak " . $jumlahMurid . " ganti status dari Cuti ke keluar";
+        echo "Sebanyak " . $jumlahMurid . " ganti status dari Cuti ke keluar";
 
     }
 
+    public function setStatusCutiAktiv()
+    {
+        $murid = new MuridModel();
+        $arrMurid = $murid->getWhere("status=2 AND murid_date_cuti_aktiv = DATE_FORMAT(CURDATE(),'%Y-%m-05')");
+        foreach($arrMurid as $murid){
+            $murid->murid_date_cuti_aktiv = "0000-00-00";
+            $murid->status = 1;
+            $murid->save(1);
+        }
+    }
 
-
-    function cobaCuti(){
+    function cobaCuti()
+    {
         $log = new LogStatusMurid();
-        $log->getCountSiswaCutiGroup(1901,'K',3,2017,26);
+        $log->getCountSiswaCutiGroup(1901, 'K', 3, 2017, 26);
     }
 }

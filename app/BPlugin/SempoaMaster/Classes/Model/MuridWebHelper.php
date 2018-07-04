@@ -148,7 +148,7 @@ class MuridWebHelper extends WebService
                                 <script>
                                     $(function () {
                                         var availableTags = <? echo json_encode($arrNoBuku);?>;
-                                        $("#pilih_buku_<?= $murid->id_murid  . $t; ?>").autocomplete({
+                                        $("#pilih_buku_<?= $murid->id_murid . $t; ?>").autocomplete({
                                             source: availableTags
                                         });
 
@@ -323,7 +323,7 @@ class MuridWebHelper extends WebService
                                 post.pilih_kapan = $('#pilih_kapan').val();
                                 post.id_buku = '<?= $id_buku; ?>';
                                 post.id_perlengkapan = '<?= $id_perlengkapan; ?>';
-                                post.no_buku = $("#pilih_buku_<?= $murid->id_murid  . $t; ?>").val();
+                                post.no_buku = $("#pilih_buku_<?= $murid->id_murid . $t; ?>").val();
                                 $.post("<?= _SPPATH; ?>MuridWebHelper/process_firstpayment",
                                     post,
                                     function (data) {
@@ -380,44 +380,44 @@ class MuridWebHelper extends WebService
         $id_buku = addslashes($_POST['id_buku']);
         $no_buku = addslashes($_POST['no_buku']);
 
-        if($murid_id == ""){
+        if ($murid_id == "") {
             $json['status_code'] = 0;
             $json['status_message'] = "Murid ID kosong! ";
             echo json_encode($json);
             die();
         }
-        if($jenis_pmbr == ""){
+        if ($jenis_pmbr == "") {
             $json['status_code'] = 0;
             $json['status_message'] = "Jenis Pembayaran kosong! ";
             echo json_encode($json);
             die();
         }
-        if($pilih_kupon == ""){
+        if ($pilih_kupon == "") {
             $json['status_code'] = 0;
             $json['status_message'] = "No Kupon kosong! ";
             echo json_encode($json);
             die();
         }
 
-        if($pilih_kapan == ""){
+        if ($pilih_kapan == "") {
             $json['status_code'] = 0;
             $json['status_message'] = "Pembayaran untuk bulan  kosong! ";
             echo json_encode($json);
             die();
         }
-        if($id_perlengkapan == ""){
+        if ($id_perlengkapan == "") {
             $json['status_code'] = 0;
             $json['status_message'] = "ID Perlengkapan kosong! ";
             echo json_encode($json);
             die();
         }
-        if($no_buku == ""){
+        if ($no_buku == "") {
             $json['status_code'] = 0;
             $json['status_message'] = "No Buku kosong! ";
             echo json_encode($json);
             die();
         }
-        if($id_buku == ""){
+        if ($id_buku == "") {
             $json['status_code'] = 0;
             $json['status_message'] = "ID Buku kosong! ";
             echo json_encode($json);
@@ -580,7 +580,6 @@ class MuridWebHelper extends WebService
                 $j->journey_tc_id = AccessRight::getMyOrgID();
 
 
-
                 // StockBarang
 
                 // StockBarang
@@ -591,7 +590,6 @@ class MuridWebHelper extends WebService
                 $stockBarang = new StockModel();
                 $stockBarang->getWhereOne("id_barang = $id_perlengkapan AND org_id=$org");
                 $stockBarang->jumlah_stock = $stockBarang->jumlah_stock - 1;
-
 
 
                 $objIuranBuku = new IuranBuku();
@@ -855,12 +853,13 @@ class MuridWebHelper extends WebService
         $id = addslashes($_GET['id_murid']);
         $murid = new MuridModel();
         $murid->getByID($id);
-
+        $t = time();
+        $id_student_html = $id . "_" . $t;
         $arrLevelMurid = Generic::getAllLevel();
 
         if (AccessRight::getMyOrgType() == KEY::$IBO) {
             $arrStatusMurid = Generic::getAllStatusMurid();
-            $html = "\"<select id='select_status_$murid->id_murid'>";
+            $html = "\"<select id='select_status_$id_student_html'>";
             foreach ($arrStatusMurid as $key => $value) {
                 if ($key == $murid->status) {
                     $html = $html . "<option value='$key' selected>$value</option>";
@@ -869,6 +868,7 @@ class MuridWebHelper extends WebService
                 }
             }
             $html = $html . "</select>\"";
+
         } elseif (AccessRight::getMyOrgType() == KEY::$TC) {
             $arrStatusMurid = array();
             if ($murid->status == 1) {
@@ -881,7 +881,7 @@ class MuridWebHelper extends WebService
                 $arrStatusMurid[3] = "Keluar";
             }
 
-            $html = "\"<select id='select_status_$murid->id_murid'>";
+            $html = "\"<select id='select_status_$id_student_html'>";
             foreach ($arrStatusMurid as $key => $value) {
                 if ($key == $murid->status) {
                     $html = $html . "<option value='$key' selected>$value</option>";
@@ -1007,7 +1007,7 @@ class MuridWebHelper extends WebService
                             <td>
                                 Status
                             </td>
-                            <td id="status_<?= $murid->id_murid; ?>_<?= $t; ?>" colspan="2" style="font-weight: bold;">
+                            <td id="status_<?= $id_student_html; ?>" colspan="2" style="font-weight: bold;">
                                 <?= $arrStatusMurid[$murid->status]; ?>
                             </td>
                         </tr>
@@ -1332,33 +1332,46 @@ class MuridWebHelper extends WebService
                     }, 'json');
                 }
             });
-            $('#status_<?= $murid->id_murid; ?>_<?=$t;?>').dblclick(function () {
-                <?
-                if($murid->pay_firsttime == 1){
-                ?>
-                $('#status_<?= $murid->id_murid; ?>_<?=$t;?>').html(<?= $html ?>);
-                $('#select_status_<?= $murid->id_murid; ?>').change(function () {
-                    var id_status = $('#select_status_<?= $murid->id_murid; ?>').val();
 
-                    $.get("<?= _SPPATH; ?>MuridWebHelper/setStatusMurid?id_murid=<?= $murid->id_murid; ?>" + "&id_status=" + id_status, function (data) {
-                        alert(data.status_message);
-                        if (data.status_code) {
+            $('#status_<?=$id_student_html;?>').dblclick(function () {
+//                var status_sebelum =  $('#status_<?//= $id_student_html; ?>//').text();
+                if(confirm("Anda akan merubah status Anak, Anda yakin?")){
+                    <?
+                    if($murid->pay_firsttime == 1){
+                    ?>
+                    $('#status_<?= $id_student_html;?>').html(<?= $html ?>);
+                    $('#select_status_<?= $id_student_html; ?>').change(function () {
 
-                            lwrefresh(selected_page);
+                        var id_status = $('#select_status_<?= $id_student_html; ?>').val();
+                        if(id_status == 1){
+
+                            $('#modal_cuti_aktiv .modal-body #id_murid').val(<?=$id;?>);
+                            $('#modal_cuti_aktiv').modal('show');
+//                        alert(status_sebelum);
                         }
-                        console.log(data.murid);
+                        else{
+                            $.get("<?= _SPPATH; ?>MuridWebHelper/setStatusMurid?id_murid=<?= $murid->id_murid; ?>" + "&id_status=" + id_status, function (data) {
+                                alert(data.status_message);
+                                if (data.status_code) {
 
-                    }, 'json');
+                                    lwrefresh(selected_page);
+                                }
+                                console.log(data.murid);
 
-                });
-                <?
+                            }, 'json');
+                        }
+                    });
+                    <?
+                    }
+                    else{
+                    ?>
+                    alert("Murid belum melakukan pembayaran pertama");
+                    <?
+                    }
+                    ?>
                 }
-                else{
-                ?>
-                alert("Murid belum melakukan pembayaran pertama");
-                <?
-                }
-                ?>
+
+
 
             });
 

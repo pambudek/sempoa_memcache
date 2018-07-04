@@ -1757,12 +1757,11 @@ class CoretCoret extends WebService
     {
 
 
-
         $datas = array();
         foreach ($_POST as $key => $value) {
             $datas[$key] = $value;
         }
-        $json['status_code'] =count($datas)>0 ? 1 : 0;
+        $json['status_code'] = count($datas) > 0 ? 1 : 0;
         $json['result']['data'] = $datas;
         echo json_encode($json);
         die();
@@ -1841,18 +1840,19 @@ class CoretCoret extends WebService
 
     }
 
-    public function cobaIdBuku(){
+    public function cobaIdBuku()
+    {
 
         $a = new DateTime('now');
         $b = $a->format("Y-m-d");
         pr($b);
         //2018-02-06
         $progress = new ProgressModel();
-        pr($progress->getMuridProgressByDate("1406030001",10,"2018-02-06"));
+        pr($progress->getMuridProgressByDate("1406030001", 10, "2018-02-06"));
 
         die();
         $brg = new BarangWebModel();
-        pr($brg->getIdBarangByLevelKurikulum(2,1));
+        pr($brg->getIdBarangByLevelKurikulum(2, 1));
     }
 
 
@@ -1889,7 +1889,7 @@ class CoretCoret extends WebService
         $buku = new BarangWebModel();
         $buku->getWhereOne("level=$level_murid AND jenis_kurikulum=$kur AND jenis_biaya=1");
         $halBukuTotal = $buku->halaman_buku;
-        $halBuku =json_decode($halBukuTotal);
+        $halBuku = json_decode($halBukuTotal);
 
         pr($halBuku);
 
@@ -1937,5 +1937,66 @@ class CoretCoret extends WebService
 //        $a = serialize($arrBuku);
 //        pr($a);
 //        pr(unserialize($a));
+    }
+
+    public function cobaDate()
+    {
+        ?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+        <head>
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
+            <script type="text/javascript"
+                    src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+            <link rel="stylesheet" type="text/css" media="screen"
+                  href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css">
+            <script type="text/javascript">
+                $(function () {
+                    $('.date-picker').datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        showButtonPanel: true,
+                        dateFormat: 'MM yy',
+                        onClose: function (dateText, inst) {
+                            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                            $(this).datepicker('setDate', new Date(year, month, 1));
+                        },
+                        beforeShow: function (input, inst) {
+                            var datestr;
+                            if ((datestr = $(this).val()).length > 0) {
+                                year = datestr.substring(datestr.length - 4, datestr.length);
+                                month = jQuery.inArray(datestr.substring(0, datestr.length - 5), $(this).datepicker('option', 'monthNamesShort'));
+                                $(this).datepicker('option', 'defaultDate', new Date(year, month, 1));
+                                $(this).datepicker('setDate', new Date(year, month, 1));
+                            }
+                        }
+                    });
+                });
+            </script>
+            <style>
+                .ui-datepicker-calendar {
+                    display: none;
+                }
+            </style>
+        </head>
+        <body>
+        <label for="startDate">Date :</label>
+        <input name="startDate" id="startDate" class="date-picker"/>
+        </body>
+        </html>
+        <?
+    }
+
+    public function setDateby(){
+        $varbulan = "08 2018";
+        $a = new LogStatusMurid();
+        $arr = $a->getCountSiswaByStatusOrgTypeDet(7, 2018, "C", "ibo", 3);
+        return $arr;
+        pr($arr);
+        foreach($arr as $val){
+            echo $val[count($val) - 1];
+        }
+
     }
 }

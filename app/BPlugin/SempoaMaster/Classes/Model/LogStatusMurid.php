@@ -92,7 +92,7 @@ class LogStatusMurid extends Model {
      * $orgType = tc
      */
 
-    public function getCountSiswaByStatusOrgType($bln, $thn, $status_siswa, $orgType, $org_id) {
+    public function getCountSiswaByStatusOrgType_tmp($bln, $thn, $status_siswa, $orgType, $org_id) {
         $count = 0;
         if ($orgType == KEY::$AK) {
             $count = $this->getJumlah("log_status='$status_siswa' AND log_ak_id=$org_id AND log_thn=$thn AND log_bln=$bln");
@@ -107,6 +107,35 @@ class LogStatusMurid extends Model {
         }
         return $count;
     }
+
+
+    //
+    public function getCountSiswaByStatusOrgType($bln, $thn, $status_siswa, $orgType, $org_id) {
+        $count = 0;
+        if ($orgType == KEY::$AK) {
+//            $count = $this->getJumlah("log_status='$status_siswa' AND log_ak_id=$org_id AND log_thn=$thn AND log_bln=$bln");
+            $arrLogMuridID = $this->getWhere("log_ak_id=$org_id AND log_thn=$thn AND log_bln=$bln ORDER BY log_id ASC");
+        } elseif ($orgType == KEY::$KPO) {
+//            $count = $this->getJumlah("log_status='$status_siswa' AND log_kpo_id=$org_id AND log_thn=$thn AND log_bln=$bln");
+            $arrLogMuridID = $this->getWhere("log_kpo_id=$org_id AND log_thn=$thn AND log_bln=$bln ORDER BY log_id ASC");
+        } elseif ($orgType == KEY::$IBO) {
+
+        } elseif ($orgType == KEY::$TC) {
+            $arrLogMuridID = $this->getWhere("log_tc_id=$org_id AND log_thn=$thn AND log_bln=$bln ORDER BY log_id ASC");
+
+        }
+        $arrMuridID = array();
+        foreach($arrLogMuridID as $muridID){
+            $arrMuridID[$muridID->log_id_murid][] = $muridID->log_status;
+        }
+        foreach($arrMuridID as $val){
+            if($val[count($val) - 1] == $status_siswa){
+                $count++;
+            }
+        }
+        return $count;
+    }
+
 
     public function getCountSiswaCutiGroup($id_siswa,$status, $bln, $thn, $org_id){
         $logMurid = new LogStatusMurid();
