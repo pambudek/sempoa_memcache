@@ -829,12 +829,12 @@
                 </div>
                 <div class="modal-body">
                     <label for="startDate">Date :</label>
-                    <input name="startDate" id="startDate_<?=$t;?>" class="date-picker"/>
+                    <input name="startDate" id="startDate_<?=$t;?>" class="date-picker_<?=$t;?>"/>
                     <input type="hidden" name="id_murid_<?=$t;?>" id="id_murid" value="" />
                 </div>
                 <script type="text/javascript">
                     $(function () {
-                        $('.date-picker').datepicker({
+                        $('.date-picker_<?=$t;?>').datepicker({
                             changeMonth: true,
                             changeYear: true,
                             minDate: '+1m',
@@ -858,11 +858,11 @@
                         });
                     });
                 </script>
-                <style>
-                    .ui-datepicker-calendar {
-                        display: none;
-                    }
-                </style>
+<!--                <style>-->
+<!--                    .ui-datepicker-calendar {-->
+<!--                        display: none;-->
+<!--                    }-->
+<!--                </style>-->
                 <div class="modal-footer">
                     <button type="button" onclick="setDateAktiv();" class="btn btn-primary">Save</button>
                 </div>
@@ -870,8 +870,8 @@
                     function setDateAktiv(){
                         var monthAktiv = $('#startDate_<?=$t;?>').val();
                         var id_murid = $('#id_murid').val();
-                        alert(monthAktiv);
-                        alert(id_murid);
+//                        alert(monthAktiv);
+//                        alert(id_murid);
                         $.post("<?= _SPPATH; ?>MuridWebHelperExt/setStatusCutiAktiv", {id_murid: id_murid, monthAktiv: monthAktiv},
                             function (data) {
                                 if (data.status_code) {
