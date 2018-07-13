@@ -9,7 +9,8 @@
 class SempoaMain extends WebApps{
 
     function index(){
-        header("Location:"._SPPATH."loginpage");
+//        header("Location:"._SPPATH."loginpage");
+        header("Location:"._SPPATH."maintenancePage");
         die();
     }
 
@@ -57,6 +58,8 @@ class SempoaMain extends WebApps{
 
     function loginpage ()
     {
+        header("Location:"._SPPATH."maintenancePage");
+        die();
 //        if(Auth::isLogged()){
 //            //loginin pakai cookie
 //
@@ -178,6 +181,14 @@ class SempoaMain extends WebApps{
     }
 
 
+    function maintenancePage ()
+    {
+
+        ?>
+
+
+        <?
+    }
     var $access_home = "normal_user";
     function home(){
 

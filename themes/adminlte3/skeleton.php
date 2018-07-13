@@ -67,6 +67,12 @@
             border-radius: 5px;
             background-color: #dedede;
         }
+        body{
+            background-image: url('images/maintenance-page.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+        }
 
     </style>
 </head>
@@ -93,7 +99,10 @@
     </div>
 </div>
 
+<?
 
+die();
+?>
 <div class="wrapper">
 
     <header class="main-header">
