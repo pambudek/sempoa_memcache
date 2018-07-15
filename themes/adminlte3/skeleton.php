@@ -99,10 +99,6 @@
     </div>
 </div>
 
-<?
-
-die();
-?>
 <div class="wrapper">
 
     <header class="main-header">
