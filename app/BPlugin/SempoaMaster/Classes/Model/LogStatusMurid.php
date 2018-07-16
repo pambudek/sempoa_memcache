@@ -17,11 +17,12 @@ class LogStatusMurid extends Model {
     var $main_id = "log_id";
     var $table_name = "sempoa__log_status_murid";
     //Default Coloms for read
-    public $default_read_coloms = "log_id,log_id_murid,log_bln,log_thn,log_status,log_ak_id,log_kpo_id,log_ibo_id,log_tc_id";
+    public $default_read_coloms = "log_id,log_id_murid,log_tgl,log_bln,log_thn,log_status,log_ak_id,log_kpo_id,log_ibo_id,log_tc_id";
 //allowed colom in CRUD filter
-    public $coloumlist = "log_id,log_id_murid,log_bln,log_thn,log_status,log_ak_id,log_kpo_id,log_ibo_id,log_tc_id";
+    public $coloumlist = "log_id,log_id_murid,log_tgl,log_bln,log_thn,log_status,log_ak_id,log_kpo_id,log_ibo_id,log_tc_id";
     public $log_id;
     public $log_id_murid;
+    public $log_tgl;
     public $log_bln;
     public $log_thn;
     public $log_status;
@@ -34,6 +35,7 @@ class LogStatusMurid extends Model {
         $murid = new MuridModel();
         $murid->getByID($id_murid);
         $this->log_id_murid = $id_murid;
+        $this->log_tgl = date("d");
         $this->log_bln = date("n");
         $this->log_thn = date("Y");
         $this->log_ak_id = $murid->murid_ak_id;
@@ -59,6 +61,7 @@ class LogStatusMurid extends Model {
         $murid = new MuridModel();
         $murid->getByID($id_murid);
         $this->log_id_murid = $id_murid;
+        $this->log_tgl = date("d");
         $this->log_bln = date("n");
         $this->log_thn = date("Y");
         $this->log_ak_id = $murid->murid_ak_id;

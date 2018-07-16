@@ -4043,9 +4043,11 @@ class MuridWebHelper extends WebService
 
         $objMurid = new MuridModel();
         $objMurid->getByID($id_murid);
-        $objMurid->status = $id_status;
-        $succ = $objMurid->save(1);
         $json['murid'] = $objMurid;
+        $objMurid->status = $id_status;
+        $json['status'] = $id_status;
+        $succ = $objMurid->save(1);
+
         if ($succ) {
 //
             $json['status_code'] = 1;

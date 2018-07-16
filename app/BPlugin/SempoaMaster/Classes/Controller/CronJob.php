@@ -601,6 +601,7 @@ class CronJob extends WebService
         foreach($arrMurid as $val){
             $log = new LogStatusMurid();
             $log->log_id_murid = $val->id_murid;
+            $log->log_tgl = date("d");
             $log->log_bln = date("n");
             $log->log_thn = date("Y");
             $log->log_ak_id = $val->murid_ak_id;

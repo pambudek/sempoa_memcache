@@ -1999,4 +1999,12 @@ class CoretCoret extends WebService
         }
 
     }
+
+    public function getDate()
+    {
+
+        $a = date("Y") . "-" . date("n");
+        $username = substr($a, strpos($a, '-')+1);
+        pr($username);
+    }
 }
