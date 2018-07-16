@@ -580,7 +580,7 @@ class CronJob extends WebService
     {
         $murid = new MuridModel();
         $arrMurid = $murid->getWhere("status=2 AND murid_date_cuti_aktiv = DATE_FORMAT(CURDATE(),'%Y-%m-05')");
-        foreach($arrMurid as $murid){
+        foreach ($arrMurid as $murid) {
             $murid->murid_date_cuti_aktiv = "0000-00-00";
             $murid->status = 1;
             $murid->save(1);
@@ -591,5 +591,24 @@ class CronJob extends WebService
     {
         $log = new LogStatusMurid();
         $log->getCountSiswaCutiGroup(1901, 'K', 3, 2017, 26);
+    }
+
+    public function createAktivLog()
+    {
+
+        $murid = new MuridModel();
+        $arrMurid = $murid->getWhere("status = 1");
+        foreach($arrMurid as $val){
+            $log = new LogStatusMurid();
+            $log->log_id_murid = $val->id_murid;
+            $log->log_bln = date("n");
+            $log->log_thn = date("Y");
+            $log->log_ak_id = $val->murid_ak_id;
+            $log->log_kpo_id = $val->murid_kpo_id;
+            $log->log_ibo_id = $val->murid_ibo_id;
+            $log->log_tc_id = $val->murid_tc_id;
+            $log->log_status = "A";
+            $log->save();
+        }
     }
 }

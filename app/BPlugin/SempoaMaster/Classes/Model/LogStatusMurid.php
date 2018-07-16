@@ -103,7 +103,7 @@ class LogStatusMurid extends Model {
         } elseif ($orgType == KEY::$TC) {
 
             $count = $this->getJumlah("log_status='$status_siswa' AND log_tc_id=$org_id AND log_thn=$thn AND log_bln=$bln");
- 
+
         }
         return $count;
     }
@@ -119,6 +119,7 @@ class LogStatusMurid extends Model {
 //            $count = $this->getJumlah("log_status='$status_siswa' AND log_kpo_id=$org_id AND log_thn=$thn AND log_bln=$bln");
             $arrLogMuridID = $this->getWhere("log_kpo_id=$org_id AND log_thn=$thn AND log_bln=$bln ORDER BY log_id ASC");
         } elseif ($orgType == KEY::$IBO) {
+            $arrLogMuridID = $this->getWhere("log_ibo_id=$org_id AND log_thn=$thn AND log_bln=$bln ORDER BY log_id ASC");
 
         } elseif ($orgType == KEY::$TC) {
             $arrLogMuridID = $this->getWhere("log_tc_id=$org_id AND log_thn=$thn AND log_bln=$bln ORDER BY log_id ASC");
