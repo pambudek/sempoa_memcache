@@ -67,12 +67,6 @@
             border-radius: 5px;
             background-color: #dedede;
         }
-        /*body{*/
-            /*background-image: url('images/maintenance-page.png');*/
-            /*background-repeat: no-repeat;*/
-            /*background-position: center;*/
-            /*background-size: cover;*/
-        /*}*/
 
     </style>
 </head>
@@ -98,6 +92,7 @@
         <div style='font-size:48px;'><?= Lang::t('OK'); ?></div>
     </div>
 </div>
+
 
 <div class="wrapper">
 
@@ -842,7 +837,7 @@
                         $('.date-picker_<?=$t;?>').datepicker({
                             changeMonth: true,
                             changeYear: true,
-                            minDate: '+1m',
+                            minDate: '-0m',
                             maxDate: '+3m',
                             showButtonPanel: true,
                             dateFormat: 'yy-mm',
@@ -875,8 +870,8 @@
                     function setDateAktiv(){
                         var monthAktiv = $('#startDate_<?=$t;?>').val();
                         var id_murid = $('#id_murid').val();
-//                        alert(monthAktiv);
-//                        alert(id_murid);
+                        alert(monthAktiv);
+                        alert(id_murid);
                         $.post("<?= _SPPATH; ?>MuridWebHelperExt/setStatusCutiAktiv", {id_murid: id_murid, monthAktiv: monthAktiv},
                             function (data) {
                                 if (data.status_code) {
