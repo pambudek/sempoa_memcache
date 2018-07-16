@@ -870,8 +870,8 @@
                     function setDateAktiv(){
                         var monthAktiv = $('#startDate_<?=$t;?>').val();
                         var id_murid = $('#id_murid').val();
-                        alert(monthAktiv);
-                        alert(id_murid);
+//                        alert(monthAktiv);
+//                        alert(id_murid);
                         $.post("<?= _SPPATH; ?>MuridWebHelperExt/setStatusCutiAktiv", {id_murid: id_murid, monthAktiv: monthAktiv},
                             function (data) {
                                 if (data.status_code) {
