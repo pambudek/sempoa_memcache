@@ -688,6 +688,7 @@ class MuridWebHelper extends WebService
                     $nilaiMurid->save();
                 }
 //                $json['buku'] = pr($stockBarangBuku);
+                Generic2::sendEmailToParent($murid_id,"","",KEY::$TYPE_EMAIL_FP);
                 $json['status_code'] = 1;
                 $json['status_message'] = "Payment Entry Success\nSilahkan Masukan Murid Ke Kelas Yang Diinginkan";
                 echo json_encode($json);
@@ -1335,7 +1336,7 @@ class MuridWebHelper extends WebService
 
             $('#status_<?=$id_student_html;?>').dblclick(function () {
 //                var status_sebelum =  $('#status_<?//= $id_student_html; ?>//').text();
-                if(confirm("Anda akan merubah status Anak, Anda yakin?")){
+                if (confirm("Anda akan merubah status Anak, Anda yakin?")) {
                     <?
                     if($murid->pay_firsttime == 1){
                     ?>
@@ -1343,13 +1344,13 @@ class MuridWebHelper extends WebService
                     $('#select_status_<?= $id_student_html; ?>').change(function () {
 
                         var id_status = $('#select_status_<?= $id_student_html; ?>').val();
-                        if(id_status == 1){
+                        if (id_status == 1) {
 
                             $('#modal_cuti_aktiv .modal-body #id_murid').val(<?=$id;?>);
                             $('#modal_cuti_aktiv').modal('show');
 //                        alert(status_sebelum);
                         }
-                        else{
+                        else {
                             $.get("<?= _SPPATH; ?>MuridWebHelper/setStatusMurid?id_murid=<?= $murid->id_murid; ?>" + "&id_status=" + id_status, function (data) {
                                 alert(data.status_message);
                                 if (data.status_code) {
@@ -1370,7 +1371,6 @@ class MuridWebHelper extends WebService
                     }
                     ?>
                 }
-
 
 
             });
@@ -2705,7 +2705,7 @@ class MuridWebHelper extends WebService
                                             if (AccessRight::getMyOrgType() == "tc") {
                                                 ?>
                                                 <button class="btn btn-default belumbayar_<?= $val->bln_id; ?>"
-                                                        id='pay_now_bulanan_<?= $val->bln_id . $t; ?>'>Pay Now
+                                                        id='pay_now_bulanan_<?= $val->bln_id . $t; ?>'>Pay Now Buku
                                                 </button>
 
                                                 <?
@@ -2799,7 +2799,7 @@ class MuridWebHelper extends WebService
                                             if ($val->bln_status == 0) {
 //                                                echo $mk->bln_kupon_id;
                                             } else {
-                                                if ($murid->id_level_masuk == $val->bln_buku_level) {
+                                                if (substr($val->bln_no_invoice, 0, 2) == KEY::$AWALAN_FIRST_PAYMENT) {
                                                     echo "<a target=\"_blank\" href=" . _SPPATH . "MuridWebHelper/printRegister2?id_murid=" . $id . "><span  style=\"vertical-align:middle\" class=\"glyphicon glyphicon-print\"  aria-hidden=\"true\"></span>
                                             </a>";
                                                 } else {
@@ -5171,7 +5171,8 @@ class MuridWebHelper extends WebService
         $iuranBuku = new IuranBuku();
         $arrLevel = Generic::getAllLevel();
         $a = array_keys($arrLevel, $level);
-        $iuranBuku->getWhereOne("bln_murid_id=$id_murid AND bln_buku_level=$a[0]");
+//        $iuranBuku->getWhereOne("bln_murid_id=$id_murid AND bln_buku_level=$a[0]");
+        $iuranBuku->getWhereOne("bln_murid_id=$id_murid AND bln_buku_level=$a[0] AND bln_status = 1 ORDER BY bln_id DESC");
         $tc = new SempoaOrg();
         $tc->getWhereOne("org_id=$murid->murid_tc_id");
         $bukuDgnNo = new StockBuku();
@@ -5181,7 +5182,6 @@ class MuridWebHelper extends WebService
         ?>
 
         <html>
-
         <head>
             <title>Invoice <?= Lang::t("Iuran Buku") ?></title>
             <meta charset="utf-8">

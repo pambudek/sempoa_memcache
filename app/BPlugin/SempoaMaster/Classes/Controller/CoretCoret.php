@@ -1277,7 +1277,43 @@ class CoretCoret extends WebService
                     $bweiter = false;
                 }
 
-            } else {
+            }
+            elseif ($val->org_id == 6) {
+                $kartuStock->getWhereOne("stock_id_buku=$val->id_barang AND stock_status_ibo=1 AND stock_buku_ibo=$val->org_id");
+                if (!is_null($kartuStock->stock_buku_id)) {
+                    $jumlah = $kartuStock->getJumlah("stock_id_buku=$val->id_barang AND stock_status_ibo=1 AND stock_buku_ibo=$val->org_id");
+                    $bweiter = true;
+                    pr("IBO");
+                } else {
+                    $bweiter = false;
+                }
+
+            }
+            elseif ($val->org_id == 113) {
+                $kartuStock->getWhereOne("stock_id_buku=$val->id_barang AND stock_status_ibo=1 AND stock_buku_ibo=$val->org_id");
+                if (!is_null($kartuStock->stock_buku_id)) {
+                    $jumlah = $kartuStock->getJumlah("stock_id_buku=$val->id_barang AND stock_status_ibo=1 AND stock_buku_ibo=$val->org_id");
+                    $bweiter = true;
+                    pr("IBO");
+                } else {
+                    $bweiter = false;
+                }
+
+            }
+
+            elseif ($val->org_id == 116) {
+                $kartuStock->getWhereOne("stock_id_buku=$val->id_barang AND stock_status_ibo=1 AND stock_buku_ibo=$val->org_id");
+                if (!is_null($kartuStock->stock_buku_id)) {
+                    $jumlah = $kartuStock->getJumlah("stock_id_buku=$val->id_barang AND stock_status_ibo=1 AND stock_buku_ibo=$val->org_id");
+                    $bweiter = true;
+                    pr("IBO");
+                } else {
+                    $bweiter = false;
+                }
+
+            }
+
+            else {
                 $kartuStock->getWhereOne("stock_id_buku=$val->id_barang AND stock_status_tc=1 AND stock_buku_tc=$val->org_id");
                 if (!is_null($kartuStock->stock_buku_id)) {
                     $jumlah = $kartuStock->getJumlah("stock_id_buku=$val->id_barang AND stock_status_tc=1 AND stock_buku_tc=$val->org_id");
@@ -2003,8 +2039,203 @@ class CoretCoret extends WebService
     public function getDate()
     {
 
+        $murid = new MuridModel();
+        $murid->getByID(12522);
+        pr($murid->getParentEmail());
+//        pr($murid->getParentName(12522));
+
+        die();
+        $a = new Leapmail2();
+        $a->sendHTMLEmail("efindi.ongso@gmail.com","Test","","sasaas");
+        die();
         $a = date("Y") . "-" . date("n");
         $username = substr($a, strpos($a, '-')+1);
         pr($username);
+    }
+
+
+//    function printSPP2($id_murid, $id_kupon)
+         function printSPP2()
+    {
+
+        $id_murid = 12522;
+        $id_kupon = 6000090198;
+
+
+        $invoice_id = 13437;
+        $level = "Junior 2";
+
+        pr(Generic2::printRegister2($id_murid));
+        die();
+        Generic2::sendEmailToParent($id_murid, "", $invoice_id,KEY::$TYPE_EMAIL_BUKU);
+//        pr(Generic2::printBuku2($id_murid, $invoice_id, $level));
+
+        die();
+
+        pr(Generic2::sendEmailToParent($id_murid, $id_kupon));
+        die();
+        $murid = new MuridModel();
+        $murid->getByID($id_murid);
+
+        $kuponSatuan = new KuponSatuan();
+        $nama = $murid->getNameMurid();
+        $kuponSatuan->getByID($id_kupon);
+        $arrjenisBiayaSPP = Generic::getJenisBiayaType();
+        $jenisBiayaSPP = $arrjenisBiayaSPP[$murid->id_level_sekarang];
+        $jenisbm = new JenisBiayaModel();
+        $jenisbm->getByID(AccessRight::getMyOrgID() . "_" . $jenisBiayaSPP);
+        $iuranBulanan = new IuranBulanan();
+        $iuranBulanan->getWhereOne("bln_kupon_id=$kuponSatuan->kupon_id");
+        $tc = new SempoaOrg();
+        $tc->getWhereOne("org_id=$murid->murid_tc_id");
+        $date = new DateTime($iuranBulanan->bln_date_pembayaran);
+        $tanggal = $date->format("d-m-Y");
+        ?>
+        <html>
+
+        <head>
+            <meta charset="utf-8">
+            <style>
+
+
+                #data_tc {
+                    text-align: center;
+                }
+
+                div.info_invoices {
+                    font-size: 12px;
+                }
+
+                div.nama_siswa {
+                    font-size: 12px;
+                }
+
+                table {
+                    font-family: arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                    font-size: 12px;
+                }
+
+                td, th {
+
+                    border: 1px solid #414141;
+                    text-align: center;
+                    padding: 8px;
+                    font-size: 12px;
+                }
+
+                th {
+                    background-color: #dddddd;
+                }
+
+                #sempoasip_pusat {
+                    text-align: center;
+                }
+
+                #logo_sempoa {
+                    display: block;
+                    margin: auto;
+                }
+
+                div.penutup_invoices {
+                    text-align: center;
+                    margin-left: 450px;
+                    margin-right: 450px;
+                }
+
+                .container {
+                    font-size: 12px;
+                }
+            </style>
+
+        </head>
+
+        <body>
+
+        <section class="sheet padding-10mm">
+            <!-- Write HTML just like a web page -->
+            <article>
+
+                <div class="container" style="margin-left: 20px; margin-right: 20px;">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="invoice_orang_tua">
+                                <div class="kop_invoices">
+                                    <h4 id="data_tc">
+                                        <?= $tc->nama; ?><br>
+                                        <?= $tc->alamat; ?><br>
+                                        Telp. <?= $tc->nomor_telp; ?>, Fax. <?= $tc->tc_no_fax_office; ?>,
+                                        HP. <?= $tc->tc_no_hp_office; ?>
+                                    </h4>
+                                    <div class="info_invoices">
+                                        <b>No. Invoice : <?= $iuranBulanan->bln_no_invoice; ?></b> <br>
+                                        <b>Tanggal : <?= $tanggal; ?></b>
+                                    </div>
+                                    <div class="nama_siswa">
+                                        <p>
+                                            Telah diterima pembayaran oleh Murid :<br>
+                                            <b>Nama Murid : <?= $nama; ?></b><br>
+                                            <b>No Murid : <?= $murid->kode_siswa; ?></b><br>
+                                        </p>
+                                    </div>
+                                    <table style="border-right: 20px;">
+                                        <tr>
+                                            <th>No Kupon</th>
+                                            <th>Keterangan</th>
+                                            <th>Harga</th>
+                                        </tr>
+                                        <tr>
+                                            <td><?= $iuranBulanan->bln_kupon_id; ?></td>
+                                            <td>Iuran Bulanan : <?= $iuranBulanan->bln_date; ?></td>
+                                            <td><?= idr($jenisbm->harga); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td style="text-align:right;padding-right:15px;font-style:bold;">Jumlah
+                                                Total
+                                            </td>
+                                            <td><?= idr($jenisbm->harga); ?></td>
+                                        </tr>
+
+                                    </table>
+
+                    <span>
+	<p>Pembayaran melalui mesin EDC atau via transfer ke :</p>
+	<h4 id="sempoasip_pusat">SEMPOA SIP<br><?= $tc->tc_nama_bank; ?> <?= $tc->tc_cabang_bank; ?>
+        <br><?= $tc->tc_acc_bank; ?></h4>
+
+</span>
+                                    <div class="clearfix"></div>
+
+                                    <div class="col-md-3" style="text-align: right;">
+                                        ....................., <?= $tanggal; ?><!--</div>-->
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <br><br>
+                                    <div>
+                                        <p style="border-right: 20px; float: left;">Catatan :
+                                            Setiap Training
+                                            Centre
+                                            beroperasional dan
+                                            memiliki kepemilikan secara mandiri</p>
+
+                                    </div>
+                                    <br><br><br>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+        </section>
+        </body>
+        </html>
+        <?
+
     }
 }

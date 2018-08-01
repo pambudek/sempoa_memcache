@@ -54,7 +54,7 @@ class MuridModel extends SempoaModel
     public $murid_date_cuti_aktiv;
     public $removeAutoCrudClick = array("pay_firsttime", "profile", "no_pay_firsttime");
     public $statushelp;
-    public $hideColoums = array("murid_ak_id", "murid_kpo_id", "murid_ibo_id", "murid_kurikulum", "murid_parent_id","murid_date_cuti_aktiv");
+    public $hideColoums = array("murid_ak_id", "murid_kpo_id", "murid_ibo_id", "murid_kurikulum", "murid_parent_id", "murid_date_cuti_aktiv");
 
     public $APPWS = "id_murid,kode_siswa,nama_siswa,jenis_kelamin,alamat,agama,tempat_lahir,id_level_sekarang,tanggal_lahir,murid_ak_id,murid_kpo_id,murid_ibo_id,murid_tc_id,murid_app_pwd";
 
@@ -159,6 +159,7 @@ class MuridModel extends SempoaModel
         $return['murid_active'] = new Leap\View\InputText("hidden", "murid_active", "murid_active", $this->murid_active);
         $return['murid_parent_id'] = new Leap\View\InputText("hidden", "murid_parent_id", "murid_parent_id", $this->murid_parent_id);
         $return['no_pay_firsttime'] = new Leap\View\InputText("hidden", "no_pay_firsttime", "no_pay_firsttime", $this->no_pay_firsttime);
+        $return['murid_date_cuti_aktiv'] = new Leap\View\InputText("hidden", "murid_date_cuti_aktiv", "murid_date_cuti_aktiv", $this->murid_date_cuti_aktiv);
 
         return $return;
     }
@@ -268,8 +269,7 @@ class MuridModel extends SempoaModel
                     } else {
                         $obj->no_pay_firsttime = "";
                     }
-                }
-                else{
+                } else {
                     $obj->no_pay_firsttime = "";
                 }
 
@@ -413,5 +413,23 @@ class MuridModel extends SempoaModel
             $obj->TC = Generic::getTCNamebyID($obj->murid_tc_id);
         }
         return $return;
+    }
+
+    public function getParentEmail()
+    {
+        $this->getWhereOne("id_murid=$this->id_murid");
+        return $this->email_ortu;
+    }
+
+    public function getParentName()
+    {
+        $this->getWhereOne("id_murid=$this->id_murid");
+        return $this->nama_ortu;
+    }
+
+    public function getNameMurid()
+    {
+        $this->getWhereOne("id_murid=$this->id_murid");
+        return $this->nama_siswa;
     }
 }

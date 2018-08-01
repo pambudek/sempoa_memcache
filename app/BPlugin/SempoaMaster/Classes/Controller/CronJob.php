@@ -580,6 +580,7 @@ class CronJob extends WebService
     {
         $murid = new MuridModel();
         $arrMurid = $murid->getWhere("status=2 AND murid_date_cuti_aktiv = DATE_FORMAT(CURDATE(),'%Y-%m-05')");
+        pr(count($arrMurid));
         foreach ($arrMurid as $murid) {
             $murid->murid_date_cuti_aktiv = "0000-00-00";
             $murid->status = 1;

@@ -19,9 +19,10 @@ class Mailjet {
     var $debug = 0;
 
     # Edit with your Mailjet API keys (you can find them here : https://app.mailjet.com/account/api_keys)
-    var $apiKey    = 'a2262548e262ae743bb3b0de1e3539ab';
-    var $secretKey = '54e59c4efa8a7f311d69d6a7f208ee5f';
-
+//    var $apiKey    = 'a2262548e262ae743bb3b0de1e3539ab';
+//    var $secretKey = '54e59c4efa8a7f311d69d6a7f208ee5f';
+    var $apiKey    = 'f9cb29cc67d59783e2fb43a079e8de39';
+    var $secretKey = 'f88a2e4426d0722030377bf172d5cfc3';
     # Constructor function
     public function __construct ($apiKey = false, $secretKey = false)
     {

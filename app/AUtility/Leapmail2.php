@@ -10,8 +10,8 @@ use \Mailjet\Resources;
 
 class Leapmail2 {
 
-    public $fromEmail = "info@leap-systems.com";
-    public $fromName = "Appear App";
+    public $fromEmail = "info@sempoasip.com";
+    public $fromName = "Sempoa SIP";
 
     function sendHTMLEmail($email, $judul, $isi,$isiHTML){
 

@@ -352,4 +352,15 @@ class KEY
     // Inovice
     public static $INVOICE_NAIK_KELAS = 1;
 
+
+    // TYPE EMAIL
+    public static $TYPE_EMAIL_SPP = "SPP";
+    public static $TYPE_EMAIL_BUKU = "Buku";
+    public static $TYPE_EMAIL_FP = "FP";
+
+
+    // Subject EMAIL;
+    public static $SUBJECT_SPP = "SEMPOASIP - Bukti Pembayaran Bulanan";
+    public static $SUBJECT_PEMBELIAN_BUKU = "SEMPOASIP - Pembelian Buku";
+    public static $SUBJECT_FIRST_PAYMENT = "SEMPOASIP - Bukti Pembayaran Pertama";
 }
