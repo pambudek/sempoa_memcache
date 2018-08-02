@@ -2065,7 +2065,8 @@ class CoretCoret extends WebService
         $invoice_id = 13437;
         $level = "Junior 2";
 
-        pr(Generic2::printRegister2($id_murid));
+//        sendEmailToParent($id_murid, $idKuponSatuan = "", $idInvoice = "", $type)
+        pr(Generic2::sendEmailToParent($id_murid,"","",KEY::$TYPE_EMAIL_FP));
         die();
         Generic2::sendEmailToParent($id_murid, "", $invoice_id,KEY::$TYPE_EMAIL_BUKU);
 //        pr(Generic2::printBuku2($id_murid, $invoice_id, $level));

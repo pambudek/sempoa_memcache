@@ -57,7 +57,7 @@ class Generic2
     }
 
 
-    public static function sendEmailToParent($id_murid, $idKuponSatuan="", $idInvoice="",$type)
+    public static function sendEmailToParent($id_murid, $idKuponSatuan = "", $idInvoice = "", $type)
     {
 
         $murid = new MuridModel();
@@ -68,7 +68,7 @@ class Generic2
                 self::sendEmailSempoa($murid->getParentEmail(), KEY::$SUBJECT_SPP, self::printSPP2($id_murid, $idKuponSatuan));
             }
             if ($type == KEY::$TYPE_EMAIL_BUKU) {
-                self::sendEmailSempoa($murid->getParentEmail(), KEY::$SUBJECT_PEMBELIAN_BUKU, self::printBuku2($id_murid, $idInvoice,Generic::getLevelNameByID($murid->id_level_masuk)));;
+                self::sendEmailSempoa($murid->getParentEmail(), KEY::$SUBJECT_PEMBELIAN_BUKU, self::printBuku2($id_murid, $idInvoice, Generic::getLevelNameByID($murid->id_level_masuk)));;
             }
 
             if ($type == KEY::$TYPE_EMAIL_FP) {
@@ -99,12 +99,12 @@ class Generic2
         if ($murid->getParentName() != "") {
             $sambut = "Dear " . $murid->getParentName() . ", ";
         } else {
-            $sambut = "Dear Mami " . $murid->getNameMurid() . ", ";
+            $sambut = "Dear Mami/Papi " . $murid->getNameMurid() . ", ";
         }
 
         $level = Generic::getLevelNameByID($murid->id_level_sekarang);
         $jumlah = idr($jenisbm->harga);
-
+        $logo = _SPPATH._PHOTOURL."/Picture1.png";
         $return = "<html>";
         $return = $return . "  <meta charset=\"utf-8\">
             <style>
@@ -208,12 +208,7 @@ class Generic2
 
                                     </table>
 
-                    <span>
-	<p>Pembayaran melalui mesin EDC atau via transfer ke :</p>
-	<h4 id=\"sempoasip_pusat\">SEMPOA SIP<br> $tc->tc_nama_bank  $tc->tc_cabang_bank
-        <br>$tc->tc_acc_bank</h4>
-
-</span>
+                    <span></span>
                                     <div class=\"clearfix\"></div>
 
                                     <div class=\"col-md-3\" style=\"text-align: right;\">
@@ -271,8 +266,9 @@ class Generic2
         if ($murid->getParentName() != "") {
             $sambut = "Dear " . $murid->getParentName() . ", ";
         } else {
-            $sambut = "Dear Mami " . $murid->getNameMurid() . ", ";
+            $sambut = "Dear Mami/Papi " . $murid->getNameMurid() . ", ";
         }
+        $logo = _SPPATH._PHOTOURL."/Picture1.png";
         $return = "<html>
         <head>
             <title>Invoice <?= Lang::t(\"Iuran Buku\") ?></title>
@@ -390,12 +386,7 @@ class Generic2
                                             </tr>
                                             </tbody>
                                         </table>
-                    <span>
-	<p>Pembayaran melalui mesin EDC atau via transfer ke :</p>
-	<h4 id=\"sempoasip_pusat\">SEMPOA SIP<br> $tc->tc_nama_bank  $tc->tc_cabang_bank
-        <br>$tc->tc_acc_bank</h4>
-
-</span>
+                    <span></span>
                                         <div class=\"clearfix\"></div>
 
                                         <div class=\"col-md-3\" style=\"text-align: right;\">
@@ -418,9 +409,11 @@ class Generic2
 
                                 </div>
                             </div>
-                        </div>
+                        </div>";
+        $return = $return . "Hormat Kami, <br><br>";
+        $return = $return . "Sempoa SIP <br>";
+        $return = $return . "</div>
 
-                    </div>
                 </div>
         </body>
         </article>
@@ -473,8 +466,18 @@ class Generic2
         $name = $murid->nama_siswa;
         $nobuku = Generic:: getNoBukuByIuranBulananIDWithTC($pay->bln_no_invoice, $pay->murid_tc_id);
         $levelmasuk = Generic::getLevelNameByID($murid->id_level_masuk);
-        $return = "  <html>
 
+        if ($murid->getParentName() != "") {
+            $sambut = "Dear " . $murid->getParentName() . ", ";
+        } else {
+            $sambut = "Dear Mami/Papi " . $murid->getNameMurid() . ", ";
+        }
+
+        $logo = _SPPATH._PHOTOURL."/Picture1.png";
+//        echo _SPPATH._PHOTOURL;
+
+
+        $return = "<html>
         <head>
             <style>
 
@@ -529,9 +532,11 @@ class Generic2
         <body>
         <section class=\"sheet padding-10mm\">
             <article>
-                <div class=\"invoice_orang_tua\">
-                    <div class=\"kop_invoices\">
-
+                <div class=\"invoice_orang_tua\">";
+        $return = $return . $sambut;
+        $return = $return . "<div class=\"kop_invoices\">
+              <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:50%;\"/>
+<div class=\"clearfix\"></div>
                         <h4 id=\"data_tc\">
                             $tc->nama<br>
                             $tc->alamat<br>
@@ -584,10 +589,6 @@ class Generic2
                         </table>
 
 <span>
-	<p>Pembayaran melalui mesin EDC atau via transfer ke :</p>
-	<h4 id=\"sempoasip_pusat\">SEMPOA SIP<br> $tc->tc_nama_bank  $tc->tc_cabang_bank
-        <br> $tc->tc_acc_bank</h4>
-
 	<p style=\"float: right; margin-right: 20px;\">$tanggal</p>
 </span>
                         <br><br>
@@ -595,12 +596,13 @@ class Generic2
                             <p style=\"float: left;\">Catatan : Setiap Training Centre beroperasional
                                 dan
                                 memiliki kepemilikan secara mandiri</p>
-                            <p style=\"float: right;\">Training Center</p>
-                        </div>
-                        <br><br>
-                    </div>
+                         </div>
+                                    <br><br><br>
 
-                </div>
+                                </div>";
+        $return = $return . "Hormat Kami, <br><br>";
+        $return = $return . "Sempoa SIP <br>";
+        $return = $return . "</div>
             </article>
         </section>
 
