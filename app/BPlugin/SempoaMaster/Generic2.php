@@ -80,7 +80,6 @@ class Generic2
 
     static function printSPP2($id_murid, $idKuponSatuan)
     {
-
         $kuponSatuan = new KuponSatuan();
         $kuponSatuan->getByID($idKuponSatuan);
         $murid = new MuridModel();
@@ -101,16 +100,16 @@ class Generic2
         } else {
             $sambut = "Dear Mami/Papi " . $murid->getNameMurid() . ", ";
         }
-
         $level = Generic::getLevelNameByID($murid->id_level_sekarang);
         $jumlah = idr($jenisbm->harga);
-        $logo = _SPPATH._PHOTOURL."/Picture1.png";
-        $return = "<html>";
-        $return = $return . "  <meta charset=\"utf-8\">
+        $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
+        $return = "  <html>
+
+        <head>
+            <meta charset=\"utf-8\">
             <style>
 
-
-                #data_tc {
+               #data_tc {
                     text-align: center;
                 }
 
@@ -159,20 +158,25 @@ class Generic2
                 .container {
                     font-size: 12px;
                 }
-            </style>";
-        $return = $return . "<body>";
-        $return = $return . "<section class=\"sheet padding-10mm\">";
-        $return = $return . " <article>";
-        $return = $return . " <div class=\"container\" style=\"margin-left: 20px; margin-right: 20px;\">";
-        $return = $return . " <div class=\"row\">";
-        $return = $return . "<div class=\"col-xs-12\">";
-        $return = $return . " <div class=\"invoice_orang_tua\">";
-        $return = $return . $sambut;
-        $return = $return . " <div class=\"kop_invoices\">
+            </style>
+
+        </head>
+
+        <body>
+        <section class=\"sheet padding-10mm\">
+            <!-- Write HTML just like a web page -->
+            <article>
+
+                <div class=\"container\" style=\"margin-left: 20px; margin-right: 20px;\">
+                    <div class=\"row\">
+                        <div class=\"col-xs-12\">
+                            <div class=\"invoice_orang_tua\">
+                                <div class=\"kop_invoices\">
+                                 <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
                                     <h4 id=\"data_tc\">
-                                         $tc->nama <br>
-                                       $tc->alamat<br>
-                                        Telp. $tc->nomor_telp , Fax. $tc->tc_no_fax_office,
+                                        $tc->nama<br>
+                                        $tc->alamat<br>
+                                        Telp. $tc->nomor_telp, Fax. $tc->tc_no_fax_office,
                                         HP. $tc->tc_no_hp_office
                                     </h4>
                                     <div class=\"info_invoices\">
@@ -181,10 +185,11 @@ class Generic2
                                     </div>
                                     <div class=\"nama_siswa\">
                                         <p>
-                                            Telah diterima pembayaran oleh Murid :<br>
-                                            <b>Nama Murid :  $nama </b><br>
-                                            <b>No Murid :  $murid->kode_siswa</b><br>
-                                            <b>Level :  $level</b><br>
+                                            Telah diterima pembayaran:<br>
+                                            <b>Nama Murid : $nama</b><br>
+                                            <b>No Murid : $murid->kode_siswa</b><br>
+                                            <b>Level : $level</b><br>
+
                                         </p>
                                     </div>
                                     <table style=\"border-right: 20px;\">
@@ -208,52 +213,49 @@ class Generic2
 
                                     </table>
 
-                    <span></span>
                                     <div class=\"clearfix\"></div>
 
-                                    <div class=\"col-md-3\" style=\"text-align: right;\">
-                                        $tanggal<!--</div>-->
 
-                                    </div>
                                     <div class=\"clearfix\"></div>
                                     <br><br>
                                     <div>
-                                        <p style=\"border-right: 20px; float: left;\">Catatan :
+                                        <p style=\"border-right: 20px; float: left;\"><b>Catatan :</b>
                                             Setiap Training
                                             Centre
                                             beroperasional dan
                                             memiliki kepemilikan secara mandiri</p>
 
                                     </div>
-                                    <br><br><br>
-
-                                </div>";
-        $return = $return . "Hormat Kami, <br><br>";
+                                    <br><br><br>";
+                                     $return = $return . "Hormat Kami, <br><br>";
         $return = $return . "Sempoa SIP <br>";
-        $return = $return . " </div>";
-        $return = $return . "  </div>";
-        $return = $return . " </article>";
-        $return = $return . " </section>";
-        $return = $return . "</body>";
-        $return = $return . "</html>";
+        $return = $return . "</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+        </section>
+        </body>
+        </html>";
+
 
         return $return;
-
     }
 
 
     static function printBuku2($id_murid, $invoice_id, $level)
     {
-
         $jenisbm = new JenisBiayaModel();
         $jenisbm->getByID(AccessRight::getMyOrgID() . "_" . KEY::$BIAYA_IURAN_BUKU);
         $murid = new MuridModel();
         $murid->getByID($id_murid);
+        $nama = $murid->nama_siswa;
         $iuranBuku = new IuranBuku();
         $arrLevel = Generic::getAllLevel();
         $a = array_keys($arrLevel, $level);
         $iuranBuku->getWhereOne("bln_murid_id=$id_murid AND bln_buku_level=$a[0] AND bln_status = 1 ORDER BY bln_id DESC");
-
         $tc = new SempoaOrg();
         $tc->getWhereOne("org_id=$murid->murid_tc_id");
         $bukuDgnNo = new StockBuku();
@@ -262,21 +264,20 @@ class Generic2
         $level2 = Generic::getLevelNameByID($murid->id_level_sekarang);
         $jumlah = idr($jenisbm->harga);
         $return = "";
-
         if ($murid->getParentName() != "") {
             $sambut = "Dear " . $murid->getParentName() . ", ";
         } else {
             $sambut = "Dear Mami/Papi " . $murid->getNameMurid() . ", ";
         }
-        $logo = _SPPATH._PHOTOURL."/Picture1.png";
-        $return = "<html>
+        $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
+        $jumlah = idr($jenisbm->harga);
+        $return = " <html>
         <head>
             <title>Invoice <?= Lang::t(\"Iuran Buku\") ?></title>
             <meta charset=\"utf-8\">
             <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
 
             <style>
-
                 #data_tc {
                     text-align: center;
                 }
@@ -339,13 +340,13 @@ class Generic2
                 <div class=\"container\">
                     <div class=\"row\">
                         <div class=\"col-xs-12\">
-                            <div class=\"invoice_orang_tua\">";
-        $return = $return . $sambut;
-        $return = $return . "<div class=\"kop_invoices\">
+                            <div class=\"invoice_orang_tua\">
+                                <div class=\"kop_invoices\">
+                                 <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
                                     <h4 id=\"data_tc\">
-                                         $tc->nama<br>
+                                        $tc->nama<br>
                                         $tc->alamat<br>
-                                        Telp. $tc->nomor_telp, Fax.$tc->tc_no_fax_office,
+                                        Telp. $tc->nomor_telp, Fax. $tc->tc_no_fax_office,
                                         HP. $tc->tc_no_hp_office
                                     </h4>
                                     <div class=\"info_invoices\">
@@ -354,9 +355,10 @@ class Generic2
                                     </div>
                                     <div class=\"nama_siswa\">
                                         Telah diterima pembayaran oleh Murid :<br>
-                                        <b>Nama Murid : $murid->nama_siswa</b><br>
+                                        <b>Nama Murid : $nama</b><br>
                                         <b>No Murid : $murid->kode_siswa</b><br>
-                                        <b>Level : $level</b><br><br>
+                                        <b>Level : $level</b><br>
+                                        <br>
                                         <table style=\"border-right: 20px;\">
                                             <thead>
                                             <th>No Buku</th>
@@ -364,18 +366,6 @@ class Generic2
                                             <th>Harga</th>
                                             </thead>
                                             <tbody>";
-
-        foreach ($arbukuDgnNo as $val) {
-            $date = new DateTime($val->stock_buku_tgl_keluar_tc);
-            $tanggal = $date->format("d-m-Y");
-            $return = $return . "<tr>
-                <td> $val->stock_buku_no</td>
-                <td>$val->stock_name_buku</td>
-                <td>$jumlah</td>
-            </tr>";
-
-
-        }
 
         $return = $return . "<tr>
                                                 <td></td>
@@ -386,17 +376,11 @@ class Generic2
                                             </tr>
                                             </tbody>
                                         </table>
-                    <span></span>
-                                        <div class=\"clearfix\"></div>
 
-                                        <div class=\"col-md-3\" style=\"text-align: right;\">
-                                            <!--</div>-->
 
-                                        </div>
-                                        <div class=\"clearfix\"></div>
                                         <br><br>
                                         <div>
-                                            <p style=\"border-right: 20px; float: left;margin-left: 20px;\">Catatan :
+                                            <p style=\"border-right: 20px; float: left;margin-left: 20px;\"><b>Catatan :</b>
                                                 Setiap Training
                                                 Centre
                                                 beroperasional dan
@@ -409,18 +393,17 @@ class Generic2
 
                                 </div>
                             </div>
-                        </div>";
-        $return = $return . "Hormat Kami, <br><br>";
-        $return = $return . "Sempoa SIP <br>";
-        $return = $return . "</div>
+                        </div>
 
+                    </div>
                 </div>
         </body>
         </article>
         </section>
         </html>";
-        return $return;
 
+
+        return $return;
     }
 
     static function printRegister2($id_murid)
@@ -460,9 +443,9 @@ class Generic2
         }
         $total = idr($pay->murid_pay_value);
         $tc = new SempoaOrg();
-        $tc->getWhereOne("org_id=$murid->murid_tc_id");
+        $tc->getWhereOne("org_id = $murid->murid_tc_id");
         $date = new DateTime($pay->murid_pay_date);
-        $tanggal = $date->format("d-m-Y");
+        $tanggal = $date->format("d - m - Y");
         $name = $murid->nama_siswa;
         $nobuku = Generic:: getNoBukuByIuranBulananIDWithTC($pay->bln_no_invoice, $pay->murid_tc_id);
         $levelmasuk = Generic::getLevelNameByID($murid->id_level_masuk);
@@ -470,10 +453,10 @@ class Generic2
         if ($murid->getParentName() != "") {
             $sambut = "Dear " . $murid->getParentName() . ", ";
         } else {
-            $sambut = "Dear Mami/Papi " . $murid->getNameMurid() . ", ";
+            $sambut = "Dear Mami / Papi " . $murid->getNameMurid() . ", ";
         }
 
-        $logo = _SPPATH._PHOTOURL."/Picture1.png";
+        $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
 //        echo _SPPATH._PHOTOURL;
 
 
@@ -535,7 +518,7 @@ class Generic2
                 <div class=\"invoice_orang_tua\">";
         $return = $return . $sambut;
         $return = $return . "<div class=\"kop_invoices\">
-              <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:50%;\"/>
+              <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\"/>
 <div class=\"clearfix\"></div>
                         <h4 id=\"data_tc\">
                             $tc->nama<br>
@@ -549,9 +532,11 @@ class Generic2
                         </div>
                         <div class=\"nama_siswa\">
                             <p>
-                                Telah diterima pembayaran oleh Murid :<br>
+                                Telah diterima pembayaran :<br>
                                 <b>Nama Murid : $name</b><br>
                                 <b>No Murid : $murid->kode_siswa</b><br>
+                                <b>Level : $levelmasuk</b><br>
+
                             </p>
                         </div>
                         <table>
@@ -588,12 +573,9 @@ class Generic2
 
                         </table>
 
-<span>
-	<p style=\"float: right; margin-right: 20px;\">$tanggal</p>
-</span>
                         <br><br>
                         <div>
-                            <p style=\"float: left;\">Catatan : Setiap Training Centre beroperasional
+                            <p style=\"float: left;\"><b>Catatan :</b> Setiap Training Centre beroperasional
                                 dan
                                 memiliki kepemilikan secara mandiri</p>
                          </div>
