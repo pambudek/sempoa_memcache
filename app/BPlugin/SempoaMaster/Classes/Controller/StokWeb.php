@@ -704,6 +704,8 @@ class StokWeb extends WebService
         $brg_id = key($arrJenisBarang);
         if ($myOrgType == KEY::$KPO) {
             $arrIbos = Generic::getAllMyIBO($myorgid);
+            pr($arrIbos);
+            die();
             $ibo_id = isset($_GET['ibo_id']) ? addslashes($_GET['ibo_id']) : Key($arrIbos);
             $arrStock = $stockNo->getWhere("stock_buku_status_kpo = 0  AND stock_id_buku = $brg_id AND stock_buku_kpo =$myorgid AND stock_buku_ibo=$ibo_id AND MONTH(stock_buku_tgl_keluar_kpo)='$bln'  AND YEAR(stock_buku_tgl_keluar_kpo)= '$thn'  ORDER by stock_buku_id ASC");
 //            $arrStock2 = $stockNo->getWhere("stock_buku_status_kpo = 0  AND stock_buku_kpo =$myorgid ORDER by stock_buku_id ASC");
