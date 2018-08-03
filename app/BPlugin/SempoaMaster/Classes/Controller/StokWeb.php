@@ -709,6 +709,7 @@ class StokWeb extends WebService
 //            $arrStock2 = $stockNo->getWhere("stock_buku_status_kpo = 0  AND stock_buku_kpo =$myorgid ORDER by stock_buku_id ASC");
             $arrStock2 = $stockNo->getWhere("stock_buku_status_kpo = 0  AND stock_buku_kpo =$myorgid ORDER by stock_buku_no ASC");
 pr($arrStock2);
+            die();
 
         } elseif ($myOrgType == KEY::$IBO) {
             $arrMyTC = Generic::getAllMyTC(AccessRight::getMyOrgID());
