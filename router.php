@@ -15,6 +15,7 @@
  ************************************/
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
+phpinfo();
 /******************************
  *  LOAD All Frameworks
  *  using Leap loosely coupled Object Oriented Framework
