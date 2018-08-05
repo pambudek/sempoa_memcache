@@ -103,7 +103,8 @@ class Generic2
         $level = Generic::getLevelNameByID($murid->id_level_sekarang);
         $jumlah = idr($jenisbm->harga);
         $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
-        $return = "  <html>
+
+        $return = $return . "  <html>
 
         <head>
             <meta charset=\"utf-8\">
@@ -171,8 +172,9 @@ class Generic2
                     <div class=\"row\">
                         <div class=\"col-xs-12\">
                             <div class=\"invoice_orang_tua\">
-                                <div class=\"kop_invoices\">
-                                 <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
+                                <div class=\"kop_invoices\">";
+        $return = $return . $sambut;
+        $return = $return . "<img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
                                     <h4 id=\"data_tc\">
                                         $tc->nama<br>
                                         $tc->alamat<br>
@@ -227,7 +229,7 @@ class Generic2
 
                                     </div>
                                     <br><br><br>";
-                                     $return = $return . "Hormat Kami, <br><br>";
+        $return = $return . "Hormat Kami, <br><br>";
         $return = $return . "Sempoa SIP <br>";
         $return = $return . "</div>
                             </div>
@@ -262,7 +264,7 @@ class Generic2
         $arbukuDgnNo = $bukuDgnNo->getWhere("stock_invoice_murid=$iuranBuku->bln_id");
         $arbukuDgnNo = $bukuDgnNo->getWhere("stock_invoice_murid=$invoice_id");
         $level2 = Generic::getLevelNameByID($murid->id_level_sekarang);
-        $jumlah = idr($jenisbm->harga);
+
         $return = "";
         if ($murid->getParentName() != "") {
             $sambut = "Dear " . $murid->getParentName() . ", ";
@@ -271,13 +273,16 @@ class Generic2
         }
         $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
         $jumlah = idr($jenisbm->harga);
-        $return = " <html>
+
+        $return = $return . "<html>
         <head>
             <title>Invoice <?= Lang::t(\"Iuran Buku\") ?></title>
             <meta charset=\"utf-8\">
             <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
 
             <style>
+
+
                 #data_tc {
                     text-align: center;
                 }
@@ -341,8 +346,9 @@ class Generic2
                     <div class=\"row\">
                         <div class=\"col-xs-12\">
                             <div class=\"invoice_orang_tua\">
-                                <div class=\"kop_invoices\">
-                                 <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
+                                <div class=\"kop_invoices\">";
+        $return = $return . $sambut;
+        $return = $return . "<img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
                                     <h4 id=\"data_tc\">
                                         $tc->nama<br>
                                         $tc->alamat<br>
@@ -357,8 +363,7 @@ class Generic2
                                         Telah diterima pembayaran oleh Murid :<br>
                                         <b>Nama Murid : $nama</b><br>
                                         <b>No Murid : $murid->kode_siswa</b><br>
-                                        <b>Level : $level</b><br>
-                                        <br>
+                                        <b>Level : $level2</b><br><br>
                                         <table style=\"border-right: 20px;\">
                                             <thead>
                                             <th>No Buku</th>
@@ -367,7 +372,17 @@ class Generic2
                                             </thead>
                                             <tbody>";
 
-        $return = $return . "<tr>
+
+                                             foreach ($arbukuDgnNo as $val) {
+                                                 $date = new DateTime($val->stock_buku_tgl_keluar_tc);
+                                                 $tanggal = $date->format("d-m-Y");
+                                                 $return = $return . "<tr>
+                                                    <td>$val->stock_buku_no</td>
+                                                    <td>$val->stock_name_buku</td>
+                                                    <td>$jumlah</td>
+                                                </tr>";
+                                             }
+                                            $return = $return . "<tr>
                                                 <td></td>
                                                 <td style=\"text-align:right;padding-right:15px;font-style:bold;\">Jumlah
                                                     Total
@@ -377,19 +392,20 @@ class Generic2
                                             </tbody>
                                         </table>
 
-
+                                        <div class=\"clearfix\"></div>
                                         <br><br>
                                         <div>
-                                            <p style=\"border-right: 20px; float: left;margin-left: 20px;\"><b>Catatan :</b>
+                                             <p style=\"float: left;\"><b>Catatan :</b>
                                                 Setiap Training
                                                 Centre
                                                 beroperasional dan
                                                 memiliki kepemilikan secara mandiri</p>
 
                                         </div>
-                                        <br><br><br>
-
-                                    </div>
+                                        <br><br><br>";
+        $return = $return . "Hormat Kami, <br><br>";
+        $return = $return . "Sempoa SIP <br>";
+        $return = $return . "</div>
 
                                 </div>
                             </div>
@@ -401,7 +417,6 @@ class Generic2
         </article>
         </section>
         </html>";
-
 
         return $return;
     }
