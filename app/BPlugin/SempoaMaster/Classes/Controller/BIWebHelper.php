@@ -24,6 +24,7 @@ class BIWebHelper extends WebService
         $waktu = $bln . "-" . $thn;
         $dataArray = array();
         $i = 0;
+        die();
         foreach ($arrMyTC as $keytc => $tc) {
             $rekap_siswa = new RekapSiswaIBOModel();
             $arrRekapSiswa = $rekap_siswa->getWhere("bi_rekap_tc_id = '$keytc' AND bi_rekap_ibo_id='$ibo_id' AND bi_rekap_siswa_waktu = '$waktu' ");
