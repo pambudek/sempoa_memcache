@@ -406,11 +406,20 @@ class SettingWeb2Helper extends WebService
 
                     $jenisbm = new JenisBiayaModel();
                     $jenisbm->getByID(trim(rtrim($org_id)) . "_" . $biaya->id_jenis_biaya);
-                    if( ($jenisbm->harga == 0) || ($jenisbm->harga < $val)){
+                    if (is_null($jenisbm->id_setting_biaya)) {
+                        $jenisbm = new JenisBiayaModel();
+                        $jenisbm->id_setting_biaya = $org_id . "_" . $biaya->id_jenis_biaya;
                         $jenisbm->harga = $val;
                         $jenisbm->setting_org_id = $org_id;
                         $jenisbm->jenis_biaya = $biaya->id_jenis_biaya;
-                        $suc = $jenisbm->save(1);
+                        $jenisbm->save(1);
+                    } else {
+                        if (($jenisbm->harga == 0) || ($jenisbm->harga < $val)) {
+                            $jenisbm->harga = $val;
+                            $jenisbm->setting_org_id = $org_id;
+                            $jenisbm->jenis_biaya = $biaya->id_jenis_biaya;
+                            $suc = $jenisbm->save(1);
+                        }
                     }
 
 
@@ -745,26 +754,26 @@ class SettingWeb2Helper extends WebService
             </style>
             <script>
                 $("#biaya_<?= $mytype; ?>_<?= AccessRight::getMyOrgID(); ?>").submit(function (event) {
-                        //                alert( "Handler for .submit() called." );
-                        event.preventDefault();
+                    //                alert( "Handler for .submit() called." );
+                    event.preventDefault();
 
-                        var post = $("#biaya_<?= $mytype; ?>_<?= AccessRight::getMyOrgID(); ?>").serialize();
-                        $('.err_text').hide();
-                        $('.input_bordered').removeClass("input_bordered");
-                        $.post("<?= _SPPATH; ?>SettingWeb2Helper/updateAllBiaya", post, function (data) {
-                            console.log(data);
-                            if (data.status_code) {
-                                alert("Data berhasil tersimpan");
-                            } else {
-                                var err = data.err;
+                    var post = $("#biaya_<?= $mytype; ?>_<?= AccessRight::getMyOrgID(); ?>").serialize();
+                    $('.err_text').hide();
+                    $('.input_bordered').removeClass("input_bordered");
+                    $.post("<?= _SPPATH; ?>SettingWeb2Helper/updateAllBiaya", post, function (data) {
+                        console.log(data);
+                        if (data.status_code) {
+                            alert("Data berhasil tersimpan");
+                        } else {
+                            var err = data.err;
 
-                                for (x in err) {
-                                    $('#' + x).addClass("input_bordered");
-                                    var text = err[x];
-                                    $('#' + x + "_text").html(text).show();
-                                }
+                            for (x in err) {
+                                $('#' + x).addClass("input_bordered");
+                                var text = err[x];
+                                $('#' + x + "_text").html(text).show();
                             }
-                        }, 'json');
+                        }
+                    }, 'json');
 
 //                    else{
 //                        openLw('read_biaya_pendaftaran_minimal_semua_ibo', '<?//=_SPPATH;?>//SettingWeb2Helper/read_biaya_pendaftaran_minimal_semua_ibo', 'fade');
