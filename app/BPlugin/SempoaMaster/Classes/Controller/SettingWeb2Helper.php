@@ -405,12 +405,14 @@ class SettingWeb2Helper extends WebService
 //                    $org_id = $child->org_id;
 
                     $jenisbm = new JenisBiayaModel();
-                    $jenisbm->id_setting_biaya = trim(rtrim($org_id)) . "_" . $biaya->id_jenis_biaya;
-                    $jenisbm->harga = $val;
-                    $jenisbm->setting_org_id = $org_id;
-                    $jenisbm->jenis_biaya = $biaya->id_jenis_biaya;
+                    $jenisbm->getByID(trim(rtrim($org_id)) . "_" . $biaya->id_jenis_biaya);
+                    if( ($jenisbm->harga == 0) || ($jenisbm->harga < $val)){
+                        $jenisbm->harga = $val;
+                        $jenisbm->setting_org_id = $org_id;
+                        $jenisbm->jenis_biaya = $biaya->id_jenis_biaya;
+                        $suc = $jenisbm->save(1);
+                    }
 
-                    $suc = $jenisbm->save(1);
 
                     //inform ke anak2 kalau ada perubahan harga
                     SempoaInboxModel::sendMsg($org_id, AccessRight::getMyOrgID(), "Ada perubahan biaya", "Ada perubahan biaya <br> Tolong sesuaikan harga anda");
