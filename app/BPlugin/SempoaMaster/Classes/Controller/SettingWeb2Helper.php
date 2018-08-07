@@ -408,7 +408,7 @@ class SettingWeb2Helper extends WebService
                     $jenisbm->getByID(trim(rtrim($org_id)) . "_" . $biaya->id_jenis_biaya);
                     if (is_null($jenisbm->id_setting_biaya)) {
                         $jenisbm = new JenisBiayaModel();
-                        $jenisbm->id_setting_biaya = $org_id . "_" . $biaya->id_jenis_biaya;
+                        $jenisbm->id_setting_biaya = trim(rtrim($org_id)) . "_" . $biaya->id_jenis_biaya;
                         $jenisbm->harga = $val;
                         $jenisbm->setting_org_id = $org_id;
                         $jenisbm->jenis_biaya = $biaya->id_jenis_biaya;

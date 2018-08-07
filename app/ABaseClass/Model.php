@@ -227,7 +227,6 @@ class Model extends Leap\Model\Model
 //            echo "db ".$this->table_name;
             global $db;
             $q = "SELECT $readcoloums FROM {$this->table_name} WHERE {$this->main_id} = '$id'";
-            pr($q);
             $obj = $db->query($q, 1);
             $row = toRow($obj);
             $this->fill($row);
