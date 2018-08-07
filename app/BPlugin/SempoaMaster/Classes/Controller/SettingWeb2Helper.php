@@ -412,7 +412,7 @@ class SettingWeb2Helper extends WebService
                         $jenisbm->harga = $val;
                         $jenisbm->setting_org_id = $org_id;
                         $jenisbm->jenis_biaya = $biaya->id_jenis_biaya;
-                        $jenisbm->save(1);
+                        $jenisbm->save();
                     } else {
                         if (($jenisbm->harga == 0) || ($jenisbm->harga < $val)) {
                             $jenisbm->harga = $val;
