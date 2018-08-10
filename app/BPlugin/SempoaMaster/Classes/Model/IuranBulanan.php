@@ -12,10 +12,10 @@ class IuranBulanan extends Model{
     var $main_id = "bln_id";
 
     //Default Coloms for read
-    public $default_read_coloms = "bln_id,bln_murid_id,bln_date_pembayaran,bln_date,bln_mon,bln_tahun,bln_status,bln_kupon_id,bln_tc_id,bln_ibo_id,bln_kpo_id,bln_ak_id,bln_no_urut_in,bln_no_invoice,bln_create_date,bln_urutan_invoice_murid";
+    public $default_read_coloms = "bln_id,bln_murid_id,bln_date_pembayaran,bln_date,bln_mon,bln_tahun,bln_status,bln_kupon_id,bln_jumlah,bln_tc_id,bln_ibo_id,bln_kpo_id,bln_ak_id,bln_no_urut_in,bln_no_invoice,bln_create_date,bln_urutan_invoice_murid";
 
 //allowed colom in CRUD filter
-    public $coloumlist = "bln_id,bln_murid_id,bln_date,bln_date_pembayaran,bln_mon,bln_tahun,bln_status,bln_kupon_id,bln_tc_id,bln_ibo_id,bln_kpo_id,bln_ak_id,bln_cara_bayar,bln_no_urut_in,bln_no_invoice,bln_create_date,bln_urutan_invoice_murid";
+    public $coloumlist = "bln_id,bln_murid_id,bln_date,bln_date_pembayaran,bln_mon,bln_tahun,bln_status,bln_kupon_id,bln_jumlah,bln_tc_id,bln_ibo_id,bln_kpo_id,bln_ak_id,bln_cara_bayar,bln_no_urut_in,bln_no_invoice,bln_create_date,bln_urutan_invoice_murid";
     public $test;
     public $bln_id;
     public $bln_murid_id;
@@ -25,6 +25,7 @@ class IuranBulanan extends Model{
     public $bln_tahun;
     public $bln_status;
     public $bln_kupon_id;
+    public $bln_jumlah;
     public $bln_tc_id;
     public $bln_ibo_id;
     public $bln_kpo_id;

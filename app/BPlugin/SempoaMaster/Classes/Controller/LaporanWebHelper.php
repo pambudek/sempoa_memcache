@@ -124,13 +124,18 @@ class LaporanWebHelper extends WebService
             echo json_encode($json);
             die();
         }
-
+        $arrjenisBiayaSPP = Generic::getJenisBiayaType();
+        $jenisbm = new JenisBiayaModel();
+        $jenisbm->getByID($iuranBulanan->bln_tc_id . "_" . $arrjenisBiayaSPP[$level_murid]);
         $iuranBulanan->bln_status = 1;
         $iuranBulanan->bln_kupon_id = $kupon_id;
         $iuranBulanan->bln_date_pembayaran = date("Y-m-d H:i:s");
         $iuranBulanan->bln_no_urut_inv = $iuranBulanan->getLastNoUrutInvoice($thn_skrg, $bln_skrg, AccessRight::getMyOrgID());
         $iuranBulanan->bln_no_invoice = "SPP/" . $thn_skrg . "/" . $bln_skrg . "/" . $iuranBulanan->bln_no_urut_inv;
         $iuranBulanan->bln_cara_bayar = $jpb;
+        $iuranBulanan->bln_jumlah = $jenisbm->harga;
+
+
         $iuranBulanan->save(1);
 
         $json['kuponsblm'] = $obKuponOwner;
@@ -146,7 +151,7 @@ class LaporanWebHelper extends WebService
         if ($succ) {
             //($buku_id,$keterangan,$debit,$credit,$org_id)
             $myID = AccessRight::getMyOrgID();
-            $arrjenisBiayaSPP = Generic::getJenisBiayaType();
+
             $jenisBiayaSPP = $arrjenisBiayaSPP[$level_murid];
 
             Generic::createLaporanDebet($myID, $myID, KEY::$DEBET_IURAN_BULANAN_TC, $jenisBiayaSPP, "Iuran Bulanan: Siswa: " . Generic::getMuridNamebyID($iuranBulanan->bln_murid_id) . ", Bulan: " . $iuranBulanan->bln_date . " dgn Kode Kupon: " . $kupon_id, 1, 0, "Utama");
@@ -159,7 +164,7 @@ class LaporanWebHelper extends WebService
                 SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", "Kupon Anda Tinggal: <b>" . $jumlahKuponTersedia . "</b>");
             }
             echo json_encode($json);
-            Generic2::sendEmailToParent($iuranBulanan->bln_murid_id, $kupon_id,"",KEY::$TYPE_EMAIL_SPP);
+//            Generic2::sendEmailToParent($iuranBulanan->bln_murid_id, $kupon_id,"",KEY::$TYPE_EMAIL_SPP);
             die();
         }
         $json['status_code'] = 0;
@@ -635,7 +640,7 @@ class LaporanWebHelper extends WebService
 
         // Kirim email
 
-        Generic2::sendEmailToParent($iuranBuku->bln_murid_id,"",$iuranBuku->bln_id,KEY::$TYPE_EMAIL_BUKU);
+//        Generic2::sendEmailToParent($iuranBuku->bln_murid_id,"",$iuranBuku->bln_id,KEY::$TYPE_EMAIL_BUKU);
         // jika naik level
         if ($level_murid != $level_invoice) {
             $objMurid = new MuridModel();

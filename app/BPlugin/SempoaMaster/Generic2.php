@@ -159,6 +159,9 @@ class Generic2
                 .container {
                     font-size: 12px;
                 }
+                .kop_invoices{
+
+                }
             </style>
 
         </head>
@@ -169,12 +172,16 @@ class Generic2
             <article>
 
                 <div class=\"container\" style=\"margin-left: 20px; margin-right: 20px;\">
-                    <div class=\"row\">
-                        <div class=\"col-xs-12\">
-                            <div class=\"invoice_orang_tua\">
-                                <div class=\"kop_invoices\">";
+                    <div class=\"row\">";
         $return = $return . $sambut;
         $return = $return . "<img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
+         <div class=\"clearfix\"></div>
+                        <div class=\"col-xs-12\">
+                            <div class=\"invoice_orang_tua\">
+
+
+        <div class=\"kop_invoices\">
+
                                     <h4 id=\"data_tc\">
                                         $tc->nama<br>
                                         $tc->alamat<br>
@@ -215,7 +222,7 @@ class Generic2
 
                                     </table>
 
-                                    <div class=\"clearfix\"></div>
+
 
 
                                     <div class=\"clearfix\"></div>
@@ -373,16 +380,16 @@ class Generic2
                                             <tbody>";
 
 
-                                             foreach ($arbukuDgnNo as $val) {
-                                                 $date = new DateTime($val->stock_buku_tgl_keluar_tc);
-                                                 $tanggal = $date->format("d-m-Y");
-                                                 $return = $return . "<tr>
+        foreach ($arbukuDgnNo as $val) {
+            $date = new DateTime($val->stock_buku_tgl_keluar_tc);
+            $tanggal = $date->format("d-m-Y");
+            $return = $return . "<tr>
                                                     <td>$val->stock_buku_no</td>
                                                     <td>$val->stock_name_buku</td>
                                                     <td>$jumlah</td>
                                                 </tr>";
-                                             }
-                                            $return = $return . "<tr>
+        }
+        $return = $return . "<tr>
                                                 <td></td>
                                                 <td style=\"text-align:right;padding-right:15px;font-style:bold;\">Jumlah
                                                     Total
