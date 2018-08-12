@@ -656,9 +656,9 @@ class CronJob extends WebService
             if (is_null($log->log_id)) {
                 $log = new LogStatusMurid();
                 $log->log_id_murid = $val->id_murid;
-                $log->log_tgl = date("d");
-                $log->log_bln = date("n");
-                $log->log_thn = date("Y");
+                $log->log_tgl = $tgl;
+                $log->log_bln = $bln;
+                $log->log_thn = $thn;
                 $log->log_ak_id = $val->murid_ak_id;
                 $log->log_kpo_id = $val->murid_kpo_id;
                 $log->log_ibo_id = $val->murid_ibo_id;
