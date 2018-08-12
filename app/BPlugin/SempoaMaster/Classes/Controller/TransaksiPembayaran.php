@@ -389,6 +389,22 @@ class TransaksiPembayaran extends WebService
 
             }
         }
+        else{
+            $murid = new MuridModel();
+            $arrMuridModel = $murid->getWhere("status=1 AND murid_tc_id=$tc_id");
+//            $varLogDataMurid[] =
+            foreach ($arrMuridModel as $var) {
+                if (!array_key_exists($var->id_murid, $arrMurid)) {
+                    $arrMurid[$var->id_murid] = "A";
+                    $arrMuridName[$var->id_murid] = false;
+                }
+
+                    $arrLogDataMurid[$var->id_murid]['level'] = Generic::getLevelNameByID($var->id_level_sekarang);
+
+
+
+            }
+        }
 
 
 
