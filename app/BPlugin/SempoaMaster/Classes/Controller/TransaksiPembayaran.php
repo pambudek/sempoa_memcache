@@ -143,7 +143,7 @@ class TransaksiPembayaran extends WebService
                         }
                     }
                     ?>
-                    <div id="summary_bayar" >
+                    <div id="summary_bayar">
                 <span style="cursor: pointer;"
                       onclick="$('.sudahbayar').show();$('.belumbayar').hide();">Sudah Bayar</span> :
                         <b><? echo $sdhbayar; ?></b>
@@ -170,7 +170,7 @@ class TransaksiPembayaran extends WebService
                             <?= $iuran->bln_kupon_id; ?>
                         </td>
                         <td>
-                            <? if($iuran->bln_status == ""){
+                            <? if ($iuran->bln_status == "") {
                                 $iuran->bln_status = 0;
                             }
                             echo $arrSTatus[$iuran->bln_status]; ?>
@@ -351,7 +351,6 @@ class TransaksiPembayaran extends WebService
     }
 
 
-
     public function listPembayaranSPPMonthly()
     {
 
@@ -359,17 +358,32 @@ class TransaksiPembayaran extends WebService
         $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
         $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
 
+
+        if ($bln != date("n")) {
+            $tgl = date("d", mktime(0, 0, 0, $bln + 1, 0, $thn));
+        } else {
+            $tgl = date("d") - 1;
+        }
         //date("Y-m-d", mktime(0, 0, 0, *YOUR MONTH PARAM*+1,0,date("Y")));
         $logStatusMurid = new LogStatusMurid();
-        $logStatusMurid = $logStatusMurid->getWhere("log_tc_id=$tc_id AND log_bln = $bln AND log_thn=$thn  AND log_status= 'A' Order by log_tgl DESC");
 
+        $arrLogStatusMurid = $logStatusMurid->getWhere("log_tc_id=$tc_id AND log_tgl =$tgl AND log_bln = $bln AND log_thn=$thn  AND log_status= 'A' Order by log_tgl DESC");
+//        pr($arrLogStatusMurid);
+//        die();
         $arrMurid = array();
         $arrMuridName = array();
-        foreach ($logStatusMurid as $var) {
+        $arrLogDataMurid = array();
 
+        $varLogDataMurid = explode(",", $logStatusMurid->coloumlist);
+
+        foreach ($arrLogStatusMurid as $var) {
             if (!array_key_exists($var->log_id_murid, $arrMurid)) {
                 $arrMurid[$var->log_id_murid] = $var->log_status;
                 $arrMuridName[$var->log_id_murid] = false;
+            }
+            foreach ($varLogDataMurid as $logDataMurid) {
+                $arrLogDataMurid[$var->log_id_murid][$logDataMurid] = $var->$logDataMurid;
+
             }
 
         }
@@ -387,16 +401,13 @@ class TransaksiPembayaran extends WebService
 
         }
         $arrBulan = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-
         $arrSTatus = array("<b>Unpaid</b>", "Paid");
-
         $t = time();
         ?>
-
         <section class="content-header">
             <h1>
                 <div class="pull-right" style="font-size: 13px;">
-                    Bulan :<select id="bulan_<?= $t; ?>">
+                    Bulan :<select id="bulan_spp_<?= $t; ?>">
                         <?
                         foreach ($arrBulan as $bln2) {
                             $sel = "";
@@ -409,7 +420,7 @@ class TransaksiPembayaran extends WebService
                         }
                         ?>
                     </select>
-                    Tahun :<select id="tahun_<?= $t; ?>">
+                    Tahun :<select id="tahun_spp_<?= $t; ?>">
                         <?
                         for ($x = date("Y") - 2; $x < date("Y") + 2; $x++) {
                             $sel = "";
@@ -426,29 +437,31 @@ class TransaksiPembayaran extends WebService
                         ?>
                     </select>
 
-                    <button id="submit_bln_<?= $t; ?>">submit</button>
+                    <button id="submit_bln_spp_<?= $t; ?>">submit</button>
                 </div>
                 Iuran Bulanan
             </h1>
             <script>
-                $('#submit_bln_<?= $t; ?>').click(function () {
-                    var bln = $('#bulan_<?= $t; ?>').val();
-                    var thn = $('#tahun_<?= $t; ?>').val();
+                $('#submit_bln_spp_<?= $t; ?>').click(function () {
+                    var bln = $('#bulan_spp_<?= $t; ?>').val();
+                    var thn = $('#tahun_spp_<?= $t; ?>').val();
                     var tc_id = '<?= $tc_id ?>';
-                    openLw('listPembayaranSPPMonthlyTC', '<?=_SPPATH;?>TransaksiPembayaran/listPembayaranSPPMonthlyTC' + '?now=' + $.now() + '&bln=' + bln + "&thn=" + thn + "&tc_id=" + tc_id, 'fade');
+                    openLw('listPembayaranSPPMonthlyTC', '<?=_SPPATH;?>TransaksiPembayaran/listPembayaranSPPMonthly' + '?now=' + $.now() + '&bln=' + bln + "&thn=" + thn + "&tc_id=" + tc_id, 'fade');
                 });
             </script>
         </section>
 
 
         <section class="content">
-            <div id="summary_holder" style="text-align: left; font-size: 16px;"></div>
             <div class="table-responsive" style="background-color: #FFFFFF; margin-top: 20px;">
                 <table class="table table-striped ">
                     <thead>
                     <tr>
                         <th>
                             Nama Murid
+                        </th>
+                        <th>
+                            Level
                         </th>
                         <th>
                             Tanggal
@@ -462,7 +475,7 @@ class TransaksiPembayaran extends WebService
                     </tr>
                     </thead>
 
-                    <tbody id="container_iuran_<?= $t; ?>">
+                    <tbody id="container_iuran_spp_<?= $t; ?>">
                     <?
                     $blndate = $bln . "-" . $thn;
                     $iuranBulanan = new IuranBulanan();
@@ -473,6 +486,7 @@ class TransaksiPembayaran extends WebService
                         $murid = new MuridModel();
                         $murid->getByID($val->bln_murid_id);
                         $arrNameHlp[$murid->getNameMurid()] = $val;
+//                        $arrNameHlp[$murid->getNameMurid()]->level = Generic::getLevelNameByID($murid->id_level_sekarang);
                         $arrMuridName[$val->bln_murid_id] = true;
                         $sdhbayar++;
                     }
@@ -482,29 +496,35 @@ class TransaksiPembayaran extends WebService
                             $murid = new MuridModel();
                             $murid->getByID($id_murid);
                             $arrNameHlp[$murid->getNameMurid()] = null;
+                            $arrNameHlp[$murid->getNameMurid()]['level'] = Generic::getLevelNameByID($murid->id_level_sekarang);
+                            $arrNameHlp[$murid->getNameMurid()]['bln_murid_id'] = $id_murid;
                             $blmbayar++;
                         }
                     }
-                    ?>
-                    <div id="summary_bayar" >
-                <span style="cursor: pointer;"
-                      onclick="$('.sudahbayar').show();$('.belumbayar').hide();">Sudah Bayar</span> :
-                        <b><? echo $sdhbayar; ?></b>
-                        <br>
-                <span style="cursor: pointer;"
-                      onclick="$('.sudahbayar').hide();$('.belumbayar').show();">Belum Bayar</span> : <b
-                            style="color: red;"><?= $blmbayar; ?></b>
-                    </div>
 
-                    <?
 
                     ksort($arrNameHlp);
-                    $arrIuran = explode(",", $iuranBulanan->coloumlist);
+
                     foreach ($arrNameHlp as $nama => $iuran) {
+
+                        if (is_object($iuran)) {
+                            $id_murid = $iuran->bln_murid_id;
+                        } else {
+                            $id_murid = $arrNameHlp[$nama]['bln_murid_id'];
+                        }
                         ?>
                         <tr>
                         <td>
                             <?= $nama; ?>
+                        </td>
+                        <td>
+                            <?
+                            if (is_object($iuran)) {
+                                echo $arrLogDataMurid[$id_murid]['log_level'];
+                            } else {
+                                echo $arrNameHlp[$nama]['level'];
+                            }
+                            ?>
                         </td>
                         <td>
                             <?= $iuran->bln_date_pembayaran; ?>
@@ -513,11 +533,28 @@ class TransaksiPembayaran extends WebService
                             <?= $iuran->bln_kupon_id; ?>
                         </td>
                         <td>
-                            <? if($iuran->bln_status == ""){
-                                $iuran->bln_status = 0;
+
+                            <?
+                            if (is_object($iuran)) {
+                                if ($iuran->bln_status == "") {
+                                    $iuran->bln_status = 0;
+                                }
+                                echo $arrSTatus[$iuran->bln_status];
+                            } else {
+                                ?>
+                                <button id='pay_now_<?=$id_murid . "_" . $t; ?>' class="btn btn-default">Pay Now
+                                </button>
+                                <?
                             }
-                            echo $arrSTatus[$iuran->bln_status]; ?>
+                            ?>
+
                         </td>
+                        <script>
+
+                            $('#pay_now_<?=$id_murid . "_" . $t;?>').click(function () {
+                                openLw('murid_Invoices_<?= $id_murid . "_" . $t; ?>', '<?= _SPPATH; ?>MuridWebHelper/murid_invoices?id=<?=$id_murid; ?>', 'fade');
+                            })
+                        </script>
                         </tr><?
                     }
                     ?>

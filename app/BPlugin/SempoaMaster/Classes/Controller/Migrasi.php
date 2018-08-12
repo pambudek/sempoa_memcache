@@ -1392,4 +1392,14 @@ class Migrasi extends WebService
         }
 
     }
+
+    public function migrasiIuranSPP()
+    {
+
+        $iuranBulanan = new IuranBulanan();
+
+        $arrIuran = $iuranBulanan->getAll();
+        echo "sasa";
+        echo count($arrIuran);
+    }
 }

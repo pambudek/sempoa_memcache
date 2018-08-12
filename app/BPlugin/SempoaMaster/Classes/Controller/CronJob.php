@@ -580,7 +580,6 @@ class CronJob extends WebService
     {
         $murid = new MuridModel();
         $arrMurid = $murid->getWhere("status=2 AND murid_date_cuti_aktiv = DATE_FORMAT(CURDATE(),'%Y-%m-05')");
-        pr(count($arrMurid));
         foreach ($arrMurid as $murid) {
             $murid->murid_date_cuti_aktiv = "0000-00-00";
             $murid->status = 1;
@@ -599,18 +598,89 @@ class CronJob extends WebService
 
         $murid = new MuridModel();
         $arrMurid = $murid->getWhere("status = 1");
-        foreach($arrMurid as $val){
+        pr(count($arrMurid));
+        $count=0;
+        foreach ($arrMurid as $val) {
             $log = new LogStatusMurid();
-            $log->log_id_murid = $val->id_murid;
-            $log->log_tgl = date("d");
-            $log->log_bln = date("n");
-            $log->log_thn = date("Y");
-            $log->log_ak_id = $val->murid_ak_id;
-            $log->log_kpo_id = $val->murid_kpo_id;
-            $log->log_ibo_id = $val->murid_ibo_id;
-            $log->log_tc_id = $val->murid_tc_id;
-            $log->log_status = "A";
-            $log->save();
+            $tgl = date("d");
+            $bln = date("n");
+            $thn = date("Y");
+            $murid_id = $val->id_murid;
+            $log->getWhereOne("log_tgl=$tgl AND log_bln=$bln AND log_thn=$thn AND log_id_murid=$murid_id");
+
+            if (is_null($log->log_id)) {
+                $log = new LogStatusMurid();
+                $log->log_id_murid = $val->id_murid;
+                $log->log_tgl = date("d");
+                $log->log_bln = date("n");
+                $log->log_thn = date("Y");
+                $log->log_ak_id = $val->murid_ak_id;
+                $log->log_kpo_id = $val->murid_kpo_id;
+                $log->log_ibo_id = $val->murid_ibo_id;
+                $log->log_tc_id = $val->murid_tc_id;
+                $log->log_status = "A";
+                $murid = new MuridModel();
+                $murid->getByID($val->id_murid);
+                if ($murid->murid_kurikulum == KEY::$KURIKULUM_BARU) {
+                    $log->log_level = Generic::getLevelNameByID($murid->id_level_sekarang);
+                    $log->log_kurikulum = KEY::$KURIKULUM_BARU_TEXT;
+                } else {
+                    $log->log_level = Generic::getLevelNameLamaByID($murid->id_level_sekarang);
+                    $log->log_kurikulum = KEY::$KURIKULUM_LAMA_TEXT;
+                }
+                $log->save();
+                $count++;
+//                die();
+            }
+
         }
+        pr($count . " tercreated");
+    }
+
+    public function createAktivLogDate()
+    {
+
+        $bln = isset($_GET['bln']) ? addslashes($_GET['bln']) : date("n");
+        $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
+
+        $murid = new MuridModel();
+        $arrMurid = $murid->getWhere("status = 1");
+        pr(count($arrMurid));
+        $count=0;
+        foreach ($arrMurid as $val) {
+            $log = new LogStatusMurid();
+            $tgl = date("d");
+            $bln = date("n");
+            $thn = date("Y");
+            $murid_id = $val->id_murid;
+            $log->getWhereOne("log_tgl=$tgl AND log_bln=$bln AND log_thn=$thn AND log_id_murid=$murid_id");
+
+            if (is_null($log->log_id)) {
+                $log = new LogStatusMurid();
+                $log->log_id_murid = $val->id_murid;
+                $log->log_tgl = date("d");
+                $log->log_bln = date("n");
+                $log->log_thn = date("Y");
+                $log->log_ak_id = $val->murid_ak_id;
+                $log->log_kpo_id = $val->murid_kpo_id;
+                $log->log_ibo_id = $val->murid_ibo_id;
+                $log->log_tc_id = $val->murid_tc_id;
+                $log->log_status = "A";
+                $murid = new MuridModel();
+                $murid->getByID($val->id_murid);
+                if ($murid->murid_kurikulum == KEY::$KURIKULUM_BARU) {
+                    $log->log_level = Generic::getLevelNameByID($murid->id_level_sekarang);
+                    $log->log_kurikulum = KEY::$KURIKULUM_BARU_TEXT;
+                } else {
+                    $log->log_level = Generic::getLevelNameLamaByID($murid->id_level_sekarang);
+                    $log->log_kurikulum = KEY::$KURIKULUM_LAMA_TEXT;
+                }
+                $log->save();
+                $count++;
+//                die();
+            }
+
+        }
+        pr($count . " tercreated");
     }
 }
