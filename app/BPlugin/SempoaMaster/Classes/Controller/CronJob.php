@@ -642,16 +642,14 @@ class CronJob extends WebService
 
         $bln = isset($_GET['bln']) ? addslashes($_GET['bln']) : date("n");
         $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
-
+        $tgl =  isset($_GET['tgl']) ? addslashes($_GET['tgl']) : date("d");
         $murid = new MuridModel();
         $arrMurid = $murid->getWhere("status = 1");
         pr(count($arrMurid));
         $count=0;
         foreach ($arrMurid as $val) {
             $log = new LogStatusMurid();
-            $tgl = date("d");
-            $bln = date("n");
-            $thn = date("Y");
+
             $murid_id = $val->id_murid;
             $log->getWhereOne("log_tgl=$tgl AND log_bln=$bln AND log_thn=$thn AND log_id_murid=$murid_id");
 
