@@ -368,7 +368,7 @@ class TransaksiPembayaran extends WebService
         $logStatusMurid = new LogStatusMurid();
 
         $arrLogStatusMurid = $logStatusMurid->getWhere("log_tc_id=$tc_id AND log_tgl =$tgl AND log_bln = $bln AND log_thn=$thn  AND log_status= 'A' Order by log_tgl DESC");
-//        pr($arrLogStatusMurid);
+        pr($arrLogStatusMurid);
 //        die();
         $arrMurid = array();
         $arrMuridName = array();
