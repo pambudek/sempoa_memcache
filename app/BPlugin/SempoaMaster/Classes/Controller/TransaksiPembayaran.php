@@ -358,35 +358,42 @@ class TransaksiPembayaran extends WebService
         $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
         $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
 
-
-        if ($bln != date("n")) {
+        $blog = false;
+        if ($bln < date("n")) {
             $tgl = date("d", mktime(0, 0, 0, $bln + 1, 0, $thn));
-        } else {
+            $blog = true;
+        } elseif ($bln == date("n")) {
             $tgl = date("d") - 1;
-        }
-        //date("Y-m-d", mktime(0, 0, 0, *YOUR MONTH PARAM*+1,0,date("Y")));
-        $logStatusMurid = new LogStatusMurid();
+            $blog = true;
+        } elseif ($bln > date("n")) {
 
-        $arrLogStatusMurid = $logStatusMurid->getWhere("log_tc_id=$tc_id AND log_tgl =$tgl AND log_bln = $bln AND log_thn=$thn  AND log_status= 'A' Order by log_tgl DESC");
-//        pr($arrLogStatusMurid);
-//        die();
+        }
+
         $arrMurid = array();
         $arrMuridName = array();
         $arrLogDataMurid = array();
 
-        $varLogDataMurid = explode(",", $logStatusMurid->coloumlist);
+        if ($blog) {
+            $logStatusMurid = new LogStatusMurid();
+            $arrLogStatusMurid = $logStatusMurid->getWhere("log_tc_id=$tc_id AND log_tgl =$tgl AND log_bln = $bln AND log_thn=$thn  AND log_status= 'A' Order by log_tgl DESC");
+            $varLogDataMurid = explode(",", $logStatusMurid->coloumlist);
+            foreach ($arrLogStatusMurid as $var) {
+                if (!array_key_exists($var->log_id_murid, $arrMurid)) {
+                    $arrMurid[$var->log_id_murid] = $var->log_status;
+                    $arrMuridName[$var->log_id_murid] = false;
+                }
+                foreach ($varLogDataMurid as $logDataMurid) {
+                    $arrLogDataMurid[$var->log_id_murid][$logDataMurid] = $var->$logDataMurid;
 
-        foreach ($arrLogStatusMurid as $var) {
-            if (!array_key_exists($var->log_id_murid, $arrMurid)) {
-                $arrMurid[$var->log_id_murid] = $var->log_status;
-                $arrMuridName[$var->log_id_murid] = false;
+                }
+
             }
-            foreach ($varLogDataMurid as $logDataMurid) {
-                $arrLogDataMurid[$var->log_id_murid][$logDataMurid] = $var->$logDataMurid;
-
-            }
-
         }
+
+
+
+
+
 
         $bedingung = "";
         foreach ($arrMuridName as $key => $val) {
@@ -542,7 +549,7 @@ class TransaksiPembayaran extends WebService
                                 echo $arrSTatus[$iuran->bln_status];
                             } else {
                                 ?>
-                                <button id='pay_now_<?=$id_murid . "_" . $t; ?>' class="btn btn-default">Pay Now
+                                <button id='pay_now_<?= $id_murid . "_" . $t; ?>' class="btn btn-default">Pay Now
                                 </button>
                                 <?
                             }
