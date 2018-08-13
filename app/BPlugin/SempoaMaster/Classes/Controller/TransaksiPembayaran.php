@@ -537,8 +537,8 @@ class TransaksiPembayaran extends WebService
                         }
                         ?>
                         <tr>
-                        <td>
-                            <?= $nama; ?>
+                        <td><a style="cursor: pointer;"
+                               onclick="back_to_profile_murid('<?= $iuran->bln_murid_id; ?>');"><?= $nama; ?></a>
                         </td>
                         <td>
                             <?
