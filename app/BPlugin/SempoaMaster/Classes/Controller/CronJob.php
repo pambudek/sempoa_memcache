@@ -681,4 +681,11 @@ class CronJob extends WebService
         }
         pr($count . " tercreated");
     }
+
+    public function kirimEmail(){
+
+        $mail = new Leapmail2();
+        $mail->sendHTMLEmail("efindi.ongso@gmail.com","cron","cron","cronisi");
+
+    }
 }
