@@ -317,11 +317,6 @@ class TransaksiPembayaran extends WebService
                             $blmbayar++;
                         }
                     }
-                    ?>
-                    Jumlah yang sudah bayar iuran: <?= $sdhbayar; ?>
-                    <br>Jumlah yang belum bayar iuran: <?= $blmbayar; ?>
-                    <?
-
                     ksort($arrNameHlp);
                     $arrIuran = explode(",", $iuranBulanan->coloumlist);
                     foreach ($arrNameHlp as $nama => $iuran) {
@@ -357,14 +352,16 @@ class TransaksiPembayaran extends WebService
         $bln = isset($_GET['bln']) ? addslashes($_GET['bln']) : date("n");
         $thn = isset($_GET['thn']) ? addslashes($_GET['thn']) : date("Y");
         $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
-
+        $t = time();
         $blog = false;
+        $blogthismonth = false;
         if ($bln < date("n")) {
             $tgl = date("d", mktime(0, 0, 0, $bln + 1, 0, $thn));
             $blog = true;
         } elseif ($bln == date("n")) {
             $tgl = date("d") - 1;
             $blog = true;
+            $blogthismonth = true;
         } elseif ($bln > date("n")) {
 
         }
@@ -376,6 +373,11 @@ class TransaksiPembayaran extends WebService
         if ($blog) {
             $logStatusMurid = new LogStatusMurid();
             $arrLogStatusMurid = $logStatusMurid->getWhere("log_tc_id=$tc_id AND log_tgl =$tgl AND log_bln = $bln AND log_thn=$thn  AND log_status= 'A' Order by log_tgl DESC");
+            if((count($arrLogStatusMurid) == 0) && $blogthismonth) {
+
+                $arrLogStatusMurid = $logStatusMurid->getWhere("log_tc_id=$tc_id  AND log_bln = $bln AND log_thn=$thn  AND log_status= 'A' Order by log_tgl DESC");
+            }
+
             $varLogDataMurid = explode(",", $logStatusMurid->coloumlist);
             foreach ($arrLogStatusMurid as $var) {
                 if (!array_key_exists($var->log_id_murid, $arrMurid)) {
@@ -476,6 +478,7 @@ class TransaksiPembayaran extends WebService
 
 
         <section class="content">
+            <div id="summary_holder_<?=$t;?>" style="text-align: left; font-size: 16px;"></div>
             <div class="table-responsive" style="background-color: #FFFFFF; margin-top: 20px;">
                 <table class="table table-striped ">
                     <thead>
@@ -529,14 +532,22 @@ class TransaksiPembayaran extends WebService
                     ksort($arrNameHlp);
 
                     foreach ($arrNameHlp as $nama => $iuran) {
-
+                        $bsdhbayar = false;
                         if (is_object($iuran)) {
                             $id_murid = $iuran->bln_murid_id;
+                            $bsdhbayar = true;
                         } else {
                             $id_murid = $arrNameHlp[$nama]['bln_murid_id'];
                         }
+//                        sudahbayar').show();$('.belumbayar
+                        if($bsdhbayar){
+                            $id_byr = "class='sudahbayar'";
+                        }
+                        else{
+                            $id_byr = "class='belumbayar'";
+                        }
                         ?>
-                        <tr>
+                        <tr <?=$id_byr;?>>
                         <td><a style="cursor: pointer;"
                                onclick="back_to_profile_murid('<?= $iuran->bln_murid_id; ?>');"><?= $nama; ?></a>
                         </td>
@@ -584,6 +595,19 @@ class TransaksiPembayaran extends WebService
                     </tbody>
                 </table>
             </div>
+
+            <div id="summary_bayar" style="display: none">
+                <span style="cursor: pointer;" onclick="$('.sudahbayar').show();$('.belumbayar').hide();">Sudah Bayar</span> :
+                <b><? echo $sdhbayar; ?></b>
+                <br>
+                <span style="cursor: pointer;" onclick="$('.sudahbayar').hide();$('.belumbayar').show();">Belum Bayar</span> :
+                <b style="color: red;"><?= $blmbayar; ?></b>
+            </div>
+            <script>
+                $(document).ready(function () {
+                    $('#summary_holder_<?=$t;?>').html($('#summary_bayar').html());
+                });
+            </script>
         </section>
 
         <?
