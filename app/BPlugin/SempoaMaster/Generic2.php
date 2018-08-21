@@ -104,37 +104,34 @@ class Generic2
         $jumlah = idr($jenisbm->harga);
         $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
 
-        $return = $return . "  <html>
-
+        $return = "<html>
         <head>
-            <meta charset=\"utf-8\">
             <style>
 
-               #data_tc {
+                #data_tc {
                     text-align: center;
                 }
 
                 div.info_invoices {
-                    font-size: 12px;
+
                 }
 
                 div.nama_siswa {
-                    font-size: 12px;
+
                 }
 
                 table {
                     font-family: arial, sans-serif;
                     border-collapse: collapse;
                     width: 100%;
+                    margin-right: 20px;
                     font-size: 12px;
                 }
 
                 td, th {
-
                     border: 1px solid #414141;
                     text-align: center;
                     padding: 8px;
-                    font-size: 12px;
                 }
 
                 th {
@@ -145,9 +142,10 @@ class Generic2
                     text-align: center;
                 }
 
-                #logo_sempoa {
-                    display: block;
-                    margin: auto;
+                .invoice_orang_tua {
+                    margin-left: 20px;
+                    margin-right: 20px;
+                    font-size: 12px;
                 }
 
                 div.penutup_invoices {
@@ -155,34 +153,18 @@ class Generic2
                     margin-left: 450px;
                     margin-right: 450px;
                 }
-
-                .container {
-                    font-size: 12px;
-                }
-                .kop_invoices{
-
-                }
             </style>
-
         </head>
-
         <body>
         <section class=\"sheet padding-10mm\">
-            <!-- Write HTML just like a web page -->
             <article>
+                <div class=\"invoice_orang_tua\">";
 
-                <div class=\"container\" style=\"margin-left: 20px; margin-right: 20px;\">
-                    <div class=\"row\">";
         $return = $return . $sambut;
-        $return = $return . "<img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
-         <div class=\"clearfix\"></div>
-                        <div class=\"col-xs-12\">
-                            <div class=\"invoice_orang_tua\">
-
-
-        <div class=\"kop_invoices\">
-
-                                    <h4 id=\"data_tc\">
+        $return = $return . "<div class=\"kop_invoices\">
+ <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\"/>
+<div class=\"clearfix\"></div>
+                 <h4 id=\"data_tc\">
                                         $tc->nama<br>
                                         $tc->alamat<br>
                                         Telp. $tc->nomor_telp, Fax. $tc->tc_no_fax_office,
@@ -272,7 +254,6 @@ class Generic2
         $arbukuDgnNo = $bukuDgnNo->getWhere("stock_invoice_murid=$invoice_id");
         $level2 = Generic::getLevelNameByID($murid->id_level_sekarang);
 
-        $return = "";
         if ($murid->getParentName() != "") {
             $sambut = "Dear " . $murid->getParentName() . ", ";
         } else {
@@ -281,41 +262,34 @@ class Generic2
         $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
         $jumlah = idr($jenisbm->harga);
 
-        $return = $return . "<html>
-        <head>
-            <title>Invoice <?= Lang::t(\"Iuran Buku\") ?></title>
-            <meta charset=\"utf-8\">
-            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-
+        $return = "<html>
+             <head>
             <style>
-
 
                 #data_tc {
                     text-align: center;
                 }
 
                 div.info_invoices {
-                    padding: 10px;
-                    font-size: 12px;
+
                 }
 
                 div.nama_siswa {
-                    padding: 10px;
-                    font-size: 12px;
+
                 }
 
                 table {
                     font-family: arial, sans-serif;
                     border-collapse: collapse;
                     width: 100%;
-                    margin-right: 12px;
+                    margin-right: 20px;
+                    font-size: 12px;
                 }
 
                 td, th {
                     border: 1px solid #414141;
                     text-align: center;
                     padding: 8px;
-                    font-size: 12px;
                 }
 
                 th {
@@ -326,9 +300,10 @@ class Generic2
                     text-align: center;
                 }
 
-                #logo_sempoa {
-                    display: block;
-                    margin: auto;
+                .invoice_orang_tua {
+                    margin-left: 20px;
+                    margin-right: 20px;
+                    font-size: 12px;
                 }
 
                 div.penutup_invoices {
@@ -336,26 +311,20 @@ class Generic2
                     margin-left: 450px;
                     margin-right: 450px;
                 }
-
-                .nama_siswa {
-                    font-size: 12px;
-                }
             </style>
         </head>
 
+
         <body>
         <section class=\"sheet padding-10mm\">
-
-            <!-- Write HTML just like a web page -->
             <article>
+                <div class=\"invoice_orang_tua\">";
 
-                <div class=\"container\">
-                    <div class=\"row\">
-                        <div class=\"col-xs-12\">
-                            <div class=\"invoice_orang_tua\">
-                                <div class=\"kop_invoices\">";
         $return = $return . $sambut;
-        $return = $return . "<img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\">
+        $return = $return . "<div class=\"kop_invoices\">
+              <img src= $logo alt=\"logo_sempoa\"  align=\"right\" style=\"max-width:20%;\"/>
+<div class=\"clearfix\"></div>
+
                                     <h4 id=\"data_tc\">
                                         $tc->nama<br>
                                         $tc->alamat<br>
@@ -614,6 +583,247 @@ class Generic2
         </html>";
         return $return;
 
+    }
+
+
+    static function printSPP3($id_murid, $idKuponSatuan)
+    {
+
+        $kuponSatuan = new KuponSatuan();
+        $kuponSatuan->getByID($idKuponSatuan);
+        $murid = new MuridModel();
+        $murid->getByID($id_murid);
+        $nama = $murid->nama_siswa;
+        $arrjenisBiayaSPP = Generic::getJenisBiayaType();
+        $jenisBiayaSPP = $arrjenisBiayaSPP[$murid->id_level_sekarang];
+        $jenisbm = new JenisBiayaModel();
+        $jenisbm->getByID(AccessRight::getMyOrgID() . "_" . $jenisBiayaSPP);
+        $iuranBulanan = new IuranBulanan();
+        $iuranBulanan->getWhereOne("bln_kupon_id=$kuponSatuan->kupon_id");
+        $tc = new SempoaOrg();
+        $tc->getWhereOne("org_id=$murid->murid_tc_id");
+        $date = new DateTime($iuranBulanan->bln_date_pembayaran);
+        $tanggal = $date->format("d-m-Y");
+        if ($murid->getParentName() != "") {
+            $sambut = "Dear " . $murid->getParentName() . ", ";
+        } else {
+            $sambut = "Dear Mami/Papi " . $murid->getNameMurid() . ", ";
+        }
+        $level = Generic::getLevelNameByID($murid->id_level_sekarang);
+        $jumlah = idr($jenisbm->harga);
+        $logo = "http://bo.sempoasip.com/" . _PHOTOURL . "/Picture1.png";
+
+        $return = "<head>
+            <title>Invoice Iuran Buku</title>
+            <meta charset=\"utf-8\">
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+            <link rel=\"stylesheet\" href=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\">
+            <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\"></script>
+            <script src=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>
+        </head>
+        <body>";
+        $return = $return . $sambut;
+        $return = $return . "<br><br>";
+        $return = $return . " <div class=\"Invoice_org_tua\">
+            <div class=\"kop_surat\">
+                <div class=\"container\">
+                    <div class=\"row\">
+                        <div class=\"col-md-12 \">
+                            <img src=\"$logo\" alt=\"logo_sempoa\" class=\"img-responsive pull-right\"
+                                 style=\"max-width:20%\"/>
+                        </div>
+                    </div>
+                </div>
+                <div class=\"container container-table\">
+                    <div class=\"row vertical-center-row\">
+                        <div class=\"text-center col-md-6 col-md-offset-3\" style=\"\">
+                            <h4 id=\"data_tc\">
+                                $tc->nama<br>
+                                $tc->alamat<br>
+                                Telp. $tc->nomor_telp, Fax. $tc->tc_no_fax_office,
+                                HP. $tc->tc_no_hp_office
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class=\"container\">
+                    <div class=\"row\">
+                        <div class=\"col-md-4\">
+                            <b>No. Invoice : $iuranBulanan->bln_no_invoice</b><br>
+                            <b>Tanggal : $tanggal</b><br><br>
+                            Telah diterima pembayaran:<br>
+                            <b>Nama Murid : $nama</b><br>
+                            <b>No Murid : $murid->kode_siswa</b><br>
+                            <b>Level : $level</b><br>
+                        </div>
+                    </div>
+
+                    <br>
+                </div>
+
+            </div>
+
+            <div class=\"container\">
+                <div class=\"table-responsive\">
+                    <table class=\"table table-bordered text-center\" id=\"table_invoice\">
+                        <thead>
+                        <tr>
+                            <th class=\"text-center\">No Kupon</th>
+                            <th class=\"text-center\">Keterangan</th>
+                            <th class=\"text-center\">Harga</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>$iuranBulanan->bln_kupon_id</td>
+                            <td>Iuran Bulanan : $iuranBulanan->bln_date</td>
+                            <td>$jumlah</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Jumlah Total</td>
+                            <td>$jumlah</td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class=\"container\">
+                <div class=\"row\">
+                    <div class=\"col-md-12\">
+                        <b>Catatan :</b> Setiap Training Centre beroperasional dan memiliki kepemilikan secara mandiri
+                    </div>
+                    <br>
+                    <br>
+                    <div class=\"clearfix\"></div>
+                    <div class=\"col-md-4 text-left\">
+                        Hormat kami, <br><br>
+                        Sempoa SIP
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </body>";
+        pr($return);
+//        return $return;
+//
+        ?>
+        <!---->
+        <!--        <head>-->
+        <!--            <title>Invoice Iuran Buku</title>-->
+        <!--            <meta charset="utf-8">-->
+        <!--            <meta name="viewport" content="width=device-width, initial-scale=1">-->
+        <!--            <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+        <!--            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
+        <!--            <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+        <!--        </head>-->
+        <!--        <body>-->
+        <!---->
+        <!---->
+        <!--        <div class="Invoice_org_tua">-->
+        <!--            <div class="kop_surat">-->
+        <!--                <div class="container">-->
+        <!--                    <div class="row">-->
+        <!--                        <div class="col-md-12 ">-->
+        <!--                            <img src="--><?//= $logo;
+        ?><!--" alt="logo_sempoa" class="img-responsive pull-right"-->
+        <!--                                 style="max-width:20%"/>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--                <div class="container container-table">-->
+        <!--                    <div class="row vertical-center-row">-->
+        <!--                        <div class="text-center col-md-6 col-md-offset-3" style="">-->
+        <!--                            <h4 id="data_tc">-->
+        <!--                                --><?//= $tc->nama;
+        ?><!--<br>-->
+        <!--                                --><?//= $tc->alamat;
+        ?><!--<br>-->
+        <!--                                Telp. --><?//= $tc->nomor_telp;
+        ?><!--, Fax. --><?//= $tc->tc_no_fax_office;
+        ?><!--,-->
+        <!--                                HP. --><?//= $tc->tc_no_hp_office;
+        ?>
+        <!--                            </h4>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--                <div class="container">-->
+        <!--                    <div class="row">-->
+        <!--                        <div class="col-md-4">-->
+        <!--                            <b>No. Invoice :--><?//= $iuranBulanan->bln_no_invoice;
+        ?><!--</b><br>-->
+        <!--                            <b>Tanggal :--><?//= $tanggal;
+        ?><!--</b><br><br>-->
+        <!--                            Telah diterima pembayaran:<br>-->
+        <!--                            <b>Nama Murid : --><?//= $nama;
+        ?><!--</b><br>-->
+        <!--                            <b>No Murid : --><?//= $murid->kode_siswa;
+        ?><!--</b><br>-->
+        <!--                            <b>Level : --><?//= $level;
+        ?><!--</b><br>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!---->
+        <!--                    <br>-->
+        <!--                </div>-->
+        <!---->
+        <!--            </div>-->
+        <!---->
+        <!--            <div class="container">-->
+        <!--                <div class="table-responsive">-->
+        <!--                    <table class="table table-bordered text-center" id="table_invoice">-->
+        <!--                        <thead>-->
+        <!--                        <tr>-->
+        <!--                            <th class="text-center">No Kupon</th>-->
+        <!--                            <th class="text-center">Keterangan</th>-->
+        <!--                            <th class="text-center">Harga</th>-->
+        <!--                        </tr>-->
+        <!--                        </thead>-->
+        <!--                        <tbody>-->
+        <!--                        <tr>-->
+        <!--                            <td>--><?//= $iuranBulanan->bln_kupon_id;
+        ?><!--</td>-->
+        <!--                            <td>Iuran Bulanan : --><?//= $iuranBulanan->bln_date;
+        ?><!--</td>-->
+        <!--                            <td>--><?//= $jumlah;
+        ?><!--</td>-->
+        <!--                        </tr>-->
+        <!--                        <tr>-->
+        <!--                            <td></td>-->
+        <!--                            <td>Jumlah Total</td>-->
+        <!--                            <td>--><?//= $jumlah;
+        ?><!--</td>-->
+        <!---->
+        <!--                        </tr>-->
+        <!--                        </tbody>-->
+        <!--                    </table>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!---->
+        <!---->
+        <!--            <div class="container">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="col-md-12">-->
+        <!--                        <b>Catatan :</b> Setiap Training Centre beroperasional dan memiliki kepemilikan secara mandiri-->
+        <!--                    </div>-->
+        <!--                    <br>-->
+        <!--                    <br>-->
+        <!--                    <div class="clearfix"></div>-->
+        <!--                    <div class="col-md-4 text-left">-->
+        <!--                        Hormat kami, <br><br>-->
+        <!--                        Sempoa SIP-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!---->
+        <!--        </div>-->
+        <!--        </body>-->
+        <!--        --><?//
     }
 
 }

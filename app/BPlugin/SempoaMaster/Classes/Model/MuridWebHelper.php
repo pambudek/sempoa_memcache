@@ -688,7 +688,7 @@ class MuridWebHelper extends WebService
                     $nilaiMurid->save();
                 }
 //                $json['buku'] = pr($stockBarangBuku);
-//                Generic2::sendEmailToParent($murid_id,"","",KEY::$TYPE_EMAIL_FP);
+                Generic2::sendEmailToParent($murid_id,"","",KEY::$TYPE_EMAIL_FP);
                 $json['status_code'] = 1;
                 $json['status_message'] = "Payment Entry Success\nSilahkan Masukan Murid Ke Kelas Yang Diinginkan";
                 echo json_encode($json);

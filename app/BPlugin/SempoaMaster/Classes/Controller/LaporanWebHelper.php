@@ -164,7 +164,7 @@ class LaporanWebHelper extends WebService
                 SempoaInboxModel::sendMsg(AccessRight::getMyOrgID(), AccessRight::getMyOrgID(), "Warning", "Kupon Anda Tinggal: <b>" . $jumlahKuponTersedia . "</b>");
             }
             echo json_encode($json);
-//            Generic2::sendEmailToParent($iuranBulanan->bln_murid_id, $kupon_id,"",KEY::$TYPE_EMAIL_SPP);
+            Generic2::sendEmailToParent($iuranBulanan->bln_murid_id, $kupon_id,"",KEY::$TYPE_EMAIL_SPP);
             die();
         }
         $json['status_code'] = 0;
@@ -640,7 +640,7 @@ class LaporanWebHelper extends WebService
 
         // Kirim email
 
-//        Generic2::sendEmailToParent($iuranBuku->bln_murid_id,"",$iuranBuku->bln_id,KEY::$TYPE_EMAIL_BUKU);
+        Generic2::sendEmailToParent($iuranBuku->bln_murid_id,"",$iuranBuku->bln_id,KEY::$TYPE_EMAIL_BUKU);
         // jika naik level
         if ($level_murid != $level_invoice) {
             $objMurid = new MuridModel();
