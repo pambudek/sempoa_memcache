@@ -471,7 +471,9 @@ class TransaksiPembayaran extends WebService
                     var bln = $('#bulan_spp_<?= $t; ?>').val();
                     var thn = $('#tahun_spp_<?= $t; ?>').val();
                     var tc_id = '<?= $tc_id ?>';
+//                    alert("bln: "  + bln);
                     openLw('listPembayaranSPPMonthlyTC', '<?=_SPPATH;?>TransaksiPembayaran/listPembayaranSPPMonthly' + '?now=' + $.now() + '&bln=' + bln + "&thn=" + thn + "&tc_id=" + tc_id, 'fade');
+
                 });
             </script>
         </section>
@@ -508,6 +510,7 @@ class TransaksiPembayaran extends WebService
                     $arrIB = $iuranBulanan->getWhere("bln_tc_id=$tc_id AND bln_date='$blndate' AND ( $bedingung)");
                     $arrNameHlp = array();
                     $sdhbayar = 0;
+                    $blmbayar = 0;
                     foreach ($arrIB as $val) {
                         $murid = new MuridModel();
                         $murid->getByID($val->bln_murid_id);
@@ -516,7 +519,7 @@ class TransaksiPembayaran extends WebService
                         $arrMuridName[$val->bln_murid_id] = true;
                         $sdhbayar++;
                     }
-                    $blmbayar = 0;
+
                     foreach ($arrMuridName as $id_murid => $val) {
                         if (!$val) {
                             $murid = new MuridModel();
@@ -596,7 +599,7 @@ class TransaksiPembayaran extends WebService
                 </table>
             </div>
 
-            <div id="summary_bayar" style="display: none">
+            <div id="summary_bayar_<?=$t;?>" style="display: none">
                 <span style="cursor: pointer;" onclick="$('.sudahbayar').show();$('.belumbayar').hide();">Sudah Bayar</span> :
                 <b><? echo $sdhbayar; ?></b>
                 <br>
@@ -605,7 +608,10 @@ class TransaksiPembayaran extends WebService
             </div>
             <script>
                 $(document).ready(function () {
-                    $('#summary_holder_<?=$t;?>').html($('#summary_bayar').html());
+//                    alert('sdh bayar: ' + '<?//=$sdhbayar?>//');
+//                    alert('blm bayar: ' + '<?//=$blmbayar?>//');
+//                    alert($('#summary_bayar_<?//=$t;?>//').html());
+                    $('#summary_holder_<?=$t;?>').html($('#summary_bayar_<?=$t;?>').html());
                 });
             </script>
         </section>
