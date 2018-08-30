@@ -85,17 +85,12 @@ class MuridWebHelper extends WebService
                 <div class="data-siswa-item">Kode Siswa : <b><?= $murid->kode_siswa; ?></b></div>
 
             </div>
-            <? //pr($murid);
-            ?>
-
             <div style="background-color: #EEEEEE; font-size: 18px; text-align: center; padding: 5px;">Daftar
                 Pembayaran
             </div>
             <table width="100%" class="table table-hover" style="font-size: 16px;">
                 <?
                 $total = 0;
-                //            pr($arrIDs);
-
                 foreach ($arrIDs as $num => $id_biaya) {
                     $biaya = new SettingJenisBiayaModel();
                     $biaya->getByID($id_biaya);
@@ -688,7 +683,7 @@ class MuridWebHelper extends WebService
                     $nilaiMurid->save();
                 }
 //                $json['buku'] = pr($stockBarangBuku);
-                Generic2::sendEmailToParent($murid_id,"","",KEY::$TYPE_EMAIL_FP);
+                Generic2::sendEmailToParent($murid_id, "", "", KEY::$TYPE_EMAIL_FP);
                 $json['status_code'] = 1;
                 $json['status_message'] = "Payment Entry Success\nSilahkan Masukan Murid Ke Kelas Yang Diinginkan";
                 echo json_encode($json);
@@ -1146,7 +1141,9 @@ class MuridWebHelper extends WebService
                                         $your_date = strtotime($fp->murid_pay_date);
                                         $datediff = Generic::diffTwoDaysInDay($now, $your_date);
 //                                        echo $murid->id_murid . " - " . $fp->murid_pay_date . " - " . Generic::getMuridNamebyID($fp->murid_id) . " - ".$datediff;
-                                        if ($datediff <= KEY::$MAX_UNDO_FIRST_PAYMENT) {
+                                        $maxDate = Efiwebsetting::getData("bln_undo");
+//                                        if ($datediff <= KEY::$MAX_UNDO_FIRST_PAYMENT) {
+                                        if ($datediff <= $maxDate) {
                                             ?>
                                             <span id="undo_first_payment_<?= $murid->id_murid; ?>" class="fa fa-undo"
                                                   aria-hidden="true"></span>
@@ -2456,7 +2453,8 @@ class MuridWebHelper extends WebService
                                                     $your_date = strtotime($mk->bln_date_pembayaran);
                                                     $datediff = $now - $your_date;
                                                     $datediff = floor($datediff / (60 * 60 * 24));
-                                                    if ($datediff <= KEY::$MAX_UNDO_SPP) {
+                                                    $maxDate = Efiwebsetting::getData("bln_undo");
+                                                    if ($datediff <= $maxDate) {
                                                         ?>
                                                         <span id="undo_<?= $mk->bln_id; ?>" class="fa fa-undo"
                                                               aria-hidden="true"></span>
@@ -2831,7 +2829,9 @@ class MuridWebHelper extends WebService
                                                 $now = time();
                                                 $your_date = strtotime($val->bln_date_pembayaran);
                                                 $datediff = Generic::diffTwoDaysInDay($now, $your_date);
-                                                if ($datediff <= KEY::$MAX_UNDO_IURAN_BUKU) {
+                                                $maxDate = Efiwebsetting::getData("bln_undo");
+//                                            if ($datediff <= KEY::$MAX_UNDO_IURAN_BUKU) {
+                                                if ($datediff <= $maxDate) {
                                                     ?>
                                                     <span id="undo_iuran_buku_<?= $val->bln_id; ?>" class="fa fa-undo"
                                                           aria-hidden="true"></span>
@@ -3143,7 +3143,8 @@ class MuridWebHelper extends WebService
                         $your_date = strtotime($mk->bln_date_pembayaran);
                         $datediff = $now - $your_date;
                         $datediff = floor($datediff / (60 * 60 * 24));
-                        if ($datediff <= KEY::$MAX_UNDO_SPP) {
+                        $maxDate = Efiwebsetting::getData("bln_undo");
+                        if ($datediff <= $maxDate) {
                             ?>
                             <span id="undo_<?= $mk->bln_id; ?>" class="fa fa-undo"
                                   aria-hidden="true"></span>
@@ -6517,7 +6518,9 @@ class MuridWebHelper extends WebService
                             $now = time();
                             $your_date = strtotime($val->bln_date_pembayaran);
                             $datediff = Generic::diffTwoDaysInDay($now, $your_date);
-                            if ($datediff <= KEY::$MAX_UNDO_IURAN_BUKU) {
+                            $maxDate = Efiwebsetting::getData("bln_undo");
+//                             if ($datediff <= KEY::$MAX_UNDO_IURAN_BUKU) {
+                            if ($datediff <= $maxDate) {
                                 ?>
                                 <span id="undo_iuran_buku_<?= $val->bln_id; ?>" class="fa fa-undo"
                                       aria-hidden="true"></span>

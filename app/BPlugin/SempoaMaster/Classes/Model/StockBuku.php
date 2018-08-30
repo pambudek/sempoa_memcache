@@ -260,8 +260,11 @@ class StockBuku extends Model
     public function getAllMyNoBukuFreiTCByInvoiceId($level,$tc_id, $kurikulum){
 
         $brg = new BarangWebModel();
+//        $id_buku =$brg->getIdBarangByLevelKurikulum($level,$kurikulum);
+//        $arrNoBuku = $this->getWhere("stock_buku_tc='$tc_id' AND stock_status_tc='1' AND stock_grup_level='$level' AND stock_id_buku='$id_buku'");
         $id_buku =$brg->getIdBarangByLevelKurikulum($level,$kurikulum);
-        $arrNoBuku = $this->getWhere("stock_buku_tc='$tc_id' AND stock_status_tc='1' AND stock_grup_level='$level' AND stock_id_buku='$id_buku'");
+        $arrNoBuku = $this->getWhere("stock_buku_tc='$tc_id' AND stock_status_tc='1' AND stock_grup_level='$level'");
+
         $arrResult = array();
         foreach($arrNoBuku as $val){
             $arrResult[] = $val->stock_buku_no;
