@@ -22,7 +22,7 @@ class Model extends Leap\Model\Model
     {
         global $db;
         $q = "SELECT {$selectedColom} FROM {$this->table_name} WHERE $whereClause";
-        pr($q);
+//        pr($q);
         $muridkelas = $db->query($q, 2);
         $newMurid = array();
         $classname = get_called_class();
