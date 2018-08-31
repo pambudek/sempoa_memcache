@@ -381,7 +381,7 @@ class KelasWeb extends WebService
                 <script>
                     $('#submit_daftar_kelas_<?= $t; ?>').click(function () {
                         var tc_id = $('#pilih_TC_<?= $t; ?>').val();
-                        $('#content_dafar_kelas_<?= $t; ?>').load("<?= _SPPATH; ?>KelasWebHelper/loadDaftarKelas?tc_id=" + tc_id , function () {
+                        $('#content_dafar_kelas_<?= $t; ?>').load("<?= _SPPATH; ?>KelasWebHelper/loadDaftarKelas?tc_id=" + tc_id, function () {
 
                         }, 'json');
                     });
@@ -458,20 +458,390 @@ class KelasWeb extends WebService
 
     function create_operasional_kelas()
     {
+        $kelas = new KelasWebModel();
+        $hariini = isset($_GET['hari']) ? addslashes($_GET['hari']) : date('w');
+        $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
+        $arr = $kelas->getWhere("tc_id = $tc_id AND aktiv = 1 AND hari_kelas=$hariini ORDER BY jam_mulai_kelas ASC");
+        $dowMap = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $t = time();
+
+        ?>
+
+        <section class="content-header">
+            <h1>
+                <div class="pull-left" style="font-size: 13px;">
+                    Hari :<select id="hari_<?= $t; ?>">
+                        <?
+                        foreach ($dowMap as $key => $hari) {
+                            $sel = "";
+                            if ($key == date("w")) {
+                                $sel = "selected";
+                            }
+                            ?>
+                            <option value="<?= $key; ?>" <?= $sel; ?>><?= $hari; ?></option>
+                            <?
+                        }
+                        ?>
+                    </select>
+
+                    <button id="submit_hari_<?= $t; ?>">submit</button>
+                    <script>
+                        $('#submit_hari_<?= $t; ?>').click(function () {
+                            var hari = $('#hari_<?= $t; ?>').val();
+                            alert(hari);
+                            var tc_id = '<?= $tc_id; ?>';
+                            $('#container_kelas_<?=$t;?>').load("<?= _SPPATH; ?>KelasWebHelper/loadManageKelas?hari=" + hari + "&tc_id=" + tc_id, function () {
+                            }, 'json');
+                        });
+                    </script>
+                </div>
+
+            </h1>
+
+        </section>
+
+        <div class="clearfix"></div>
+
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>
+                        Hari dan Jam
+                    </th>
+                    <th>
+                        Ruang
+                    </th>
+                    <th>
+                        Level
+                    </th>
+                    <th>
+                        Guru
+                    </th>
+                    <th>
+                        Murid
+                    </th>
+                    <th>
+                        Action
+                    </th>
+                    <th>
+                        Status Kelas
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="container_kelas_<?= $t; ?>">
+                <?
+                foreach ($arr as $e) {
+
+                    $guru = new SempoaGuruModel();
+                    $guru->getByID($e->guru_id);
+                    $lvl = new SempoaLevel();
+                    $lvl->getByID($guru->id_level_training_guru);
+
+                    $mk = new MuridKelasMatrix();
+                    ?>
+                    <tr>
+                        <td>
+                            <?= $dowMap[$e->hari_kelas]; ?>
+                            <br>
+                            <?= date("h:i", strtotime($e->jam_mulai_kelas)); ?>
+                            - <?= date("h:i", strtotime($e->jam_akhir_kelas)); ?>
+
+                        </td>
+                        <td><?= $e->id_room; ?></td>
+                        <td><?= $lvl->level; ?></td>
+                        <td><b data-toggle="tooltip" title="open teacher profile" style=" cursor:pointer;"
+                               onclick="openLw('Profile_Guru','<?= _SPPATH; ?>GuruWebHelper/guru_profile?guru_id=<?= $e->guru_id; ?>','fade');"><?= $guru->nama_guru; ?></b>
+                            <?/*     <br>
+                                Lupa Absen ? Klik <a onclick="openLw('absen_lupa_guru', '<?= _SPPATH; ?>KelasWebHelper/absen_lupa_guru?id_guru=<?= $guru->guru_id; ?>&id_kelas=<?= $e->id_kelas; ?>', 'fade');">disini..</a>
+                                <hr style="padding: 2px;margin: 0px;"> */ ?>
+                        </td>
+
+                        <td>
+                            <?
+                            $arrMuriddiKelas = $mk->getWhereFromMultipleTable("id_murid = murid_id AND kelas_id = '{$e->id_kelas}' AND active_status = 1", array("MuridModel"));
+
+                            foreach ($arrMuriddiKelas as $mur) {
+                                ?>
+                                <b data-toggle="tooltip" title="open student profile" style=" cursor:pointer;"
+                                   onclick="openLw('Profile_Murid','<?= _SPPATH; ?>MuridWebHelper/profile?id_murid=<?= $mur->id_murid; ?>','fade');"><?= $mur->nama_siswa; ?></b>
+                                <i data-toggle="tooltip" class="glyphicon glyphicon-remove"
+                                   title="remove this student from classroom" style="cursor: pointer"
+                                   onclick="remove_murid_from_kelas('<?= $mur->mk_id; ?>', '<?= $mur->id_murid; ?>', '<?= $e->id_kelas; ?>');"></i>
+                                <br>
+                                <?/*
+                                    Lupa Absen ? Klik <a onclick="openLw('absen_lupa', '<?= _SPPATH; ?>KelasWebHelper/absen_lupa?id_murid=<?= $mur->id_murid; ?>&id_kelas=<?= $e->id_kelas; ?>', 'fade');">disini..</a>
+                                    <hr style="padding: 2px;margin: 0px;">
+*/ ?>
+                                <?
+                            }
+                            ?>
+                        </td>
+
+                        <td>
+                            <button class="btn btn-default" onclick="add_murid_to_kelass('<?= $e->id_kelas; ?>');">
+                                Add Murid
+                            </button>
+
+                        </td>
+                        <td>
+                            <? if ($e->aktiv == 1) {
+                                ?>
+                                <button class="btn btn-default"
+                                        onclick="set_kelas_nonaktiv('<?= $e->id_kelas; ?>');">
+                                    Non Aktiv
+                                </button>
+                                <?
+                            } ?>
+
+
+                        </td>
+                    </tr>
+                    <?
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+        <script>
+
+            function set_kelas_nonaktiv(kelas_id) {
+                if (confirm("Anda akan menonaktivkan kelas?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/nonaktivkankelas", {kelas_id: kelas_id}, function (data) {
+                        if (data.status_code) {
+                            lwrefresh("container_kelas_<?= $t; ?>");
+
+                        } else {
+                            alert(data.status_message);
+                        }
+                    }, 'json');
+            }
+
+
+            function add_murid_to_kelass(id_kelas) {
+                $('#modal_add_murid .modal-body').load("<?= _SPPATH; ?>KelasWebHelper/load_murid_tc?kelas_id=" + id_kelas + "&tc_id=<?= AccessRight::getMyOrgID(); ?>");
+                $('#modal_add_murid').modal('show');
+                //                $('#modal_add_murid').modal('show');
+            }
+            function remove_murid_from_kelas(mk_id, murid_id, kelas_id) {
+                if (confirm("Anda akan menghapus Murid dari Kelas?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/remove_murid_from_kelas", {mk_id: mk_id}, function (data) {
+                        if (data.status_code) {
+                            lwrefresh(selected_page);
+
+                        } else {
+                            alert(data.status_message);
+                        }
+                    }, 'json');
+            }
+
+            function absen_guru_dikelas(murid_id, kelas_id) {
+                if (confirm("Anda akan mengabsen Guru?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/absen_guru_dikelas",
+                        {
+                            guru_id: murid_id,
+                            kelas_id: kelas_id
+                        },
+                        function (data) {
+                            if (data.status_code) {
+                                alert(data.status_message);
+                                lwrefresh(selected_page);
+
+                            } else {
+                                alert(data.status_message);
+                            }
+                        }, 'json');
+            }
+            function absen_murid_dikelas(mk_id, murid_id, kelas_id) {
+                if (confirm("Anda akan mengabsen Murid?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/absen_murid_dikelas",
+                        {
+                            mk_id: mk_id,
+                            murid_id: murid_id,
+                            kelas_id: kelas_id
+                        },
+                        function (data) {
+                            if (data.status_code) {
+                                alert(data.status_message);
+                                lwrefresh(selected_page);
+
+                            } else {
+                                alert(data.status_message);
+                            }
+                        }, 'json');
+            }
+        </script>
+        <?
+    }
+
+    function create_operasional_kelas_load()
+    {
+        $kelas = new KelasWebModel();
+        $hariini = isset($_GET['hari']) ? addslashes($_GET['hari']) : date('w');
+        $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
+        $arr = $kelas->getWhere("tc_id = $tc_id AND aktiv = 1 AND hari_kelas=$hariini ORDER BY jam_mulai_kelas ASC");
+        $dowMap = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $t = time();
+
+        ?>
+
+        <tbody id="container_kelas_<?= $t; ?>">
+        <?
+        foreach ($arr as $e) {
+
+            $guru = new SempoaGuruModel();
+            $guru->getByID($e->guru_id);
+            $lvl = new SempoaLevel();
+            $lvl->getByID($guru->id_level_training_guru);
+
+            $mk = new MuridKelasMatrix();
+            ?>
+            <tr>
+                <td>
+                    <?= $dowMap[$e->hari_kelas]; ?>
+                    <br>
+                    <?= date("h:i", strtotime($e->jam_mulai_kelas)); ?>
+                    - <?= date("h:i", strtotime($e->jam_akhir_kelas)); ?>
+
+                </td>
+                <td><?= $e->id_room; ?></td>
+                <td><?= $lvl->level; ?></td>
+                <td><b data-toggle="tooltip" title="open teacher profile" style=" cursor:pointer;"
+                       onclick="openLw('Profile_Guru','<?= _SPPATH; ?>GuruWebHelper/guru_profile?guru_id=<?= $e->guru_id; ?>','fade');"><?= $guru->nama_guru; ?></b>
+                    <?/*     <br>
+                                Lupa Absen ? Klik <a onclick="openLw('absen_lupa_guru', '<?= _SPPATH; ?>KelasWebHelper/absen_lupa_guru?id_guru=<?= $guru->guru_id; ?>&id_kelas=<?= $e->id_kelas; ?>', 'fade');">disini..</a>
+                                <hr style="padding: 2px;margin: 0px;"> */ ?>
+                </td>
+
+                <td>
+                    <?
+                    $arrMuriddiKelas = $mk->getWhereFromMultipleTable("id_murid = murid_id AND kelas_id = '{$e->id_kelas}' AND active_status = 1", array("MuridModel"));
+
+                    foreach ($arrMuriddiKelas as $mur) {
+                        ?>
+                        <b data-toggle="tooltip" title="open student profile" style=" cursor:pointer;"
+                           onclick="openLw('Profile_Murid','<?= _SPPATH; ?>MuridWebHelper/profile?id_murid=<?= $mur->id_murid; ?>','fade');"><?= $mur->nama_siswa; ?></b>
+                        <i data-toggle="tooltip" class="glyphicon glyphicon-remove"
+                           title="remove this student from classroom" style="cursor: pointer"
+                           onclick="remove_murid_from_kelas('<?= $mur->mk_id; ?>', '<?= $mur->id_murid; ?>', '<?= $e->id_kelas; ?>');"></i>
+                        <br>
+                        <?/*
+                                    Lupa Absen ? Klik <a onclick="openLw('absen_lupa', '<?= _SPPATH; ?>KelasWebHelper/absen_lupa?id_murid=<?= $mur->id_murid; ?>&id_kelas=<?= $e->id_kelas; ?>', 'fade');">disini..</a>
+                                    <hr style="padding: 2px;margin: 0px;">
+*/ ?>
+                        <?
+                    }
+                    ?>
+                </td>
+
+                <td>
+                    <button class="btn btn-default" onclick="add_murid_to_kelass('<?= $e->id_kelas; ?>');">
+                        Add Murid
+                    </button>
+
+                </td>
+                <td>
+                    <? if ($e->aktiv == 1) {
+                        ?>
+                        <button class="btn btn-default"
+                                onclick="set_kelas_nonaktiv('<?= $e->id_kelas; ?>');">
+                            Non Aktiv
+                        </button>
+                        <?
+                    } ?>
+
+
+                </td>
+            </tr>
+            <?
+        }
+        ?>
+        </tbody>
+        </table>
+        </div>
+        <script>
+
+            function set_kelas_nonaktiv(kelas_id) {
+                if (confirm("Anda akan menonaktivkan kelas?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/nonaktivkankelas", {kelas_id: kelas_id}, function (data) {
+                        if (data.status_code) {
+                            lwrefresh(selected_page);
+
+                        } else {
+                            alert(data.status_message);
+                        }
+                    }, 'json');
+            }
+
+
+            function add_murid_to_kelass(id_kelas) {
+                $('#modal_add_murid .modal-body').load("<?= _SPPATH; ?>KelasWebHelper/load_murid_tc?kelas_id=" + id_kelas + "&tc_id=<?= AccessRight::getMyOrgID(); ?>");
+                $('#modal_add_murid').modal('show');
+                //                $('#modal_add_murid').modal('show');
+            }
+            function remove_murid_from_kelas(mk_id, murid_id, kelas_id) {
+                if (confirm("Anda akan menghapus Murid dari Kelas?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/remove_murid_from_kelas", {mk_id: mk_id}, function (data) {
+                        if (data.status_code) {
+                            lwrefresh(selected_page);
+
+                        } else {
+                            alert(data.status_message);
+                        }
+                    }, 'json');
+            }
+
+            function absen_guru_dikelas(murid_id, kelas_id) {
+                if (confirm("Anda akan mengabsen Guru?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/absen_guru_dikelas",
+                        {
+                            guru_id: murid_id,
+                            kelas_id: kelas_id
+                        },
+                        function (data) {
+                            if (data.status_code) {
+                                alert(data.status_message);
+                                lwrefresh(selected_page);
+
+                            } else {
+                                alert(data.status_message);
+                            }
+                        }, 'json');
+            }
+            function absen_murid_dikelas(mk_id, murid_id, kelas_id) {
+                if (confirm("Anda akan mengabsen Murid?"))
+                    $.post("<?= _SPPATH; ?>KelasWebHelper/absen_murid_dikelas",
+                        {
+                            mk_id: mk_id,
+                            murid_id: murid_id,
+                            kelas_id: kelas_id
+                        },
+                        function (data) {
+                            if (data.status_code) {
+                                alert(data.status_message);
+                                lwrefresh(selected_page);
+
+                            } else {
+                                alert(data.status_message);
+                            }
+                        }, 'json');
+            }
+        </script>
+        <?
+    }
+
+    function create_operasional_kelas_tmp()
+    {
 
         $date = new DateTime('today');
         $todayweek = $date->format("W");
         $hari = $date->format("w");
         $kelas = new KelasWebModel();
-        $arr = $kelas->getWhere("tc_id = '" . AccessRight::getMyOrgID() . "' ORDER BY hari_kelas ASC,jam_mulai_kelas ASC");
+        $arr = $kelas->getWhere("tc_id = '" . AccessRight::getMyOrgID() . "' AND aktiv = 1 ORDER BY hari_kelas ASC,jam_mulai_kelas ASC");
         $dowMap = array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
         $days_now = date("Y-m-d");
 
-        if ($_GET['back']) {
-            ?>
-            <!--            <button class="btn btn-default" onclick="lwclr();">BACK</button>-->
-            <?
-        }
         ?>
         <div style="background-color: #FFFFFF; padding: 20px; margin-top: 20px;">
 
@@ -505,10 +875,14 @@ class KelasWeb extends WebService
                         <th>
                             Action
                         </th>
+                        <th>
+                            Status Kelas
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
                     <?
+                    //pr($arr);
                     foreach ($arr as $e) {
 
                         $guru = new SempoaGuruModel();
@@ -562,6 +936,18 @@ class KelasWeb extends WebService
                                 </button>
 
                             </td>
+                            <td>
+                                <? if ($e->aktiv == 1) {
+                                    ?>
+                                    <button class="btn btn-default"
+                                            onclick="set_kelas_nonaktiv('<?= $e->id_kelas; ?>');">
+                                        Non Aktiv
+                                    </button>
+                                    <?
+                                } ?>
+
+
+                            </td>
                         </tr>
                         <?
                     }
@@ -570,6 +956,20 @@ class KelasWeb extends WebService
                 </table>
             </div>
             <script>
+
+                function set_kelas_nonaktiv(kelas_id) {
+                    if (confirm("Anda akan menonaktivkan kelas?"))
+                        $.post("<?= _SPPATH; ?>KelasWebHelper/nonaktivkankelas", {kelas_id: kelas_id}, function (data) {
+                            if (data.status_code) {
+                                lwrefresh(selected_page);
+
+                            } else {
+                                alert(data.status_message);
+                            }
+                        }, 'json');
+                }
+
+
                 function add_murid_to_kelass(id_kelas) {
                     $('#modal_add_murid .modal-body').load("<?= _SPPATH; ?>KelasWebHelper/load_murid_tc?kelas_id=" + id_kelas + "&tc_id=<?= AccessRight::getMyOrgID(); ?>");
                     $('#modal_add_murid').modal('show');

@@ -1302,4 +1302,116 @@ class KelasWebHelper extends WebService
 
         <?
     }
+
+    function nonaktivkankelas()
+    {
+        $kelas_id = addslashes($_POST['kelas_id']);
+
+        $kelas = new KelasWebModel();
+        $kelas->getByID($kelas_id);
+
+       if (is_null($kelas->id_kelas)) {
+            $json['status_code'] = 0;
+            $json['status_message'] = "Kelas tidak ditemukan!";
+            echo json_encode($json);
+            die();
+        }
+
+//        $kelas_id = addslashes($_POST['id_kelas']);
+
+        $kelas->aktiv = 0;
+        if ($kelas->save(1)) {
+
+           $json['status_code'] = 1;
+            $json['status_message'] = "Kelas sudah dinonaktivkan!";
+            echo json_encode($json);
+            die();
+        }
+        $json['status_code'] = 0;
+        $json['status_message'] = "Save Failed";
+        echo json_encode($json);
+        die();
+    }
+
+
+
+    public function loadManageKelas(){
+
+        $kelas = new KelasWebModel();
+        $hariini = isset($_GET['hari']) ? addslashes($_GET['hari']) : date('w');
+        $tc_id = isset($_GET['tc_id']) ? addslashes($_GET['tc_id']) : AccessRight::getMyOrgID();
+        $arr = $kelas->getWhere("tc_id = $tc_id AND aktiv = 1 AND hari_kelas=$hariini ORDER BY jam_mulai_kelas ASC");
+        $dowMap = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $t = time();
+
+        foreach ($arr as $e) {
+
+            $guru = new SempoaGuruModel();
+            $guru->getByID($e->guru_id);
+            $lvl = new SempoaLevel();
+            $lvl->getByID($guru->id_level_training_guru);
+
+            $mk = new MuridKelasMatrix();
+            ?>
+            <tr>
+                <td>
+                    <?= $dowMap[$e->hari_kelas]; ?>
+                    <br>
+                    <?= date("h:i", strtotime($e->jam_mulai_kelas)); ?>
+                    - <?= date("h:i", strtotime($e->jam_akhir_kelas)); ?>
+
+                </td>
+                <td><?= $e->id_room; ?></td>
+                <td><?= $lvl->level; ?></td>
+                <td><b data-toggle="tooltip" title="open teacher profile" style=" cursor:pointer;"
+                       onclick="openLw('Profile_Guru','<?= _SPPATH; ?>GuruWebHelper/guru_profile?guru_id=<?= $e->guru_id; ?>','fade');"><?= $guru->nama_guru; ?></b>
+                    <?/*     <br>
+                                Lupa Absen ? Klik <a onclick="openLw('absen_lupa_guru', '<?= _SPPATH; ?>KelasWebHelper/absen_lupa_guru?id_guru=<?= $guru->guru_id; ?>&id_kelas=<?= $e->id_kelas; ?>', 'fade');">disini..</a>
+                                <hr style="padding: 2px;margin: 0px;"> */ ?>
+                </td>
+
+                <td>
+                    <?
+                    $arrMuriddiKelas = $mk->getWhereFromMultipleTable("id_murid = murid_id AND kelas_id = '{$e->id_kelas}' AND active_status = 1", array("MuridModel"));
+
+                    foreach ($arrMuriddiKelas as $mur) {
+                        ?>
+                        <b data-toggle="tooltip" title="open student profile" style=" cursor:pointer;"
+                           onclick="openLw('Profile_Murid','<?= _SPPATH; ?>MuridWebHelper/profile?id_murid=<?= $mur->id_murid; ?>','fade');"><?= $mur->nama_siswa; ?></b>
+                        <i data-toggle="tooltip" class="glyphicon glyphicon-remove"
+                           title="remove this student from classroom" style="cursor: pointer"
+                           onclick="remove_murid_from_kelas('<?= $mur->mk_id; ?>', '<?= $mur->id_murid; ?>', '<?= $e->id_kelas; ?>');"></i>
+                        <br>
+                        <?/*
+                                    Lupa Absen ? Klik <a onclick="openLw('absen_lupa', '<?= _SPPATH; ?>KelasWebHelper/absen_lupa?id_murid=<?= $mur->id_murid; ?>&id_kelas=<?= $e->id_kelas; ?>', 'fade');">disini..</a>
+                                    <hr style="padding: 2px;margin: 0px;">
+*/ ?>
+                        <?
+                    }
+                    ?>
+                </td>
+
+                <td>
+                    <button class="btn btn-default" onclick="add_murid_to_kelass('<?= $e->id_kelas; ?>');">
+                        Add Murid
+                    </button>
+
+                </td>
+                <td>
+                    <? if ($e->aktiv == 1) {
+                        ?>
+                        <button class="btn btn-default"
+                                onclick="set_kelas_nonaktiv('<?= $e->id_kelas; ?>');">
+                            Non Aktiv
+                        </button>
+                        <?
+                    } ?>
+
+
+                </td>
+            </tr>
+
+            <?
+        }
+    }
 }

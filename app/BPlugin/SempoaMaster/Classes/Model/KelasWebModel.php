@@ -17,10 +17,10 @@ class KelasWebModel extends Model {
     var $table_name = "sempoa__kelas";
     var $main_id = "id_kelas";
     //Default Coloms for read
-    public $default_read_coloms = "id_kelas,hari_kelas,jam_mulai_kelas,jam_akhir_kelas,id_room,level,guru_id,ak_id,kpo_id,ibo_id,tc_id";
+    public $default_read_coloms = "id_kelas,hari_kelas,jam_mulai_kelas,jam_akhir_kelas,id_room,level,guru_id,aktiv,ak_id,kpo_id,ibo_id,tc_id";
 //allowed colom in CRUD filter
-    public $coloumlist = "id_kelas,hari_kelas,jam_mulai_kelas,jam_akhir_kelas,id_room,murid_id,guru_id,level,ak_id,kpo_id,ibo_id,tc_id";
-    public $customColumnList = "id_kelas,hari_kelas,jam_mulai_kelas,jam_akhir_kelas,id_room,murid_id,level,guru_id";
+    public $coloumlist = "id_kelas,hari_kelas,jam_mulai_kelas,jam_akhir_kelas,id_room,murid_id,guru_id,level,aktiv,ak_id,kpo_id,ibo_id,tc_id";
+    public $customColumnList = "id_kelas,hari_kelas,jam_mulai_kelas,jam_akhir_kelas,id_room,murid_id,level,guru_id,aktiv";
     public $id_kelas;
     public $hari_kelas;
     public $jam_mulai_kelas;
@@ -29,6 +29,7 @@ class KelasWebModel extends Model {
     public $murid_id;
     public $level;
     public $guru_id;
+    public $aktiv;
     public $ak_id;
     public $kpo_id;
     public $ibo_id;
@@ -52,6 +53,8 @@ class KelasWebModel extends Model {
             $return['kpo_id'] = new Leap\View\InputText("hidden", "kpo_id", "kpo_id", $myGrandParentID);
             $return['ibo_id'] = new Leap\View\InputText("hidden", "ibo_id", "ibo_id", $myParentID);
             $return['tc_id'] = new Leap\View\InputText("hidden", "tc_id", "tc_id", $myID);
+            $return['aktiv'] = new \Leap\View\InputSelect($this->arrayYesNO, "aktiv", "aktiv", $this->aktiv);
+
         }
 
         $guru = new SempoaGuruModel();
@@ -75,6 +78,8 @@ class KelasWebModel extends Model {
     public function overwriteRead($return) {
        
         parent::overwriteRead($return);
+        $arrAktiv[0] = "Nonaktiv";
+        $arrAktiv[1] = "Aktiv";
         $objs = $return['objs'];
         $arrDays = Generic::getWeekDay();
         foreach ($objs as $obj) {
@@ -85,7 +90,9 @@ class KelasWebModel extends Model {
              if (isset($obj->guru_id)) {
                 $obj->guru_id = Generic::getGuruNamebyID($obj->guru_id);
             }
-            
+            if (isset($obj->aktiv)) {
+                $obj->aktiv = $arrAktiv[$obj->aktiv];
+            }
 //            if ($obj->murid_id != "") {
 //                $obj->murid_id = "<button onclick='window.location.href = \"mailto:" . $obj->murid_id . "\";'>Email</button>";
 //            }
