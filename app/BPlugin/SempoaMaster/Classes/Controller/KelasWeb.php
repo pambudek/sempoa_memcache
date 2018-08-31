@@ -488,7 +488,6 @@ class KelasWeb extends WebService
                     <script>
                         $('#submit_hari_<?= $t; ?>').click(function () {
                             var hari = $('#hari_<?= $t; ?>').val();
-                            alert(hari);
                             var tc_id = '<?= $tc_id; ?>';
                             $('#container_kelas_<?=$t;?>').load("<?= _SPPATH; ?>KelasWebHelper/loadManageKelas?hari=" + hari + "&tc_id=" + tc_id, function () {
                             }, 'json');
